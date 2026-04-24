@@ -36,7 +36,7 @@ class AppScaffold extends StatelessWidget {
                   style: boldTextStyle(
                       color: Colors.white, size: APP_BAR_TEXT_SIZE)),
               elevation: 0.0,
-              backgroundColor: context.primaryColor,
+                      backgroundColor: Colors.transparent,
               leading: context.canPop ? BackWidget() : null,
               actions: actions,
             )

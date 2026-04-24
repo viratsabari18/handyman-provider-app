@@ -174,7 +174,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
       appStore.setLoading(true);
       if (isUpdate) {
         await updateProfile(request).then((res) async {
-          toast(res.message.validate());
+          // toast(res.message.validate());
           finish(context, widget.onUpdate!.call());
         }).catchError((e) {
           toast(e.toString());

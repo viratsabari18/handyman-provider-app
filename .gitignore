@@ -1,4 +1,13 @@
+# Gradle
+.gradle/
+android/.gradle/
+
+# Build
 build/
+
+# Flutter
 .dart_tool/
+
+# IDE
 .idea/
 .DS_Store

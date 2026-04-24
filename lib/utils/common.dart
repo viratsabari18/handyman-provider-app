@@ -174,37 +174,130 @@ String parseHtmlString(String? htmlString) {
   return parse(parse(htmlString).body!.text).documentElement!.text;
 }
 
-String formatDate(String? dateTime, {String format = DATE_FORMAT_1, bool isFromMicrosecondsSinceEpoch = false, bool isLanguageNeeded = true, bool isTime = false, bool showDateWithTime = false}) {
-  final parsedDateTime = isFromMicrosecondsSinceEpoch ? DateTime.fromMicrosecondsSinceEpoch(dateTime.validate().toInt() * 1000) : DateTime.parse(dateTime.validate());
+String formatDate(
+  String? dateTime, {
+  String format = DATE_FORMAT_1,
+  bool isFromMicrosecondsSinceEpoch = false,
+  bool isLanguageNeeded = true,
+  bool isTime = false,
+  bool showDateWithTime = false,
+}) {
+  DateTime? parsedDateTime;
+
+  try {
+    parsedDateTime = isFromMicrosecondsSinceEpoch
+        ? DateTime.fromMicrosecondsSinceEpoch(dateTime.validate().toInt() * 1000)
+        : DateTime.parse(dateTime.validate());
+  } catch (e) {
+    return dateTime.validate(); // ✅ prevents crash
+  }
+
   if (isTime) {
-    return DateFormat('${getStringAsync(TIME_FORMAT)}', isLanguageNeeded ? appStore.selectedLanguageCode : null).format(parsedDateTime);
+    return DateFormat(
+      '${getStringAsync(TIME_FORMAT)}',
+      isLanguageNeeded ? appStore.selectedLanguageCode : null,
+    ).format(parsedDateTime);
   } else {
     if (getStringAsync(DATE_FORMAT).validate().contains('dS')) {
       int day = parsedDateTime.day;
-      if (DateFormat('${getStringAsync(DATE_FORMAT)}', isLanguageNeeded ? appStore.selectedLanguageCode : null).format(parsedDateTime).contains('$day')) {
+
+      if (DateFormat(
+        '${getStringAsync(DATE_FORMAT)}',
+        isLanguageNeeded ? appStore.selectedLanguageCode : null,
+      ).format(parsedDateTime).contains('$day')) {
         return DateFormat(
-                '${getStringAsync(DATE_FORMAT).validate().replaceAll('S', '')}${showDateWithTime ? ' ${getStringAsync(TIME_FORMAT)}' : ''}', isLanguageNeeded ? appStore.selectedLanguageCode : null)
-            .format(parsedDateTime)
-            .replaceFirst('$day', '${addOrdinalSuffix(day)}');
+          '${getStringAsync(DATE_FORMAT).validate().replaceAll('S', '')}${showDateWithTime ? ' ${getStringAsync(TIME_FORMAT)}' : ''}',
+          isLanguageNeeded ? appStore.selectedLanguageCode : null,
+        ).format(parsedDateTime).replaceFirst('$day', '${addOrdinalSuffix(day)}');
       }
     }
-    return DateFormat('${getStringAsync(DATE_FORMAT).validate()}${showDateWithTime ? ' ${getStringAsync(TIME_FORMAT)}' : ''}', isLanguageNeeded ? appStore.selectedLanguageCode : null)
-        .format(parsedDateTime);
+
+    return DateFormat(
+      '${getStringAsync(DATE_FORMAT).validate()}${showDateWithTime ? ' ${getStringAsync(TIME_FORMAT)}' : ''}',
+      isLanguageNeeded ? appStore.selectedLanguageCode : null,
+    ).format(parsedDateTime);
   }
 }
+String getTime(
+  String? time, {
+  String format = DISPLAY_TIME_FORMAT,
+  bool isFromMicrosecondsSinceEpoch = false,
+  bool isLanguageNeeded = true,
+}) {
+  DateTime? parsedTime;
 
-String getTime(String? time, {String format = DISPLAY_TIME_FORMAT, bool isFromMicrosecondsSinceEpoch = false, bool isLanguageNeeded = true}) {
-  final parsedTime = isFromMicrosecondsSinceEpoch ? DateTime.fromMicrosecondsSinceEpoch(time!.validate().toInt() * 1000) : DateTime.parse(time.validate());
-  return DateFormat(getStringAsync(TIME_FORMAT), isLanguageNeeded ? appStore.selectedLanguageCode : null).format(parsedTime);
+  try {
+    if (isFromMicrosecondsSinceEpoch) {
+      parsedTime = DateTime.fromMicrosecondsSinceEpoch(
+        time!.validate().toInt() * 1000,
+      );
+    } else {
+      // 🔥 Try normal parse first
+      parsedTime = DateTime.tryParse(time.validate());
+
+      // 🔥 If failed → try parsing "hh:mm a" format (e.g., 10:00 AM)
+      if (parsedTime == null) {
+        parsedTime = DateFormat("hh:mm a").parse(time.validate());
+      }
+    }
+  } catch (e) {
+    return time.validate(); // ✅ fallback instead of crash
+  }
+
+  return DateFormat(
+    getStringAsync(TIME_FORMAT),
+    isLanguageNeeded ? appStore.selectedLanguageCode : null,
+  ).format(parsedTime);
 }
 
 String getSlotWithDate({required String date, required String slotTime}) {
-  DateTime originalDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(date);
-  DateTime newTime = DateFormat('HH:mm:ss').parse(slotTime);
-  DateTime newDateTime = DateTime(originalDateTime.year, originalDateTime.month, originalDateTime.day, newTime.hour, newTime.minute, newTime.second);
-  return DateFormat('yyyy-MM-dd HH:mm:ss').format(newDateTime);
-}
+  try {
+    DateTime? originalDateTime;
+    DateTime? parsedTime;
 
+    // 🔥 Parse DATE safely
+    originalDateTime = DateTime.tryParse(date);
+
+    // If date doesn't include time → add default time
+    if (originalDateTime == null) {
+      originalDateTime = DateTime.tryParse("$date 00:00:00");
+    }
+
+    // 🔥 Parse TIME safely
+    try {
+      parsedTime = DateFormat("HH:mm:ss").parse(slotTime);
+    } catch (e) {
+      try {
+        parsedTime = DateFormat("hh:mm a").parse(slotTime); // e.g., 10:00 AM
+      } catch (e) {
+        // Handle range like "10:00 AM - 12:00 PM"
+        if (slotTime.contains("-")) {
+          String startTime = slotTime.split("-").first.trim();
+          parsedTime = DateFormat("hh:mm a").parse(startTime);
+        }
+      }
+    }
+
+    // If still null → fallback
+    if (originalDateTime == null || parsedTime == null) {
+      return date; // ✅ prevent crash
+    }
+
+    // 🔥 Combine date + time
+    DateTime newDateTime = DateTime(
+      originalDateTime.year,
+      originalDateTime.month,
+      originalDateTime.day,
+      parsedTime.hour,
+      parsedTime.minute,
+      parsedTime.second,
+    );
+
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(newDateTime);
+  } catch (e) {
+    return date; // ✅ fallback safe
+  }
+}
 String getDateFormat(String phpFormat) {
   final formatMapping = {
     'Y': 'yyyy',

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 const APP_NAME = 'Fixomes Provider';
 const DEFAULT_LANGUAGE = 'en';
 
-const primaryColor = Color(0xFF008067);
+const primaryColor = Color(0xFFDB0008);
 
 /// Live Url
 const DOMAIN_URL = "https://fixomes.nativefriendly.com";

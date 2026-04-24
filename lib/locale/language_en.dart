@@ -53,6 +53,16 @@ class LanguageEn extends Languages {
   String get forgotPassword => 'Forgot Password?';
 
   @override
+  String get plzSelectOneCategory => 'Please select at least one category';
+
+  @override
+  String get selected => 'Selected';
+
+  @override
+  String get selectCategories => 'Select Categories';
+
+
+  @override
   String get alreadyHaveAccountTxt => 'Already have an Account';
 
   @override

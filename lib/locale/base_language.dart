@@ -5,6 +5,7 @@ abstract class Languages {
 
   String planAboutToExpire(int days);
 
+
   String get appName;
 
   String get provider;
@@ -48,6 +49,13 @@ abstract class Languages {
   String get editProfile;
 
   String get saveChanges;
+
+    String get plzSelectOneCategory;
+  String get selected;
+  String get selectCategories;
+  String get selectZones;
+  String get plzSelectOneZone;
+
 
   String get camera;
 
@@ -1658,9 +1666,7 @@ abstract class Languages {
 
   String get selectServiceZones;
 
-  String get selectZones;
 
-  String get plzSelectOneZone;
   
   String get lblNext;
 

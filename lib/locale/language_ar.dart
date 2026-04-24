@@ -1,6 +1,6 @@
 import 'package:handyman_provider_flutter/locale/base_language.dart';
 
-class LanguageAr extends Languages {
+class LanguageAr  extends Languages {
   @override
   String planAboutToExpire(int days) => 'خطتك على وشك الانتهاء خلال $days أيام';
   @override
@@ -2514,8 +2514,19 @@ class LanguageAr extends Languages {
   String get pleaseUploadAllRequired => 'يرجى تحميل جميع المستندات المطلوبة';
 
   @override
-  String get viewPDF => 'عرض ملف PDF';
+ @override
+String get viewPDF => 'عرض ملف PDF';
 
-  @override
-  String get selectServiceZone => 'اختر منطقة الخدمة';
+@override
+String get selectServiceZone => 'اختر منطقة الخدمة';
+
+@override
+String get plzSelectOneCategory => 'الرجاء تحديد فئة واحدة على الأقل';
+
+@override
+String get selected => 'محدد';
+
+@override
+String get selectCategories => 'اختر الفئات';
+
 }

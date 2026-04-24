@@ -2526,4 +2526,14 @@ class LanguageDe extends Languages {
 
   @override
   String get selectServiceZone => 'Servicezone auswählen';
+  
+@override
+String get plzSelectOneCategory => 'Bitte wählen Sie mindestens eine Kategorie aus';
+
+@override
+String get selectCategories => 'Kategorien auswählen';
+
+@override
+String get selected => 'Ausgewählt';
+
 }

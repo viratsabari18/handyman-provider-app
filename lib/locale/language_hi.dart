@@ -2520,4 +2520,15 @@ class LanguageHi extends Languages {
 
   @override
   String get selectServiceZone => 'सेवा क्षेत्र चुनें';
+  
+
+
+@override
+String get plzSelectOneCategory => 'कृपया कम से कम एक श्रेणी चुनें';
+
+@override
+String get selectCategories => 'श्रेणियाँ चुनें';
+
+@override
+String get selected => 'चयनित';
 }

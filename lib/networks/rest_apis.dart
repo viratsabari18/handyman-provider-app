@@ -8,6 +8,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/auth/sign_in_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/main.dart';
+import 'package:handyman_provider_flutter/models/extra_charges_model.dart';
 import 'package:handyman_provider_flutter/models/package_response.dart';
 import 'package:handyman_provider_flutter/models/base_response.dart';
 import 'package:handyman_provider_flutter/models/booking_detail_response.dart';
@@ -259,18 +260,40 @@ Future changeLanguage(Map request) async {
   return RegisterResponse.fromJson(await (handleResponse(await buildHttpResponse('switch-language', request: request, method: HttpMethodType.POST))));
 }
 
-Future<UserData> loginUser(Map request) async {
-  try {
-    LoginResponse res = LoginResponse.fromJson(await (handleResponse(await buildHttpResponse('login', request: request, method: HttpMethodType.POST))));
+// Future<UserData> loginUser(Map request) async {
+//   try {
+//     LoginResponse res = LoginResponse.fromJson(await (handleResponse(await buildHttpResponse('login', request: request, method: HttpMethodType.POST))));
 
-    if (res.data != null) {
-      return res.data!;
-    } else {
-      throw errorSomethingWentWrong;
-    }
-  } catch (e) {
-    throw e;
-  }
+//     if (res.data != null) {
+//       return res.data!;
+//     } else {
+//       throw errorSomethingWentWrong;
+//     }
+//   } catch (e) {
+//     throw e;
+//   }
+// }
+
+Future<UserData> loginUser(Map request) async {
+  await Future.delayed(Duration(seconds: 1)); // simulate API delay
+
+  return UserData(
+    id: 1,
+    firstName: "Test",
+    lastName: "User",
+    email: request['email'],
+    username: "testuser",
+    displayName: "Test User",
+    apiToken: "mock_token_123",
+    status: 1, // IMPORTANT: must be 1 for success
+    userType: "provider",
+    profileImage: "",
+    contactNumber: "9999999999",
+    cityName: "Chennai",
+
+    loginType: "email",
+    userRole: ["provider"],
+  );
 }
 
 Future<void> saveUserData(UserData data) async {
@@ -332,8 +355,25 @@ Future<BaseResponseModel> forgotPassword(Map request) async {
   return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse('forgot-password', request: request, method: HttpMethodType.POST)));
 }
 
-Future<CommonResponseModel> updateProfile(Map request) async {
-  return CommonResponseModel.fromJson(await handleResponse(await buildHttpResponse('update-profile', request: request, method: HttpMethodType.POST)));
+// Future<CommonResponseModel> updateProfile(Map request) async {
+//   return CommonResponseModel.fromJson(await handleResponse(await buildHttpResponse('update-profile', request: request, method: HttpMethodType.POST)));
+// }
+
+Future<UserData> updateProfile(Map request) async {
+  await Future.delayed(Duration(seconds: 1));
+
+  return UserData(
+    id: 1,
+    displayName: "Mock User",
+    email: request['email'] ?? "test@gmail.com",
+    contactNumber: "9999999999",
+    profileImage: "",
+    apiToken: "mock_token_123",
+    status: 1,
+    userType: "provider",
+    
+    
+  );
 }
 
 Future<VerificationModel> verifyUserEmail(String userEmail) async {
@@ -397,48 +437,125 @@ Future<void> getAppConfigurations({bool isCurrentLocation = false, double? lat, 
 //endregion
 
 //region Provider API
+// Future<DashboardResponse> providerDashboard({bool forceSyncAppConfigurations = false}) async {
+//   final completer = Completer<DashboardResponse>();
+
+//   try {
+//     final data = DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('provider-dashboard', method: HttpMethodType.GET)));
+
+//     completer.complete(data);
+
+//     cachedProviderDashboardResponse = data;
+
+//     appStore.setTotalHandyman(data.totalActiveHandyman.validate());
+
+//     setValue(IS_EMAIL_VERIFIED, data.isEmailVerified.getBoolInt());
+
+//     if (data.commission != null) {
+//       setValue(DASHBOARD_COMMISSION, jsonEncode(data.commission));
+//     }
+
+//     appStore.setNotificationCount(data.notificationUnreadCount.validate());
+
+//     if (data.subscription != null) {
+//       await setSaveSubscription(
+//         isSubscribe: data.isSubscribed,
+//         subscription: data.subscription!,
+//       );
+//       if (appConfigurationStore.isInAppPurchaseEnable)
+//         inAppPurchaseService.checkSubscriptionSync(
+//           refreshCallBack: () => providerDashboard,
+//         );
+//     }
+
+//     // Sync new configurations for secret keys
+//     if (forceSyncAppConfigurations) await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
+//     getAppConfigurations();
+
+//     appStore.setLoading(false);
+//   } catch (e) {
+//     appStore.setLoading(false);
+//     completer.completeError(e);
+//   }
+
+//   return completer.future;
+// }
 Future<DashboardResponse> providerDashboard({bool forceSyncAppConfigurations = false}) async {
-  final completer = Completer<DashboardResponse>();
+  await Future.delayed(Duration(seconds: 1)); // simulate API delay
 
-  try {
-    final data = DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('provider-dashboard', method: HttpMethodType.GET)));
+  DashboardResponse data = DashboardResponse(
+    status: true,
+    totalBooking: 12,
+    totalService: 5,
+    todayCashAmount: 1200,
+    totalCashInHand: 5000,
+    totalActiveHandyman: 3,
+    totalRevenue: 25000,
 
-    completer.complete(data);
+    isEmailVerified: 1,
+    notificationUnreadCount: 2,
+    remainingPayout: 1000,
 
-    cachedProviderDashboardResponse = data;
+    // 👇 Important lists
+    service: [
+      ServiceData(
+        id: 1,
+        name: "AC Repair",
+        price: 499,
+        duration: "2 hours",
+        categoryName: "Home Services",
+        totalRating: 4.5,
+        totalReview: 10,
+        isFavourite: 0,
+        imageAttachments: [],
+      ),
+    ],
 
-    appStore.setTotalHandyman(data.totalActiveHandyman.validate());
+    handyman: [
+      UserData(
+        id: 2,
+        displayName: "John Worker",
+        profileImage: "",
+  
+      ),
+    ],
 
-    setValue(IS_EMAIL_VERIFIED, data.isEmailVerified.getBoolInt());
+    onlineHandyman: ["John Worker"],
 
-    if (data.commission != null) {
-      setValue(DASHBOARD_COMMISSION, jsonEncode(data.commission));
-    }
+    upcomingBookings: [
+      BookingData(
+        id: 1,
+        serviceName: "Plumbing",
+        customerName: "Test Customer",
+        status: "pending",
+        date: "2026-04-24",
+        amount: 800,
+        paymentStatus: "pending",
+      ),
+    ],
 
-    appStore.setNotificationCount(data.notificationUnreadCount.validate());
+    myPostJobData: [
+      PostJobData(
+        id: 1,
+        title: "Fix Washing Machine",
+        description: "Not working properly",
+        price: 1500,
+        status: "open",
+        customerName: "Customer A",
+      ),
+    ],
+  );
 
-    if (data.subscription != null) {
-      await setSaveSubscription(
-        isSubscribe: data.isSubscribed,
-        subscription: data.subscription!,
-      );
-      if (appConfigurationStore.isInAppPurchaseEnable)
-        inAppPurchaseService.checkSubscriptionSync(
-          refreshCallBack: () => providerDashboard,
-        );
-    }
+  // 🔥 IMPORTANT: mimic real side effects
+  cachedProviderDashboardResponse = data;
 
-    // Sync new configurations for secret keys
-    if (forceSyncAppConfigurations) await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
-    getAppConfigurations();
+  appStore.setTotalHandyman(data.totalActiveHandyman ?? 0);
+  appStore.setNotificationCount(data.notificationUnreadCount ?? 0);
+  appStore.setLoading(false);
 
-    appStore.setLoading(false);
-  } catch (e) {
-    appStore.setLoading(false);
-    completer.completeError(e);
-  }
+  setValue(IS_EMAIL_VERIFIED, data.isEmailVerified ?? 1);
 
-  return completer.future;
+  return data;
 }
 
 Future<ProviderDocumentListResponse> getProviderDoc() async {
@@ -682,6 +799,66 @@ Future<num> getUserWalletBalance() async {
   }
 }
 
+// Future<List<BookingData>> getBookingList(
+//   int page, {
+//   var perPage = PER_PAGE_ITEM,
+//   String serviceId = '',
+//   String dateFrom = '',
+//   String dateTo = '',
+//   String customerId = '',
+//   String providerId = '',
+//   String handymanId = '',
+//   String bookingStatus = '',
+//   String paymentStatus = '',
+//   String paymentType = '',
+//   String searchText = '',
+//   required List<BookingData> bookings,
+//   Function(bool)? lastPageCallback,
+//   Function(String totalEarning, PaymentBreakdown paymentBreakdown)? paymentBreakdownCallBack,
+// }) async {
+//   try {
+//     BookingListResponse res;
+//     String serviceIds = serviceId.isNotEmpty ? 'service_id=$serviceId&' : '';
+//     String dateStart = dateFrom.isNotEmpty ? 'date_from=$dateFrom&' : '';
+//     String dateEnd = dateTo.isNotEmpty ? '&date_to=$dateTo&' : '';
+//     String customerIds = customerId.isNotEmpty ? 'customer_id=$customerId&' : '';
+//     String providerIds = providerId.isNotEmpty ? 'provider_id=$providerId&' : '';
+//     String handymanIds = handymanId.isNotEmpty ? 'handyman_id=$handymanId&' : '';
+//     String status = bookingStatus.isNotEmpty ? 'status=$bookingStatus&' : '';
+//     String paymentStatuss = paymentStatus.isNotEmpty ? 'payment_status=$paymentStatus&' : '';
+//     String paymentTypes = paymentType.isNotEmpty ? 'payment_type=$paymentType&' : '';
+//     String searchParam = searchText.isNotEmpty ? '&search=$searchText&' : '';
+
+//     String perPageItem = 'per_page=$perPage&';
+//     String pageCount = 'page=$page';
+
+//     if (status == BOOKING_PAYMENT_STATUS_ALL) {
+//       res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse('booking-list?per_page=$perPage&page=$page$searchParam', method: HttpMethodType.GET)));
+//     } else {
+//       res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse(
+//           'booking-list?$serviceIds$dateStart$dateEnd$customerIds$providerIds$handymanIds$status$paymentStatuss$paymentTypes$perPageItem$pageCount$searchParam',
+//           method: HttpMethodType.GET)));
+//     }
+
+//     if (page == 1) bookings.clear();
+//     bookings.addAll(res.data.validate());
+//     lastPageCallback?.call(res.data.validate().length != PER_PAGE_ITEM);
+
+//     if (res.totalEarning.validate().isNotEmpty && res.paymentBreakdown != null) {
+//       paymentBreakdownCallBack?.call(res.totalEarning.validate(), res.paymentBreakdown!);
+//     }
+
+//     cachedBookingList = bookings;
+
+//     appStore.setLoading(false);
+
+//     return bookings;
+//   } catch (e) {
+//     appStore.setLoading(false);
+
+//     throw e;
+//   }
+// }
 Future<List<BookingData>> getBookingList(
   int page, {
   var perPage = PER_PAGE_ITEM,
@@ -699,37 +876,86 @@ Future<List<BookingData>> getBookingList(
   Function(bool)? lastPageCallback,
   Function(String totalEarning, PaymentBreakdown paymentBreakdown)? paymentBreakdownCallBack,
 }) async {
+  await Future.delayed(Duration(seconds: 1));
+
   try {
-    BookingListResponse res;
-    String serviceIds = serviceId.isNotEmpty ? 'service_id=$serviceId&' : '';
-    String dateStart = dateFrom.isNotEmpty ? 'date_from=$dateFrom&' : '';
-    String dateEnd = dateTo.isNotEmpty ? '&date_to=$dateTo&' : '';
-    String customerIds = customerId.isNotEmpty ? 'customer_id=$customerId&' : '';
-    String providerIds = providerId.isNotEmpty ? 'provider_id=$providerId&' : '';
-    String handymanIds = handymanId.isNotEmpty ? 'handyman_id=$handymanId&' : '';
-    String status = bookingStatus.isNotEmpty ? 'status=$bookingStatus&' : '';
-    String paymentStatuss = paymentStatus.isNotEmpty ? 'payment_status=$paymentStatus&' : '';
-    String paymentTypes = paymentType.isNotEmpty ? 'payment_type=$paymentType&' : '';
-    String searchParam = searchText.isNotEmpty ? '&search=$searchText&' : '';
-
-    String perPageItem = 'per_page=$perPage&';
-    String pageCount = 'page=$page';
-
-    if (status == BOOKING_PAYMENT_STATUS_ALL) {
-      res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse('booking-list?per_page=$perPage&page=$page$searchParam', method: HttpMethodType.GET)));
-    } else {
-      res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse(
-          'booking-list?$serviceIds$dateStart$dateEnd$customerIds$providerIds$handymanIds$status$paymentStatuss$paymentTypes$perPageItem$pageCount$searchParam',
-          method: HttpMethodType.GET)));
-    }
-
     if (page == 1) bookings.clear();
-    bookings.addAll(res.data.validate());
-    lastPageCallback?.call(res.data.validate().length != PER_PAGE_ITEM);
 
-    if (res.totalEarning.validate().isNotEmpty && res.paymentBreakdown != null) {
-      paymentBreakdownCallBack?.call(res.totalEarning.validate(), res.paymentBreakdown!);
-    }
+    List<BookingData> mockData = [
+      BookingData(
+        id: 1,
+        address: "Chennai",
+        customerName: "Rahul",
+        serviceName: "AC Repair",
+        status: "pending",
+        statusLabel: "Pending",
+        amount: 500,
+        totalAmount: 550,
+        paidAmount: 300,
+        paymentStatus: "pending",
+        paymentMethod: "cash",
+
+        // ✅ FIXED FORMATS
+        date: "2026-04-24",
+        startAt: "10:00 AM",
+        endAt: "12:00 PM",
+        bookingSlot: "",
+
+        handyman: [],
+        taxes: [],
+        extraCharges: [],
+      ),
+
+      BookingData(
+        id: 2,
+        address: "Bangalore",
+        customerName: "Arun",
+        serviceName: "Plumbing",
+        status: "completed",
+        statusLabel: "Completed",
+        amount: 800,
+        totalAmount: 800,
+        paidAmount: 800,
+        paymentStatus: "paid",
+        paymentMethod: "online",
+
+        // ✅ FIXED
+        date: "2026-04-23",
+        startAt: "09:00 AM",
+        endAt: "11:00 AM",
+        bookingSlot: "",
+
+        handyman: [],
+      ),
+
+      BookingData(
+        id: 3,
+        address: "Hyderabad",
+        customerName: "Kumar",
+        serviceName: "Cleaning",
+        status: "cancelled",
+        statusLabel: "Cancelled",
+        amount: 300,
+        totalAmount: 300,
+        paidAmount: 0,
+        paymentStatus: "failed",
+
+        // ✅ FIXED
+        date: "2026-04-22",
+        startAt: "02:00 PM",
+        endAt: "03:00 PM",
+        bookingSlot: "",
+
+        isCancelled: 1,
+        reason: "Customer not available",
+      ),
+    ];
+
+    bookings.addAll(mockData);
+
+    lastPageCallback?.call(true);
+
+    paymentBreakdownCallBack?.call("1600", PaymentBreakdown());
 
     cachedBookingList = bookings;
 
@@ -738,11 +964,9 @@ Future<List<BookingData>> getBookingList(
     return bookings;
   } catch (e) {
     appStore.setLoading(false);
-
     throw e;
   }
 }
-
 //region All Service List API
 Future<ServiceResponse> getAllServiceList({int? providerId, String perPage = ''}) async {
   String providerIds = appStore.isLoggedIn ? 'provider_id=${appStore.userId}' : '';

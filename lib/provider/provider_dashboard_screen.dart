@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 import 'package:handyman_provider_flutter/fragments/notification_fragment.dart';
@@ -98,6 +99,7 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Observer(
       builder: (_) {
         List<Widget> fragmentList = getFragments();
@@ -112,16 +114,24 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
           message: languages.lblCloseAppMsg,
           child: Scaffold(
             appBar: appBarWidget(
-              titles[currentIndex],
-              color: primaryColor,
-              textColor: Colors.white,
+              titles[currentIndex], 
+         
+              elevation: 0,
+              
+             systemUiOverlayStyle: SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+    statusBarIconBrightness: Brightness.light,
+  ),
+
+             color: !isDark ? Colors.white : Colors.black,
+             textColor: isDark ? Colors.white : Colors.black, 
               showBack: false,
               actions: [
                 IconButton(
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      ic_notification.iconImage(color: white, size: 20),
+                      ic_notification.iconImage(color: isDark ? Colors.white : Colors.black, size: 20),
                       Positioned(
                         top: -14,
                         right: -6,
