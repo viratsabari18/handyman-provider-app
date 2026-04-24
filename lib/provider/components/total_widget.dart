@@ -7,14 +7,43 @@ class TotalWidget extends StatelessWidget {
   final String icon;
   final Color? color;
 
-  TotalWidget({required this.title, required this.total, required this.icon, this.color});
+  const TotalWidget({
+    super.key,
+    required this.title,
+    required this.total,
+    required this.icon,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // 🔥 Dynamic text color
+    final Color textColor = isDark ? Colors.white : Colors.black;
+
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      decoration: boxDecorationDefault(color: context.primaryColor),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       width: context.width() / 2 - 24,
+
+      decoration: BoxDecoration(
+       
+        color: color ?? (isDark ? Colors.black : Colors.white),
+        borderRadius: BorderRadius.circular(12),
+
+        // 🔥 Visible shadow (bottom + left)
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withAlpha(150) // glow in dark
+                : Colors.black.withAlpha(100), // shadow in light
+            offset: const Offset(0, 6), // left + bottom
+            blurRadius: 10,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,18 +53,44 @@ class TotalWidget extends StatelessWidget {
               SizedBox(
                 width: context.width() / 2 - 94,
                 child: Marquee(
-                  child: Marquee(child: Text(total.validate(), style: boldTextStyle(color: Colors.white, size: 16), maxLines: 1)),
+                  child: Text(
+                    total.validate(),
+                    style: boldTextStyle(
+                      color: Colors.black, // 🔥 dynamic text color
+                      size: 16,
+                    ),
+                    maxLines: 1,
+                  ),
                 ),
               ),
+
               Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                child: Image.asset(icon, width: 18, height: 18, color: context.primaryColor),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: !isDark ? Colors.white : Colors.black, // invert icon bg
+                ),
+                child: Image.asset(
+                  icon,
+                  width: 18,
+                  height: 18,
+                  color: isDark ? Colors.white :Colors.black ,
+                ),
               ),
             ],
           ),
+
           8.height,
-          Marquee(child: Text(title, style: secondaryTextStyle(size: 14, color: Colors.white))),
+
+          Marquee(
+            child: Text(
+              title,
+              style: secondaryTextStyle(
+                size: 14,
+                color: Colors.black, // 🔥 dynamic text color
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -24,6 +24,7 @@ class TotalComponent extends StatelessWidget {
           title: languages.lblTotalBooking,
           total: snap.totalBooking.toString(),
           icon: total_booking,
+          color:Color(0xFFE5E9EB),
         ).onTap(
           () {
             LiveStream().emit(LIVESTREAM_PROVIDER_ALL_BOOKING, 1);
@@ -34,6 +35,7 @@ class TotalComponent extends StatelessWidget {
         TotalWidget(
           title: languages.lblTotalService,
           total: snap.totalService.validate().toString(),
+          color:Color(0xFFF5F5CE),
           icon: total_services,
         ).onTap(
           () {
@@ -46,11 +48,13 @@ class TotalComponent extends StatelessWidget {
           title: languages.remainingPayout,
           total: snap.remainingPayout.validate().toPriceFormat().toString(),
           icon: ic_remainng_payout_new,
+          color: Color(0xFFF5EEF5),
         ),
         TotalWidget(
           title: languages.totalRevenue,
           total: snap.totalRevenue.validate().toPriceFormat(),
           icon: total_revenue_final,
+          color:Color(0xFFEFF4F6),
         ).onTap(
           () {
             TotalEarningScreen().launch(context);
