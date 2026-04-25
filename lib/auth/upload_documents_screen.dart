@@ -4,10 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:handyman_provider_flutter/Models%20new/zone_and_cetagory_model.dart';
+import 'package:handyman_provider_flutter/Models%20new/registration_data.dart';
 import 'package:handyman_provider_flutter/components/base_scaffold_widget.dart';
 import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
-import 'package:handyman_provider_flutter/controllers/zone_and_cetagories_controller.dart';
+import 'package:handyman_provider_flutter/controllers/registration_controller.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/app_widgets.dart';
@@ -93,7 +93,7 @@ List<Documents> getMockDocuments() {
     });
     try {
       print('🔵 Fetching registration fields...');
-      final response = await ZoneAndCetagoriesController.getRegistrationFields();
+      final response = await RegistrationController.getRegistrationFields();
       print('✅ Categories count: ${response.categories?.length ?? 0}');
       print('✅ Zones count: ${response.zones?.length ?? 0}');
       
