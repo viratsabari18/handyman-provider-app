@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:handyman_provider_flutter/Models%20new/user_model.dart';
 import 'package:handyman_provider_flutter/auth/sign_in_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/main.dart';
@@ -336,6 +337,33 @@ Future<void> saveUserData(UserData data) async {
   }
 }
 
+Future<void> saveLoginUserData(UserModel data) async {
+  /// 🔥 NO STATUS CHECK (IMPORTANT)
+  /// Save data for both status = 0 and 1
+
+  await appStore.setUserId(data.id ?? 0);
+  await appStore.setFirstName(data.firstName ?? "");
+  await appStore.setLastName(data.lastName ?? "");
+  await appStore.setUserEmail(data.email ?? "");
+  await appStore.setUserName(data.username ?? "");
+  await appStore.setUserType(data.userType ?? "");
+  await appStore.setContactNumber(data.contactNumber ?? "");
+  await appStore.setUserProfile(data.profileImage ?? "");
+
+
+  /// TOKEN (VERY IMPORTANT)
+  await appStore.setToken(data.apiToken ?? "");
+
+  /// MARK USER LOGGED IN
+  await appStore.setLoggedIn(true);
+
+  /// OPTIONAL (if using config sync)
+  await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
+
+  /// OPTIONAL Firebase
+  // subscribeToFirebaseTopic();
+}
+
 Future<BaseResponseModel> changeUserPassword(Map request) async {
   return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse('change-password', request: request, method: HttpMethodType.POST)));
 }
@@ -436,126 +464,49 @@ Future<void> getAppConfigurations({bool isCurrentLocation = false, double? lat, 
 
 //endregion
 
-//region Provider API
-// Future<DashboardResponse> providerDashboard({bool forceSyncAppConfigurations = false}) async {
-//   final completer = Completer<DashboardResponse>();
 
-//   try {
-//     final data = DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('provider-dashboard', method: HttpMethodType.GET)));
-
-//     completer.complete(data);
-
-//     cachedProviderDashboardResponse = data;
-
-//     appStore.setTotalHandyman(data.totalActiveHandyman.validate());
-
-//     setValue(IS_EMAIL_VERIFIED, data.isEmailVerified.getBoolInt());
-
-//     if (data.commission != null) {
-//       setValue(DASHBOARD_COMMISSION, jsonEncode(data.commission));
-//     }
-
-//     appStore.setNotificationCount(data.notificationUnreadCount.validate());
-
-//     if (data.subscription != null) {
-//       await setSaveSubscription(
-//         isSubscribe: data.isSubscribed,
-//         subscription: data.subscription!,
-//       );
-//       if (appConfigurationStore.isInAppPurchaseEnable)
-//         inAppPurchaseService.checkSubscriptionSync(
-//           refreshCallBack: () => providerDashboard,
-//         );
-//     }
-
-//     // Sync new configurations for secret keys
-//     if (forceSyncAppConfigurations) await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
-//     getAppConfigurations();
-
-//     appStore.setLoading(false);
-//   } catch (e) {
-//     appStore.setLoading(false);
-//     completer.completeError(e);
-//   }
-
-//   return completer.future;
-// }
 Future<DashboardResponse> providerDashboard({bool forceSyncAppConfigurations = false}) async {
-  await Future.delayed(Duration(seconds: 1)); // simulate API delay
+  final completer = Completer<DashboardResponse>();
 
-  DashboardResponse data = DashboardResponse(
-    status: true,
-    totalBooking: 12,
-    totalService: 5,
-    todayCashAmount: 1200,
-    totalCashInHand: 5000,
-    totalActiveHandyman: 3,
-    totalRevenue: 25000,
+  try {
+    final data = DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('provider-dashboard', method: HttpMethodType.GET)));
 
-    isEmailVerified: 1,
-    notificationUnreadCount: 2,
-    remainingPayout: 1000,
+    completer.complete(data);
 
-    // 👇 Important lists
-    service: [
-      ServiceData(
-        id: 1,
-        name: "AC Repair",
-        price: 499,
-        duration: "2 hours",
-        categoryName: "Home Services",
-        totalRating: 4.5,
-        totalReview: 10,
-        isFavourite: 0,
-        imageAttachments: [],
-      ),
-    ],
+    cachedProviderDashboardResponse = data;
 
-    handyman: [
-      UserData(
-        id: 2,
-        displayName: "John Worker",
-        profileImage: "",
-  
-      ),
-    ],
+    appStore.setTotalHandyman(data.totalActiveHandyman.validate());
 
-    onlineHandyman: ["John Worker"],
+    setValue(IS_EMAIL_VERIFIED, data.isEmailVerified.getBoolInt());
 
-    upcomingBookings: [
-      BookingData(
-        id: 1,
-        serviceName: "Plumbing",
-        customerName: "Test Customer",
-        status: "pending",
-        date: "2026-04-24",
-        amount: 800,
-        paymentStatus: "pending",
-      ),
-    ],
+    if (data.commission != null) {
+      setValue(DASHBOARD_COMMISSION, jsonEncode(data.commission));
+    }
 
-    myPostJobData: [
-      PostJobData(
-        id: 1,
-        title: "Fix Washing Machine",
-        description: "Not working properly",
-        price: 1500,
-        status: "open",
-        customerName: "Customer A",
-      ),
-    ],
-  );
+    appStore.setNotificationCount(data.notificationUnreadCount.validate());
 
-  // 🔥 IMPORTANT: mimic real side effects
-  cachedProviderDashboardResponse = data;
+    if (data.subscription != null) {
+      await setSaveSubscription(
+        isSubscribe: data.isSubscribed,
+        subscription: data.subscription!,
+      );
+      if (appConfigurationStore.isInAppPurchaseEnable)
+        inAppPurchaseService.checkSubscriptionSync(
+          refreshCallBack: () => providerDashboard,
+        );
+    }
 
-  appStore.setTotalHandyman(data.totalActiveHandyman ?? 0);
-  appStore.setNotificationCount(data.notificationUnreadCount ?? 0);
-  appStore.setLoading(false);
+    // Sync new configurations for secret keys
+    if (forceSyncAppConfigurations) await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
+    getAppConfigurations();
 
-  setValue(IS_EMAIL_VERIFIED, data.isEmailVerified ?? 1);
+    appStore.setLoading(false);
+  } catch (e) {
+    appStore.setLoading(false);
+    completer.completeError(e);
+  }
 
-  return data;
+  return completer.future;
 }
 
 Future<ProviderDocumentListResponse> getProviderDoc() async {
@@ -601,6 +552,7 @@ Future<HandymanDashBoardResponse> handymanDashboard({bool forceSyncAppConfigurat
 
   return completer.future;
 }
+
 
 Future<BaseResponseModel> updateHandymanStatus(Map request) async {
   return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse('user-update-status', request: request, method: HttpMethodType.POST)));
@@ -1038,18 +990,285 @@ Future<List<ServiceData>> getSearchList(
   }
 }
 
+// Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
+//   BookingDetailResponse bookingDetailResponse = BookingDetailResponse.fromJson(
+//     await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
+//   );
+//   callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
+//       bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
+//   appStore.setLoading(false);
+//   if (cachedBookingDetailList.any((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id)) {
+//     cachedBookingDetailList.removeWhere((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id);
+//   }
+//   cachedBookingDetailList.add(bookingDetailResponse);
+//   return bookingDetailResponse;
+// }
+
 Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
-  BookingDetailResponse bookingDetailResponse = BookingDetailResponse.fromJson(
-    await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
+  return BookingDetailResponse(
+    bookingDetail: _getMockBookingData(),
+    service: _getMockServiceData(),
+    customer: _getMockUserData(),
+    bookingActivity: _getMockBookingActivities(),
+    ratingData: _getMockRatingData(),
+    providerData: _getMockProviderData(),
+    handymanData: _getMockHandymanData(),
+    couponData: _getMockCouponData(),
+    taxes: _getMockTaxes(),
+    serviceProof: _getMockServiceProof(),
+    postRequestDetail: null,
   );
-  callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
-      bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
-  appStore.setLoading(false);
-  if (cachedBookingDetailList.any((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id)) {
-    cachedBookingDetailList.removeWhere((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id);
-  }
-  cachedBookingDetailList.add(bookingDetailResponse);
-  return bookingDetailResponse;
+}
+
+BookingData _getMockBookingData() {
+  return BookingData(
+    id: 1,
+    address: "123 Main Street, New York, NY 10001",
+    customerId: 101,
+    serviceId: 201,
+    providerId: 301,
+    quantity: 1,
+    type: SERVICE_TYPE_FIXED,
+    discount: 20,
+    amount: 500,
+    status: BookingStatusKeys.accept,
+    statusLabel: "Accepted",
+    description: "Need to repair AC unit, it's not cooling properly",
+    bookingSlot: "2024-01-20 10:00 AM - 12:00 PM",
+    providerName: "John's Handyman Services",
+    customerName: "Sarah Johnson",
+    serviceName: "AC Repair Service",
+    paymentStatus: PAID,
+    paymentMethod: "Credit Card",
+    providerImage: "https://example.com/provider.jpg",
+    providerIsVerified: 1,
+    customerImage: "https://example.com/customer.jpg",
+    date: "2024-01-15",
+    durationDiff: "2 hours",
+    durationDiffHour: "2",
+    paymentId: 401,
+    bookingAddressId: 501,
+    totalAmount: 500,
+    paidAmount: 500,
+    totalReview: 25,
+    totalRating: 4.8,
+    isCancelled: 0,
+    reason: "",
+    startAt: "2024-01-20 10:00:00",
+    endAt: "2024-01-20 12:00:00",
+    bookingType: BOOKING_TYPE_USER_POST_JOB,
+    finalTotalServicePrice: 500,
+    finalTotalTax: 50,
+    finalSubTotal: 550,
+    finalDiscountAmount: 20,
+    finalCouponDiscountAmount: 0,
+    txnId: "TXN123456789",
+    imageAttachments: [
+      "https://example.com/attachment1.jpg",
+      "https://example.com/attachment2.jpg",
+    ],
+    taxes: _getMockTaxes(),
+    extraCharges: [],
+    handyman: _getMockHandymanList(),
+    serviceaddon: _getMockServiceAddons(),
+  );
+}
+
+ServiceData _getMockServiceData() {
+  return ServiceData(
+    id: 201,
+    name: "AC Repair Service",
+    categoryId: 1,
+    subCategoryId: 5,
+    providerId: 301,
+    price: 500,
+    type: SERVICE_TYPE_FIXED,
+    discount: 20,
+    duration: "2 hours",
+    status: 1,
+    description: "Professional AC repair and maintenance service",
+    isFeatured: 1,
+    providerName: "John's Handyman Services",
+    providerImage: "https://example.com/provider.jpg",
+    categoryName: "Home Appliances",
+    totalReview: 50,
+    totalRating: 4.9,
+    isFavourite: 0,
+  );
+}
+
+UserData _getMockUserData() {
+  return UserData(
+    id: 101,
+    firstName: "Sarah",
+    lastName: "Johnson",
+    email: "sarah.johnson@example.com",
+    contactNumber: "+1234567890",
+    profileImage: "https://example.com/customer.jpg",
+    address: "123 Main Street, New York, NY 10001",
+    userType: "customer",
+    status: 1,
+    displayName: "Sarah Johnson",
+  );
+}
+
+List<BookingActivity> _getMockBookingActivities() {
+  return [
+    BookingActivity(
+      id: 1,
+      bookingId: 1,
+      datetime: "2024-01-15 14:30:00",
+      activityType: "created",
+      activityMessage: "Booking created by customer",
+      createdAt: "2024-01-15 14:30:00",
+    ),
+    BookingActivity(
+      id: 2,
+      bookingId: 1,
+      datetime: "2024-01-15 15:00:00",
+      activityType: "accepted",
+      activityMessage: "Booking accepted by provider",
+      createdAt: "2024-01-15 15:00:00",
+    ),
+    BookingActivity(
+      id: 3,
+      bookingId: 1,
+      datetime: "2024-01-16 09:00:00",
+      activityType: "handyman_assigned",
+      activityMessage: "Handyman assigned to this booking",
+      createdAt: "2024-01-16 09:00:00",
+    ),
+  ];
+}
+
+List<RatingData> _getMockRatingData() {
+  return [
+    RatingData(
+      id: 1,
+      rating: 5,
+      review: "Excellent service! Very professional and quick.",
+      customerName: "Michael Brown",
+      customerProfileImage: "https://example.com/reviewer1.jpg",
+      createdAt: "2024-01-10",
+    ),
+    RatingData(
+      id: 2,
+      rating: 4,
+      review: "Good service, reasonable price.",
+      customerName: "Emily Davis",
+      customerProfileImage: "https://example.com/reviewer2.jpg",
+      createdAt: "2024-01-05",
+    ),
+  ];
+}
+
+UserData _getMockProviderData() {
+  return UserData(
+    id: 301,
+    firstName: "John",
+    lastName: "Smith",
+    email: "john@handyman.com",
+    contactNumber: "+1987654321",
+    profileImage: "https://example.com/provider.jpg",
+    address: "456 Business Ave, New York, NY 10002",
+    userType: "provider",
+    status: 1,
+    displayName: "John's Handyman Services",
+    providerServiceRating: 4.8,
+
+  );
+}
+
+List<UserData> _getMockHandymanData() {
+  return [
+    UserData(
+      id: 401,
+      firstName: "Robert",
+      lastName: "Wilson",
+      email: "robert@handyman.com",
+      contactNumber: "+1122334455",
+      profileImage: "https://example.com/handyman1.jpg",
+      userType: "handyman",
+      status: 1,
+      displayName: "Robert Wilson",
+      handymanRating: 4.9,
+      isHandymanAvailable: true,
+      designation: "Senior Technician",
+      knownLanguages: "English, Spanish",
+      skills: "AC Repair, Electrical, Plumbing",
+      whyChooseMe: "10+ years of experience",
+    ),
+  ];
+}
+
+List<Handyman> _getMockHandymanList() {
+  return [
+    Handyman(
+      id: 1,
+      bookingId: 1,
+      handymanId: 401,
+      handyman: _getMockHandymanData().first,
+    ),
+  ];
+}
+
+CouponData _getMockCouponData() {
+  return CouponData(
+    id: 1,
+    bookingId: 1,
+    code: "WELCOME20",
+    discount: 20,
+    discountType: "percentage",
+    createdAt: "2024-01-10",
+  );
+}
+
+List<TaxData> _getMockTaxes() {
+  return [
+    TaxData(
+      id: 1,
+      providerId: 301,
+      title: "Service Tax",
+      type: "percentage",
+      value: 10,
+      totalCalculatedValue: 50,
+    ),
+  ];
+}
+
+List<ServiceAddon> _getMockServiceAddons() {
+  return [
+    ServiceAddon(
+      id: 1,
+      name: "Extended Warranty",
+      price: 50,
+      serviceId: 201,
+
+    ),
+    ServiceAddon(
+      id: 2,
+      name: "Emergency Service",
+      price: 100,
+      serviceId: 201,
+  
+    ),
+  ];
+}
+
+List<ServiceProof> _getMockServiceProof() {
+  return [
+    ServiceProof(
+      id: 1,
+      title: "Before Service Photo",
+      description: "AC unit before repair",
+      serviceId: 201,
+      bookingId: 1,
+      userId: 401,
+      handymanName: "Robert Wilson",
+      serviceName: "AC Repair Service",
+      attachments: ["https://example.com/proof1.jpg"],
+    ),
+  ];
 }
 
 Future<BaseResponseModel> bookingUpdate(Map request) async {

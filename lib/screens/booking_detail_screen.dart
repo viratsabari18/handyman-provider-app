@@ -461,191 +461,200 @@ class BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsBi
 
   //endregion
 
-  //region Components
   Widget _serviceDetailWidget({required BookingDetailResponse bookingResponse}) {
-    return Container(
-      margin: EdgeInsets.all(16),
-      decoration: boxDecorationDefault(color: context.cardColor, borderRadius: radius()),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DecoratedBox(
-            decoration: boxDecorationDefault(
-              color: primaryColor,
-              borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  languages.lblBookingID,
-                  style: boldTextStyle(size: LABEL_TEXT_SIZE, color: Colors.white),
-                ),
-                Text('#' + bookingResponse.bookingDetail!.id.toString().validate(), style: boldTextStyle(color: Colors.white, size: 16)),
-              ],
-            ).paddingSymmetric(horizontal: 16, vertical: 8),
+  return Container(
+    margin: EdgeInsets.all(16),
+    decoration: boxDecorationDefault(color: context.cardColor, borderRadius: radius()),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DecoratedBox(
+          decoration: boxDecorationDefault(
+            color: primaryColor,
+            borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              GestureDetector(
-                onTap: () {
-                  if (bookingResponse.bookingDetail!.isPostJob || bookingResponse.bookingDetail!.isPackageBooking) {
-                    //
-                  } else {
-                    ServiceDetailScreen(serviceId: bookingResponse.bookingDetail!.serviceId.validate()).launch(context);
-                  }
-                },
+              Text(
+                languages.lblBookingID,
+                style: boldTextStyle(size: LABEL_TEXT_SIZE, color: Colors.white),
+              ),
+              Text('#' + bookingResponse.bookingDetail!.id.toString().validate(), style: boldTextStyle(color: Colors.white, size: 16)),
+            ],
+          ).paddingSymmetric(horizontal: 16, vertical: 8),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (bookingResponse.bookingDetail!.isPostJob || bookingResponse.bookingDetail!.isPackageBooking) {
+                  //
+                } else {
+                  ServiceDetailScreen(serviceId: bookingResponse.bookingDetail!.serviceId.validate()).launch(context);
+                }
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // FIXED: Added null safety checks
+                  if (bookingResponse.service != null && 
+                      bookingResponse.service!.attchments != null && 
+                      bookingResponse.service!.attchments!.isNotEmpty && 
+                      !bookingResponse.bookingDetail!.isPackageBooking)
+                    CachedImageWidget(
+                      url: bookingResponse.service!.attchments!.isNotEmpty ? bookingResponse.service!.attchments!.first.url.validate() : "",
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.cover,
+                      radius: 8,
+                    )
+                  else if (bookingResponse.bookingDetail!.bookingPackage != null &&
+                      bookingResponse.bookingDetail!.bookingPackage!.imageAttachments != null &&
+                      bookingResponse.bookingDetail!.bookingPackage!.imageAttachments!.isNotEmpty)
+                    CachedImageWidget(
+                      url: bookingResponse.bookingDetail!.bookingPackage!.imageAttachments!.first.validate(),
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.cover,
+                      radius: 8,
+                    )
+                  else
+                    // Fallback placeholder image
+                    Container(
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.image, color: Colors.grey),
+                    ),
+                  16.width,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (bookingResponse.bookingDetail!.isPackageBooking && bookingResponse.bookingDetail!.bookingPackage != null)
+                        Text(
+                          bookingResponse.bookingDetail!.bookingPackage!.name.validate(),
+                          style: boldTextStyle(size: LABEL_TEXT_SIZE),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      else
+                        Text(
+                          bookingResponse.bookingDetail!.serviceName.validate(),
+                          style: boldTextStyle(size: LABEL_TEXT_SIZE),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      8.height,
+                      if (bookingResponse.bookingDetail!.bookingPackage != null)
+                        PriceWidget(
+                          price: bookingResponse.bookingDetail!.totalAmount.validate(),
+                          color: primaryColor,
+                        )
+                      else
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            PriceWidget(
+                              isFreeService: bookingResponse.bookingDetail!.type == SERVICE_TYPE_FREE,
+                              price: bookingResponse.bookingDetail!.amount.validate(),
+                              color: primaryColor,
+                              isHourlyService: bookingResponse.bookingDetail!.isHourlyService,
+                            ),
+                            if (bookingResponse.bookingDetail!.discount.validate() != 0)
+                              Text(
+                                '(${bookingResponse.bookingDetail!.discount.validate()}% ${languages.lblOff})',
+                                style: boldTextStyle(size: 12, color: Colors.green),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ).paddingLeft(4).expand(),
+                          ],
+                        ),
+                    ],
+                  ).expand()
+                ],
+              ).paddingSymmetric(horizontal: 16),
+            ),
+            if (bookingResponse.bookingDetail!.description.validate().isNotEmpty) ...[
+              16.height,
+              ReadMoreText(
+                trimLength: 65,
+                bookingResponse.bookingDetail!.description.validate(),
+                style: secondaryTextStyle(),
+                colorClickableText: context.primaryColor,
+              ).paddingSymmetric(horizontal: 16)
+            ],
+            if (bookingResponse.bookingDetail!.status != BookingStatusKeys.pending && bookingResponse.bookingDetail!.date.validate().isNotEmpty) ...[
+              16.height,
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: appStore.isDarkMode ? context.cardColor : whiteColor,
+                  border: Border.all(color: context.dividerColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (bookingResponse.service!.attchments!.isNotEmpty && !bookingResponse.bookingDetail!.isPackageBooking)
-                      CachedImageWidget(
-                        url: bookingResponse.service!.attchments!.isNotEmpty ? bookingResponse.service!.attchments!.first.url.validate() : "",
-                        height: 70,
-                        width: 70,
-                        fit: BoxFit.cover,
-                        radius: 8,
-                      )
-                    else
-                      CachedImageWidget(
-                        url: bookingResponse.bookingDetail!.bookingPackage != null
-                            ? bookingResponse.bookingDetail!.bookingPackage!.imageAttachments.validate().isNotEmpty
-                                ? bookingResponse.bookingDetail!.bookingPackage!.imageAttachments.validate().first.validate().isNotEmpty
-                                    ? bookingResponse.bookingDetail!.bookingPackage!.imageAttachments.validate().first.validate()
-                                    : ''
-                                : ''
-                            : '',
-                        height: 70,
-                        width: 70,
-                        fit: BoxFit.cover,
-                        radius: 8,
+                    Text(
+                      '${languages.lblDate} & ${languages.lblTime}:',
+                      style: secondaryTextStyle(),
+                    ).expand(flex: 2),
+                    8.width,
+                    Marquee(
+                      child: Text(
+                        getDateTimeText(bookingResponse.bookingDetail!),
+                        style: boldTextStyle(size: 12),
+                        textAlign: TextAlign.left,
                       ),
-                    16.width,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (bookingResponse.bookingDetail!.isPackageBooking)
-                          Text(
-                            bookingResponse.bookingDetail!.bookingPackage!.name.validate(),
-                            style: boldTextStyle(size: LABEL_TEXT_SIZE),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        else
-                          Text(
-                            bookingResponse.bookingDetail!.serviceName.validate(),
-                            style: boldTextStyle(size: LABEL_TEXT_SIZE),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        8.height,
-                        if (bookingResponse.bookingDetail!.bookingPackage != null)
-                          PriceWidget(
-                            price: bookingResponse.bookingDetail!.totalAmount.validate(),
-                            color: primaryColor,
-                          )
-                        else
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              PriceWidget(
-                                isFreeService: bookingResponse.bookingDetail!.type == SERVICE_TYPE_FREE,
-                                price: bookingResponse.bookingDetail!.amount.validate(),
-                                color: primaryColor,
-                                isHourlyService: bookingResponse.bookingDetail!.isHourlyService,
-                              ),
-                              if (bookingResponse.bookingDetail!.discount.validate() != 0)
-                                Text(
-                                  '(${bookingResponse.bookingDetail!.discount.validate()}% ${languages.lblOff})',
-                                  style: boldTextStyle(size: 12, color: Colors.green),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ).paddingLeft(4).expand(),
-                            ],
-                          ),
-                      ],
-                    ).expand()
+                    ).expand(flex: 5),
                   ],
-                ).paddingSymmetric(horizontal: 16),
-              ),
-              if (bookingResponse.bookingDetail!.description.validate().isNotEmpty) ...[
-                16.height,
-                ReadMoreText(
-                  trimLength: 65,
-                  bookingResponse.bookingDetail!.description.validate(),
-                  style: secondaryTextStyle(),
-                  colorClickableText: context.primaryColor,
-                ).paddingSymmetric(horizontal: 16)
-              ],
-              if (bookingResponse.bookingDetail!.status != BookingStatusKeys.pending && bookingResponse.bookingDetail!.date.validate().isNotEmpty) ...[
-                16.height,
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: appStore.isDarkMode ? context.cardColor : whiteColor,
-                    border: Border.all(color: context.dividerColor),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${languages.lblDate} & ${languages.lblTime}:',
-                        style: secondaryTextStyle(),
-                      ).expand(flex: 2),
-                      8.width,
-                      Marquee(
-                        child: Text(
-                          getDateTimeText(bookingResponse.bookingDetail!),
-                          style: boldTextStyle(size: 12),
-                          textAlign: TextAlign.left,
-                        ),
-                      ).expand(flex: 5),
-                    ],
-                  ).paddingSymmetric(vertical: 16, horizontal: 16),
-                ),
-              ],
-              Align(
-                alignment: bookingResponse.bookingDetail!.status == BookingStatusKeys.pending ? Alignment.centerLeft : Alignment.center,
-                child: TextButton(
-                  onPressed: () {
-                    if (mounted)
-                      showModalBottomSheet(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        isScrollControlled: true,
-                        isDismissible: true,
-                        shape: RoundedRectangleBorder(borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius)),
-                        builder: (_) {
-                          return DraggableScrollableSheet(
-                            initialChildSize: 0.50,
-                            minChildSize: 0.2,
-                            maxChildSize: 1,
-                            builder: (context, scrollController) {
-                              return BookingHistoryBottomSheet(
-                                data: bookingResponse.bookingActivity!.reversed.toList(),
-                                scrollController: scrollController,
-                              );
-                            },
-                          );
-                        },
-                      );
-                  },
-                  child: Text(
-                    languages.viewStatus,
-                    style: boldTextStyle(color: primaryColor, size: 14),
-                  ),
-                ),
+                ).paddingSymmetric(vertical: 16, horizontal: 16),
               ),
             ],
-          ).paddingOnly(top: 16),
-        ],
-      ),
-    );
-  }
-
+            Align(
+              alignment: bookingResponse.bookingDetail!.status == BookingStatusKeys.pending ? Alignment.centerLeft : Alignment.center,
+              child: TextButton(
+                onPressed: () {
+                  if (mounted)
+                    showModalBottomSheet(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      isScrollControlled: true,
+                      isDismissible: true,
+                      shape: RoundedRectangleBorder(borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius)),
+                      builder: (_) {
+                        return DraggableScrollableSheet(
+                          initialChildSize: 0.50,
+                          minChildSize: 0.2,
+                          maxChildSize: 1,
+                          builder: (context, scrollController) {
+                            return BookingHistoryBottomSheet(
+                              data: bookingResponse.bookingActivity!.reversed.toList(),
+                              scrollController: scrollController,
+                            );
+                          },
+                        );
+                      },
+                    );
+                },
+                child: Text(
+                  languages.viewStatus,
+                  style: boldTextStyle(color: primaryColor, size: 14),
+                ),
+              ),
+            ),
+          ],
+        ).paddingOnly(top: 16),
+      ],
+    ),
+  );
+}
   Widget _buildCounterWidget({required BookingDetailResponse value}) {
     if (value.bookingDetail!.isHourlyService &&
         (value.bookingDetail!.status == BookingStatusKeys.inProgress || value.bookingDetail!.status == BookingStatusKeys.hold || value.bookingDetail!.status == BookingStatusKeys.complete || value.bookingDetail!.status == BookingStatusKeys.onGoing))

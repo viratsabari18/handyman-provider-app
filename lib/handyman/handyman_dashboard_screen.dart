@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/my_provider_widget.dart';
 import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
@@ -30,7 +31,7 @@ class HandymanDashboardScreen extends StatefulWidget {
   _HandymanDashboardScreenState createState() => _HandymanDashboardScreenState();
 }
 
-class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
+class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> { 
   int currentIndex = 0;
 
   bool get isCurrentFragmentIsBooking => fragmentList[currentIndex].runtimeType == BookingFragment().runtimeType;
@@ -46,6 +47,7 @@ class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
   void initState() {
     super.initState();
     init();
+    print("TOKEN: ${appStore.token}");
   }
 
   void init() async {
@@ -109,6 +111,7 @@ class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+        bool isDark = Theme.of(context).brightness == Brightness.dark;
     return DoublePressBackWidget(
       message: languages.lblCloseAppMsg,
       child: Scaffold(
@@ -120,9 +123,16 @@ class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
             if (appConfigurationStore.isEnableChat) languages.lblChat,
             languages.lblProfile,
           ][currentIndex],
-          color: primaryColor,
-          elevation: 0.0,
-          textColor: Colors.white,
+       
+              elevation: 0,
+              
+             systemUiOverlayStyle: SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
+    statusBarIconBrightness: Brightness.light,
+  ),
+
+             color: !isDark ? Colors.white : Colors.black,
+             textColor: isDark ? Colors.white : Colors.black, 
           showBack: false,
           actions: [
             IconButton(

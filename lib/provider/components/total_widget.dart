@@ -7,7 +7,7 @@ class TotalWidget extends StatelessWidget {
   final String icon;
   final Color? color;
 
-  const TotalWidget({
+  const  TotalWidget({
     super.key,
     required this.title,
     required this.total,
@@ -20,7 +20,7 @@ class TotalWidget extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     // 🔥 Dynamic text color
-    final Color textColor = isDark ? Colors.white : Colors.black;
+
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),

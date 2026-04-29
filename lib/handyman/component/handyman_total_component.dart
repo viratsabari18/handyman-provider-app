@@ -24,6 +24,7 @@ class HandymanTotalComponent extends StatelessWidget {
           title: languages.lblTotalBooking,
           total: snap.totalBooking.validate().toString(),
           icon: total_services,
+               color:Color(0xFFE5E9EB),
         ).onTap(
           () {
             LiveStream().emit(LIVESTREAM_CHANGE_HANDYMAN_TAB, {"index": 1});
@@ -35,6 +36,7 @@ class HandymanTotalComponent extends StatelessWidget {
           title: languages.completedBookings,
           total: snap.completedBooking.validate().toString(),
           icon: total_services,
+                  color:Color(0xFFF5F5CE),
         ).onTap(
           () {
             LiveStream().emit(LIVESTREAM_CHANGE_HANDYMAN_TAB, {"index": 1, "booking_type": BookingStatusKeys.complete});
@@ -46,11 +48,13 @@ class HandymanTotalComponent extends StatelessWidget {
           title: languages.remainingPayout,
           total: snap.remainingPayout.validate().toPriceFormat().toString(),
           icon: percent_line,
+              color: Color(0xFFF5EEF5),
         ),
         HandymanTotalWidget(
           title: languages.totalRevenue,
           total: snap.totalRevenue.validate().toPriceFormat(),
           icon: percent_line,
+                    color:Color(0xFFEFF4F6),
         ).onTap(
           () {
             TotalEarningScreen().launch(context);

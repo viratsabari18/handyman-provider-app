@@ -8,7 +8,7 @@ import 'package:nb_utils/nb_utils.dart';
 class TodayCashComponent extends StatelessWidget {
   final num totalCashInHand;
 
-  const TodayCashComponent({Key? key, required this.totalCashInHand}) : super(key: key);
+  const  TodayCashComponent({Key? key, required this.totalCashInHand}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:handyman_provider_flutter/Models%20new/registration_data.dart';
-import 'package:handyman_provider_flutter/controllers/registration_controller.dart';
+import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
@@ -13,8 +13,6 @@ import 'package:nb_utils/nb_utils.dart';
 import '../components/back_widget.dart';
 import 'upload_documents_screen.dart';
 import 'sign_in_screen.dart';
-
-
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -53,6 +51,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   HandymanType? selectedHandymanCommission;
   
   bool isLoading = false;
+  
+  // Add error tracking
+  String? registrationError;
+  bool hasRegistrationError = false;
 
   // API Data
   RegistrationData? registrationData;
@@ -67,12 +69,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
     fetchRegistrationData();
   }
 
+  // Helper method to clear registration error
+  void _clearRegistrationError() {
+    if (hasRegistrationError) {
+      setState(() {
+        registrationError = null;
+        hasRegistrationError = false;
+      });
+    }
+  }
+
   Future<void> fetchRegistrationData() async {
     setState(() {
       isLoading = true;
+      registrationError = null; // Clear previous errors
+      hasRegistrationError = false;
     });
     try {
-      final data = await RegistrationController.getRegistrationFields();
+      final data = await RegistrationDataController.getRegistrationFields();
       setState(() {
         registrationData = data;
         // Remove duplicates from provider commissions based on commission value
@@ -84,6 +98,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } catch (e) {
       setState(() {
         isLoading = false;
+        registrationError = 'Failed to load registration data: $e';
+        hasRegistrationError = true;
       });
       toast('Failed to load registration data: $e');
       print('Error fetching registration data: $e');
@@ -194,6 +210,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     children: [
                       _buildTopWidget(),
+                      // Display registration error if any
+                      if (registrationError != null)
+                        Container(
+                          margin: EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  registrationError!,
+                                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       _buildFormWidget(),
                       _buildFooterWidget(),
                     ],
@@ -240,6 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintFirstNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -252,6 +292,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintLastNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -264,6 +305,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintUserNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -276,6 +318,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintEmailAddressTxt),
           suffix: ic_message.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -289,6 +332,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           decoration: inputDecoration(context, hint: languages.hintContactNumberTxt),
           maxLength: 15,
           suffix: calling.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -301,6 +345,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           nextFocus: userTypeFocus,
           decoration: inputDecoration(context, hint: languages.lblDesignation),
           suffix: profile.iconImage(size: 10).paddingAll(14),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -331,6 +376,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               selectedProviderCommission = null;
               selectedProvider = null;
               selectedHandymanCommission = null;
+              _clearRegistrationError(); // Clear error on change
             });
           },
         ),
@@ -360,6 +406,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 onChanged: (value) {
                   setState(() {
                     selectedProviderCommission = value;
+                    _clearRegistrationError(); // Clear error on change
                   });
                 },
               ),
@@ -394,6 +441,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     selectedProvider = value;
                     // Reset handyman commission when provider changes
                     selectedHandymanCommission = null;
+                    _clearRegistrationError(); // Clear error on change
                   });
                 },
               ),
@@ -421,6 +469,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 onChanged: (value) {
                   setState(() {
                     selectedHandymanCommission = value;
+                    _clearRegistrationError(); // Clear error on change
                   });
                 },
               ),
@@ -439,6 +488,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintPassword),
+          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
           validator: (val) {
             if (val == null || val.isEmpty) {
               return languages.hintRequired;
@@ -459,9 +509,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           textStyle: boldTextStyle(color: white),
           width: context.width() - context.navigationBarHeight,
           onTap: () async {
+            // Clear previous errors
+            _clearRegistrationError();
+            
             if (formKey.currentState!.validate()) {
               if (selectedUserTypeValue == null) {
                 toast(languages.userRole);
+                setState(() {
+                  registrationError = "Please select user role";
+                  hasRegistrationError = true;
+                });
                 return;
               }
 
@@ -469,6 +526,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (selectedUserTypeValue == USER_TYPE_PROVIDER) {
                 if (selectedProviderCommission == null) {
                   toast('Please select commission');
+                  setState(() {
+                    registrationError = "Please select commission percentage";
+                    hasRegistrationError = true;
+                  });
                   return;
                 }
               }
@@ -477,14 +538,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (selectedUserTypeValue == USER_TYPE_HANDYMAN) {
                 if (selectedProvider == null) {
                   toast('Please select provider');
+                  setState(() {
+                    registrationError = "Please select provider";
+                    hasRegistrationError = true;
+                  });
                   return;
                 }
                 if (selectedHandymanCommission == null) {
                   toast('Please select commission');
+                  setState(() {
+                    registrationError = "Please select commission percentage";
+                    hasRegistrationError = true;
+                  });
                   return;
                 }
               }
 
+              // Clear password field for security after validation (but before navigation)
+              // Note: We'll keep password for the next screen, but we can clear sensitive data if needed
+              
               // Log all user entered values
               _logUserEnteredValues();
 
@@ -504,9 +576,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 request['commission'] = selectedProviderCommission?.commission;
                 request['commission_type'] = selectedProviderCommission?.type;
                 request['provider_type_id'] = selectedProviderCommission?.id;
-                
-                UploadDocumentsScreen(formRequest: request).launch(context,
-                    pageRouteAnimation: PageRouteAnimation.SlideBottomTop);
               } else {
                 // Handyman data
                 request['provider_id'] = selectedProvider?.id;
@@ -514,12 +583,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 request['commission'] = selectedHandymanCommission?.commission;
                 request['commission_type'] = selectedHandymanCommission?.type;
                 request['handyman_type_id'] = selectedHandymanCommission?.id;
-                
-                toast("Registration successful! Please sign in.");
-                push(SignInScreen(),
-                    isNewTask: true,
-                    pageRouteAnimation: PageRouteAnimation.Fade);
               }
+
+              // Both Provider and Handyman go to UploadDocumentsScreen
+              UploadDocumentsScreen(formRequest: request).launch(context,
+                  pageRouteAnimation: PageRouteAnimation.SlideBottomTop);
+            } else {
+              // Form validation failed
+              setState(() {
+                registrationError = "Please fill all required fields correctly";
+                hasRegistrationError = true;
+              });
             }
           },
         ),
@@ -538,7 +612,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: secondaryTextStyle(),
             ),
             TextSpan(
-              text: languages.signIn,
+              text: languages.signIn ,
               style: boldTextStyle(color: primaryColor),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {

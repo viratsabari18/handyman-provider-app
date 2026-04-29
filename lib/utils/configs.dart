@@ -7,7 +7,7 @@ const DEFAULT_LANGUAGE = 'en';
 const primaryColor = Color(0xFFDB0008);
 
 /// Live Url
-const DOMAIN_URL = "https://fixomes.nativefriendly.com";
+const DOMAIN_URL = "https://ethically-thaw-bok.ngrok-free.dev";
 
 // const DOMAIN_URL = "http://192.168.1.17:8000";
 

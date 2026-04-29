@@ -20,7 +20,7 @@ import '../../components/app_widgets.dart';
 import '../../components/empty_error_state_widget.dart';
 import '../components/upcoming_booking_component.dart';
 
-class ProviderHomeFragment extends StatefulWidget {
+class  ProviderHomeFragment extends StatefulWidget {
   @override
   _ProviderHomeFragmentState createState() => _ProviderHomeFragmentState();
 }

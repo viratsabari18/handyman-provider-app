@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:handyman_provider_flutter/Models%20new/user_model.dart';
 import 'package:handyman_provider_flutter/auth/component/user_demo_mode_screen.dart';
 import 'package:handyman_provider_flutter/auth/forgot_password_dialog.dart';
 import 'package:handyman_provider_flutter/auth/sign_up_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
+import 'package:handyman_provider_flutter/controllers/auth_controller.dart';
 import 'package:handyman_provider_flutter/handyman/handyman_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
@@ -43,6 +45,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   bool isRemember = getBoolAsync(IS_REMEMBERED);
 
+  // Add this for error handling
+  String? loginError;
+  bool isLoginError = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +72,16 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
+  // Helper method to clear login error
+  void _clearLoginError() {
+    if (isLoginError) {
+      setState(() {
+        loginError = null;
+        isLoginError = false;
+      });
+    }
+  }
+
   //------------------------------------ UI ----------------------------------//
 
   @override
@@ -84,13 +100,38 @@ class _SignInScreenState extends State<SignInScreen> {
                 key: formKey,
                 autovalidateMode: autovalidateMode,
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: AppBar().preferredSize.height),
                       // Hello again with Welcome text
                       _buildHelloAgainWithWelcomeText(),
+
+                      // Display login error message if any
+                      if (loginError != null)
+                        Container(
+                          margin: EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  loginError!,
+                                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                       AutofillGroup(
                         onDisposeAction: AutofillContextAction.commit,
@@ -104,10 +145,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               autoFocus: true,
                               nextFocus: passwordFocus,
                               errorThisFieldRequired: languages.hintRequired,
-                              decoration: inputDecoration(context, hint: languages.hintEmailAddressTxt),
-                              suffix: ic_message.iconImage(size: 10).paddingAll(14),
+                              decoration: inputDecoration(context,
+                                  hint: languages.hintEmailAddressTxt),
+                              suffix:
+                                  ic_message.iconImage(size: 10).paddingAll(14),
                               autoFillHints: [AutofillHints.email],
-                              onFieldSubmitted: (val) => FocusScope.of(context).requestFocus(passwordFocus),
+                              onChanged: (value) => _clearLoginError(), // Clear error on typing
+                              onFieldSubmitted: (val) => FocusScope.of(context)
+                                  .requestFocus(passwordFocus),
                             ),
                             16.height,
                             // Enter password text field
@@ -117,12 +162,17 @@ class _SignInScreenState extends State<SignInScreen> {
                               focus: passwordFocus,
                               obscureText: true,
                               errorThisFieldRequired: languages.hintRequired,
-                              suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-                              suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
-                              errorMinimumPasswordLength: "${languages.errorPasswordLength} $passwordLengthGlobal",
-                              decoration: inputDecoration(context, hint: languages.hintPassword),
+                              suffixPasswordVisibleWidget:
+                                  ic_show.iconImage(size: 10).paddingAll(14),
+                              suffixPasswordInvisibleWidget:
+                                  ic_hide.iconImage(size: 10).paddingAll(14),
+                              errorMinimumPasswordLength:
+                                  "${languages.errorPasswordLength} $passwordLengthGlobal",
+                              decoration: inputDecoration(context,
+                                  hint: languages.hintPassword),
                               autoFillHints: [AutofillHints.password],
                               isValidationRequired: true,
+                              onChanged: (value) => _clearLoginError(), // Clear error on typing
                               validator: (val) {
                                 if (val == null || val.isEmpty) {
                                   return languages.hintRequired;
@@ -150,11 +200,19 @@ class _SignInScreenState extends State<SignInScreen> {
                             return UserDemoModeScreen(
                               onChanged: (email, password) {
                                 if (email.isNotEmpty && password.isNotEmpty) {
-                                  emailCont.text = email;
-                                  passwordCont.text = password;
+                                  setState(() {
+                                    emailCont.text = email;
+                                    passwordCont.text = password;
+                                    loginError = null; // Clear error when demo user selected
+                                    isLoginError = false;
+                                  });
                                 } else {
-                                  emailCont.clear();
-                                  passwordCont.clear();
+                                  setState(() {
+                                    emailCont.clear();
+                                    passwordCont.clear();
+                                    loginError = null; // Clear error when clearing
+                                    isLoginError = false;
+                                  });
                                 }
                               },
                             );
@@ -167,7 +225,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               Observer(
-                builder: (_) => LoaderWidget().center().visible(appStore.isLoading),
+                builder: (_) =>
+                    LoaderWidget().center().visible(appStore.isLoading),
               ),
             ],
           ),
@@ -213,14 +272,16 @@ class _SignInScreenState extends State<SignInScreen> {
                     isRemember = !isRemember;
                     setState(() {});
                   },
-                  child: Text(languages.rememberMe, style: secondaryTextStyle()),
+                  child:
+                      Text(languages.rememberMe, style: secondaryTextStyle()),
                 ),
               ],
             ),
             TextButton(
               child: Text(
                 languages.forgotPassword,
-                style: boldTextStyle(color: primaryColor, fontStyle: FontStyle.italic),
+                style: boldTextStyle(
+                    color: primaryColor, fontStyle: FontStyle.italic),
                 textAlign: TextAlign.right,
               ),
               onPressed: () {
@@ -258,6 +319,11 @@ class _SignInScreenState extends State<SignInScreen> {
             Text(languages.doNotHaveAccount, style: secondaryTextStyle()),
             TextButton(
               onPressed: () {
+                // Clear error when navigating to sign up
+                setState(() {
+                  loginError = null;
+                  isLoginError = false;
+                });
                 SignUpScreen().launch(context);
               },
               child: Text(
@@ -275,66 +341,145 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  //endregion
-
-  //region Methods
   void _handleLogin() {
     hideKeyboard(context);
+    // Clear previous errors before validation
+    setState(() {
+      loginError = null;
+      isLoginError = false;
+    });
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
       _handleLoginUsers();
     }
   }
 
-
   void _handleLoginUsers() async {
     hideKeyboard(context);
-    Map<String, dynamic> request = {
-      'email': emailCont.text.trim(),
-      'password': passwordCont.text.trim(),
-    };
 
     appStore.setLoading(true);
     try {
-      UserData user = await loginUser(request);
+      final controller = AuthController();
 
-      if (user.status != 1) {
+      final user = await controller.login(
+        email: emailCont.text.trim(),
+        password: passwordCont.text.trim(),
+      );
+
+      if (user == null) {
+        // Show user-friendly error message
+        setState(() {
+          loginError = "Invalid email or password";
+          isLoginError = true;
+        });
         appStore.setLoading(false);
-        return toast(languages.pleaseContactYourAdmin);
+        // Clear password field on failed login for security
+        passwordCont.clear();
+        // Request focus on password field for retry
+        FocusScope.of(context).requestFocus(passwordFocus);
+        return;
       }
+
+      // if (user.status != 1) {
+      //   toast("Contact admin");
+      //   return;
+      // }
+
+      /// SAVE TOKEN
+      await setValue("TOKEN", user.apiToken ?? "");
+
+      // if (user.status != 1) {
+      //   appStore.setLoading(false);
+      //   return toast(languages.pleaseContactYourAdmin);
+      // }
 
       await setValue(USER_PASSWORD, passwordCont.text);
       await setValue(IS_REMEMBERED, isRemember);
-      await saveUserData(user);
+      // await saveUserData(user);
+      await saveLoginUserData(user);
 
-      authService.verifyFirebaseUser();
+      // authService.verifyFirebaseUser();
+
+      // Clear password after successful login
+      passwordCont.clear();
 
       redirectWidget(res: user);
     } catch (e) {
       appStore.setLoading(false);
+      
+      // Parse and display appropriate error message
+      String errorMessage = e.toString();
+      if (errorMessage.contains('Exception:')) {
+        errorMessage = errorMessage.replaceAll('Exception:', '').trim();
+      }
+      
+      // Show specific error messages based on error content
+      if (errorMessage.toLowerCase().contains('email') || 
+          errorMessage.toLowerCase().contains('not found')) {
+        setState(() {
+          loginError = "Email address not found";
+          isLoginError = true;
+        });
+      } else if (errorMessage.toLowerCase().contains('password') || 
+                 errorMessage.toLowerCase().contains('credential')) {
+        setState(() {
+          loginError = "Incorrect password. Please try again.";
+          isLoginError = true;
+        });
+      } else {
+        setState(() {
+          loginError = errorMessage;
+          isLoginError = true;
+        });
+      }
+      
+      // Clear password field on error for security
+      passwordCont.clear();
+      // Request focus on password field for retry
+      FocusScope.of(context).requestFocus(passwordFocus);
+      
       toast(e.toString());
     }
   }
 
-  void redirectWidget({required UserData res}) async {
-    appStore.setLoading(false);
-    TextInput.finishAutofillContext();
+ void redirectWidget({required UserModel res}) async {
+  appStore.setLoading(false);
 
-    if (res.status.validate() == 1) {
-      await appStore.setToken(res.apiToken.validate());
-      appStore.setTester(res.email == DEFAULT_PROVIDER_EMAIL || res.email == DEFAULT_HANDYMAN_EMAIL);
+  /// SAVE TOKEN
+  await appStore.setToken(res.apiToken ?? "");
 
-      if (res.userType.validate().trim() == USER_TYPE_PROVIDER) {
-        ProviderDashboardScreen(index: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-      } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN) {
-        HandymanDashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-      } else {
-        toast(languages.cantLogin, print: true);
-      }
-    } else {
-      toast(languages.lblWaitForAcceptReq);
-    }
+  /// 🔥 IGNORE STATUS
+  if (res.userType == USER_TYPE_PROVIDER) {
+    ProviderDashboardScreen().launch(context, isNewTask: true);
+  } else if (res.userType == USER_TYPE_HANDYMAN) {
+    HandymanDashboardScreen().launch(context, isNewTask: true);
+  } else {
+    toast("Invalid user type");
   }
+}
+
+  // void redirectWidget({required UserModel res}) async {
+  //   appStore.setLoading(false);
+  //   TextInput.finishAutofillContext();
+
+  //   if (res.status.validate() == 1) {
+  //     await appStore.setToken(res.apiToken.validate());
+  //     appStore.setTester(res.email == DEFAULT_PROVIDER_EMAIL ||
+  //         res.email == DEFAULT_HANDYMAN_EMAIL);
+
+  //     if (res.userType.validate().trim() == USER_TYPE_PROVIDER) {
+  //       HandymanDashboardScreen(index: 0).launch(context,
+  //           isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     } else if (res.userType.validate().trim() == USER_TYPE_HANDYMAN) {
+  //       HandymanDashboardScreen().launch(context,
+  //           isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+  //     } else {
+  //       toast(languages.cantLogin, print: true);
+  //     }
+  //   } else {
+  //     toast(languages.lblWaitForAcceptReq);
+  //   }
+  // }
 
   //endregion
 

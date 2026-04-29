@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:handyman_provider_flutter/main.dart';
-import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class HandymanTotalWidget extends StatelessWidget {
@@ -9,35 +8,93 @@ class HandymanTotalWidget extends StatelessWidget {
   final String icon;
   final Color? color;
 
-  HandymanTotalWidget({required this.title, required this.total, required this.icon, this.color});
+  const HandymanTotalWidget({
+    super.key,
+    required this.title,
+    required this.total,
+    required this.icon,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // ✅ Same dynamic colors as your first widget
+    final Color textColor = isDark ? Colors.white : Colors.black;
+    final Color bgColor = color ?? (isDark ? Colors.black : Colors.white);
+
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      decoration: boxDecorationDefault(color: context.primaryColor),
-      //decoration: cardDecoration(context, showBorder: true,color: context.primaryColor),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       width: context.width() / 2 - 24,
-      child: Row(
+
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+
+        // ✅ SAME shadow logic
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withAlpha(150)
+                : Colors.black.withAlpha(100),
+            offset: const Offset(0, 6),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(total.validate(), style: boldTextStyle(color: Colors.white, size: 16)),
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                    child: Image.asset(icon, width: 20, height: 20, color: primaryColor),
+
+              /// TOTAL TEXT
+              SizedBox(
+                width: context.width() / 2 - 94,
+                child: Marquee(
+                  child: Text(
+                    total.validate(),
+                    style: boldTextStyle(
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                    maxLines: 1,
                   ),
-                ],
+                ),
               ),
-              8.height,
-              Text(title.validate(), style: secondaryTextStyle(color: appStore.isDarkMode ? Colors.white : context.cardColor)),
+
+              /// ICON
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? Colors.black : Colors.white, // ✅ SAME
+                ),
+                child: Image.asset(
+                  icon,
+                  width: 18,
+                  height: 18,
+                  color: isDark ? Colors.white : Colors.black, // ✅ SAME
+                ),
+              ),
             ],
-          ).expand(),
+          ),
+
+          8.height,
+
+          /// TITLE
+          Marquee(
+            child: Text(
+              title.validate(),
+              style: secondaryTextStyle(
+                size: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -9,7 +9,7 @@ import 'package:handyman_provider_flutter/utils/extensions/num_extenstions.dart'
 import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-class TotalComponent extends StatelessWidget {
+class TotalComponent extends  StatelessWidget {
   final DashboardResponse snap;
 
   TotalComponent({required this.snap});
