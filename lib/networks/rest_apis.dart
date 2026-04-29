@@ -751,66 +751,6 @@ Future<num> getUserWalletBalance() async {
   }
 }
 
-// Future<List<BookingData>> getBookingList(
-//   int page, {
-//   var perPage = PER_PAGE_ITEM,
-//   String serviceId = '',
-//   String dateFrom = '',
-//   String dateTo = '',
-//   String customerId = '',
-//   String providerId = '',
-//   String handymanId = '',
-//   String bookingStatus = '',
-//   String paymentStatus = '',
-//   String paymentType = '',
-//   String searchText = '',
-//   required List<BookingData> bookings,
-//   Function(bool)? lastPageCallback,
-//   Function(String totalEarning, PaymentBreakdown paymentBreakdown)? paymentBreakdownCallBack,
-// }) async {
-//   try {
-//     BookingListResponse res;
-//     String serviceIds = serviceId.isNotEmpty ? 'service_id=$serviceId&' : '';
-//     String dateStart = dateFrom.isNotEmpty ? 'date_from=$dateFrom&' : '';
-//     String dateEnd = dateTo.isNotEmpty ? '&date_to=$dateTo&' : '';
-//     String customerIds = customerId.isNotEmpty ? 'customer_id=$customerId&' : '';
-//     String providerIds = providerId.isNotEmpty ? 'provider_id=$providerId&' : '';
-//     String handymanIds = handymanId.isNotEmpty ? 'handyman_id=$handymanId&' : '';
-//     String status = bookingStatus.isNotEmpty ? 'status=$bookingStatus&' : '';
-//     String paymentStatuss = paymentStatus.isNotEmpty ? 'payment_status=$paymentStatus&' : '';
-//     String paymentTypes = paymentType.isNotEmpty ? 'payment_type=$paymentType&' : '';
-//     String searchParam = searchText.isNotEmpty ? '&search=$searchText&' : '';
-
-//     String perPageItem = 'per_page=$perPage&';
-//     String pageCount = 'page=$page';
-
-//     if (status == BOOKING_PAYMENT_STATUS_ALL) {
-//       res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse('booking-list?per_page=$perPage&page=$page$searchParam', method: HttpMethodType.GET)));
-//     } else {
-//       res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse(
-//           'booking-list?$serviceIds$dateStart$dateEnd$customerIds$providerIds$handymanIds$status$paymentStatuss$paymentTypes$perPageItem$pageCount$searchParam',
-//           method: HttpMethodType.GET)));
-//     }
-
-//     if (page == 1) bookings.clear();
-//     bookings.addAll(res.data.validate());
-//     lastPageCallback?.call(res.data.validate().length != PER_PAGE_ITEM);
-
-//     if (res.totalEarning.validate().isNotEmpty && res.paymentBreakdown != null) {
-//       paymentBreakdownCallBack?.call(res.totalEarning.validate(), res.paymentBreakdown!);
-//     }
-
-//     cachedBookingList = bookings;
-
-//     appStore.setLoading(false);
-
-//     return bookings;
-//   } catch (e) {
-//     appStore.setLoading(false);
-
-//     throw e;
-//   }
-// }
 Future<List<BookingData>> getBookingList(
   int page, {
   var perPage = PER_PAGE_ITEM,
@@ -828,86 +768,37 @@ Future<List<BookingData>> getBookingList(
   Function(bool)? lastPageCallback,
   Function(String totalEarning, PaymentBreakdown paymentBreakdown)? paymentBreakdownCallBack,
 }) async {
-  await Future.delayed(Duration(seconds: 1));
-
   try {
+    BookingListResponse res;
+    String serviceIds = serviceId.isNotEmpty ? 'service_id=$serviceId&' : '';
+    String dateStart = dateFrom.isNotEmpty ? 'date_from=$dateFrom&' : '';
+    String dateEnd = dateTo.isNotEmpty ? '&date_to=$dateTo&' : '';
+    String customerIds = customerId.isNotEmpty ? 'customer_id=$customerId&' : '';
+    String providerIds = providerId.isNotEmpty ? 'provider_id=$providerId&' : '';
+    String handymanIds = handymanId.isNotEmpty ? 'handyman_id=$handymanId&' : '';
+    String status = bookingStatus.isNotEmpty ? 'status=$bookingStatus&' : '';
+    String paymentStatuss = paymentStatus.isNotEmpty ? 'payment_status=$paymentStatus&' : '';
+    String paymentTypes = paymentType.isNotEmpty ? 'payment_type=$paymentType&' : '';
+    String searchParam = searchText.isNotEmpty ? '&search=$searchText&' : '';
+
+    String perPageItem = 'per_page=$perPage&';
+    String pageCount = 'page=$page';
+
+    if (status == BOOKING_PAYMENT_STATUS_ALL) {
+      res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse('booking-list?per_page=$perPage&page=$page$searchParam', method: HttpMethodType.GET)));
+    } else {
+      res = BookingListResponse.fromJson(await handleResponse(await buildHttpResponse(
+          'booking-list?$serviceIds$dateStart$dateEnd$customerIds$providerIds$handymanIds$status$paymentStatuss$paymentTypes$perPageItem$pageCount$searchParam',
+          method: HttpMethodType.GET)));
+    }
+
     if (page == 1) bookings.clear();
+    bookings.addAll(res.data.validate());
+    lastPageCallback?.call(res.data.validate().length != PER_PAGE_ITEM);
 
-    List<BookingData> mockData = [
-      BookingData(
-        id: 1,
-        address: "Chennai",
-        customerName: "Rahul",
-        serviceName: "AC Repair",
-        status: "pending",
-        statusLabel: "Pending",
-        amount: 500,
-        totalAmount: 550,
-        paidAmount: 300,
-        paymentStatus: "pending",
-        paymentMethod: "cash",
-
-        // ✅ FIXED FORMATS
-        date: "2026-04-24",
-        startAt: "10:00 AM",
-        endAt: "12:00 PM",
-        bookingSlot: "",
-
-        handyman: [],
-        taxes: [],
-        extraCharges: [],
-      ),
-
-      BookingData(
-        id: 2,
-        address: "Bangalore",
-        customerName: "Arun",
-        serviceName: "Plumbing",
-        status: "completed",
-        statusLabel: "Completed",
-        amount: 800,
-        totalAmount: 800,
-        paidAmount: 800,
-        paymentStatus: "paid",
-        paymentMethod: "online",
-
-        // ✅ FIXED
-        date: "2026-04-23",
-        startAt: "09:00 AM",
-        endAt: "11:00 AM",
-        bookingSlot: "",
-
-        handyman: [],
-      ),
-
-      BookingData(
-        id: 3,
-        address: "Hyderabad",
-        customerName: "Kumar",
-        serviceName: "Cleaning",
-        status: "cancelled",
-        statusLabel: "Cancelled",
-        amount: 300,
-        totalAmount: 300,
-        paidAmount: 0,
-        paymentStatus: "failed",
-
-        // ✅ FIXED
-        date: "2026-04-22",
-        startAt: "02:00 PM",
-        endAt: "03:00 PM",
-        bookingSlot: "",
-
-        isCancelled: 1,
-        reason: "Customer not available",
-      ),
-    ];
-
-    bookings.addAll(mockData);
-
-    lastPageCallback?.call(true);
-
-    paymentBreakdownCallBack?.call("1600", PaymentBreakdown());
+    if (res.totalEarning.validate().isNotEmpty && res.paymentBreakdown != null) {
+      paymentBreakdownCallBack?.call(res.totalEarning.validate(), res.paymentBreakdown!);
+    }
 
     cachedBookingList = bookings;
 
@@ -916,9 +807,11 @@ Future<List<BookingData>> getBookingList(
     return bookings;
   } catch (e) {
     appStore.setLoading(false);
+
     throw e;
   }
 }
+
 //region All Service List API
 Future<ServiceResponse> getAllServiceList({int? providerId, String perPage = ''}) async {
   String providerIds = appStore.isLoggedIn ? 'provider_id=${appStore.userId}' : '';
@@ -990,286 +883,21 @@ Future<List<ServiceData>> getSearchList(
   }
 }
 
-// Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
-//   BookingDetailResponse bookingDetailResponse = BookingDetailResponse.fromJson(
-//     await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
-//   );
-//   callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
-//       bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
-//   appStore.setLoading(false);
-//   if (cachedBookingDetailList.any((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id)) {
-//     cachedBookingDetailList.removeWhere((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id);
-//   }
-//   cachedBookingDetailList.add(bookingDetailResponse);
-//   return bookingDetailResponse;
-// }
-
 Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
-  return BookingDetailResponse(
-    bookingDetail: _getMockBookingData(),
-    service: _getMockServiceData(),
-    customer: _getMockUserData(),
-    bookingActivity: _getMockBookingActivities(),
-    ratingData: _getMockRatingData(),
-    providerData: _getMockProviderData(),
-    handymanData: _getMockHandymanData(),
-    couponData: _getMockCouponData(),
-    taxes: _getMockTaxes(),
-    serviceProof: _getMockServiceProof(),
-    postRequestDetail: null,
+  BookingDetailResponse bookingDetailResponse = BookingDetailResponse.fromJson(
+    await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
   );
+  callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
+      bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
+  appStore.setLoading(false);
+  if (cachedBookingDetailList.any((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id)) {
+    cachedBookingDetailList.removeWhere((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id);
+  }
+  cachedBookingDetailList.add(bookingDetailResponse);
+  return bookingDetailResponse;
 }
 
-BookingData _getMockBookingData() {
-  return BookingData(
-    id: 1,
-    address: "123 Main Street, New York, NY 10001",
-    customerId: 101,
-    serviceId: 201,
-    providerId: 301,
-    quantity: 1,
-    type: SERVICE_TYPE_FIXED,
-    discount: 20,
-    amount: 500,
-    status: BookingStatusKeys.accept,
-    statusLabel: "Accepted",
-    description: "Need to repair AC unit, it's not cooling properly",
-    bookingSlot: "2024-01-20 10:00 AM - 12:00 PM",
-    providerName: "John's Handyman Services",
-    customerName: "Sarah Johnson",
-    serviceName: "AC Repair Service",
-    paymentStatus: PAID,
-    paymentMethod: "Credit Card",
-    providerImage: "https://example.com/provider.jpg",
-    providerIsVerified: 1,
-    customerImage: "https://example.com/customer.jpg",
-    date: "2024-01-15",
-    durationDiff: "2 hours",
-    durationDiffHour: "2",
-    paymentId: 401,
-    bookingAddressId: 501,
-    totalAmount: 500,
-    paidAmount: 500,
-    totalReview: 25,
-    totalRating: 4.8,
-    isCancelled: 0,
-    reason: "",
-    startAt: "2024-01-20 10:00:00",
-    endAt: "2024-01-20 12:00:00",
-    bookingType: BOOKING_TYPE_USER_POST_JOB,
-    finalTotalServicePrice: 500,
-    finalTotalTax: 50,
-    finalSubTotal: 550,
-    finalDiscountAmount: 20,
-    finalCouponDiscountAmount: 0,
-    txnId: "TXN123456789",
-    imageAttachments: [
-      "https://example.com/attachment1.jpg",
-      "https://example.com/attachment2.jpg",
-    ],
-    taxes: _getMockTaxes(),
-    extraCharges: [],
-    handyman: _getMockHandymanList(),
-    serviceaddon: _getMockServiceAddons(),
-  );
-}
 
-ServiceData _getMockServiceData() {
-  return ServiceData(
-    id: 201,
-    name: "AC Repair Service",
-    categoryId: 1,
-    subCategoryId: 5,
-    providerId: 301,
-    price: 500,
-    type: SERVICE_TYPE_FIXED,
-    discount: 20,
-    duration: "2 hours",
-    status: 1,
-    description: "Professional AC repair and maintenance service",
-    isFeatured: 1,
-    providerName: "John's Handyman Services",
-    providerImage: "https://example.com/provider.jpg",
-    categoryName: "Home Appliances",
-    totalReview: 50,
-    totalRating: 4.9,
-    isFavourite: 0,
-  );
-}
-
-UserData _getMockUserData() {
-  return UserData(
-    id: 101,
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.johnson@example.com",
-    contactNumber: "+1234567890",
-    profileImage: "https://example.com/customer.jpg",
-    address: "123 Main Street, New York, NY 10001",
-    userType: "customer",
-    status: 1,
-    displayName: "Sarah Johnson",
-  );
-}
-
-List<BookingActivity> _getMockBookingActivities() {
-  return [
-    BookingActivity(
-      id: 1,
-      bookingId: 1,
-      datetime: "2024-01-15 14:30:00",
-      activityType: "created",
-      activityMessage: "Booking created by customer",
-      createdAt: "2024-01-15 14:30:00",
-    ),
-    BookingActivity(
-      id: 2,
-      bookingId: 1,
-      datetime: "2024-01-15 15:00:00",
-      activityType: "accepted",
-      activityMessage: "Booking accepted by provider",
-      createdAt: "2024-01-15 15:00:00",
-    ),
-    BookingActivity(
-      id: 3,
-      bookingId: 1,
-      datetime: "2024-01-16 09:00:00",
-      activityType: "handyman_assigned",
-      activityMessage: "Handyman assigned to this booking",
-      createdAt: "2024-01-16 09:00:00",
-    ),
-  ];
-}
-
-List<RatingData> _getMockRatingData() {
-  return [
-    RatingData(
-      id: 1,
-      rating: 5,
-      review: "Excellent service! Very professional and quick.",
-      customerName: "Michael Brown",
-      customerProfileImage: "https://example.com/reviewer1.jpg",
-      createdAt: "2024-01-10",
-    ),
-    RatingData(
-      id: 2,
-      rating: 4,
-      review: "Good service, reasonable price.",
-      customerName: "Emily Davis",
-      customerProfileImage: "https://example.com/reviewer2.jpg",
-      createdAt: "2024-01-05",
-    ),
-  ];
-}
-
-UserData _getMockProviderData() {
-  return UserData(
-    id: 301,
-    firstName: "John",
-    lastName: "Smith",
-    email: "john@handyman.com",
-    contactNumber: "+1987654321",
-    profileImage: "https://example.com/provider.jpg",
-    address: "456 Business Ave, New York, NY 10002",
-    userType: "provider",
-    status: 1,
-    displayName: "John's Handyman Services",
-    providerServiceRating: 4.8,
-
-  );
-}
-
-List<UserData> _getMockHandymanData() {
-  return [
-    UserData(
-      id: 401,
-      firstName: "Robert",
-      lastName: "Wilson",
-      email: "robert@handyman.com",
-      contactNumber: "+1122334455",
-      profileImage: "https://example.com/handyman1.jpg",
-      userType: "handyman",
-      status: 1,
-      displayName: "Robert Wilson",
-      handymanRating: 4.9,
-      isHandymanAvailable: true,
-      designation: "Senior Technician",
-      knownLanguages: "English, Spanish",
-      skills: "AC Repair, Electrical, Plumbing",
-      whyChooseMe: "10+ years of experience",
-    ),
-  ];
-}
-
-List<Handyman> _getMockHandymanList() {
-  return [
-    Handyman(
-      id: 1,
-      bookingId: 1,
-      handymanId: 401,
-      handyman: _getMockHandymanData().first,
-    ),
-  ];
-}
-
-CouponData _getMockCouponData() {
-  return CouponData(
-    id: 1,
-    bookingId: 1,
-    code: "WELCOME20",
-    discount: 20,
-    discountType: "percentage",
-    createdAt: "2024-01-10",
-  );
-}
-
-List<TaxData> _getMockTaxes() {
-  return [
-    TaxData(
-      id: 1,
-      providerId: 301,
-      title: "Service Tax",
-      type: "percentage",
-      value: 10,
-      totalCalculatedValue: 50,
-    ),
-  ];
-}
-
-List<ServiceAddon> _getMockServiceAddons() {
-  return [
-    ServiceAddon(
-      id: 1,
-      name: "Extended Warranty",
-      price: 50,
-      serviceId: 201,
-
-    ),
-    ServiceAddon(
-      id: 2,
-      name: "Emergency Service",
-      price: 100,
-      serviceId: 201,
-  
-    ),
-  ];
-}
-
-List<ServiceProof> _getMockServiceProof() {
-  return [
-    ServiceProof(
-      id: 1,
-      title: "Before Service Photo",
-      description: "AC unit before repair",
-      serviceId: 201,
-      bookingId: 1,
-      userId: 401,
-      handymanName: "Robert Wilson",
-      serviceName: "AC Repair Service",
-      attachments: ["https://example.com/proof1.jpg"],
-    ),
-  ];
-}
 
 Future<BaseResponseModel> bookingUpdate(Map request) async {
   var res = BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse('booking-update', request: request, method: HttpMethodType.POST)));

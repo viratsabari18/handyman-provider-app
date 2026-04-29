@@ -16,6 +16,8 @@ class DashboardResponse {
   num? todayCashAmount;
   num? totalCashInHand;
   int? totalActiveHandyman;
+  int? totalCategory;
+  int? totalZone;
   List<ServiceData>? service;
   List<UserData>? handyman;
   num? totalRevenue;
@@ -43,6 +45,8 @@ class DashboardResponse {
     this.service,
     this.totalService,
     this.totalActiveHandyman,
+    this.totalCategory,
+    this.totalZone,
     this.totalCashInHand,
     this.handyman,
     this.totalRevenue,
@@ -61,15 +65,17 @@ class DashboardResponse {
     isEmailVerified = json['is_email_verified'];
     status = json['status'];
     totalBooking = json['total_booking'];
-    totalRevenue =
-        num.tryParse(json['total_revenue']?.toString() ?? '0') ?? 0;
+    totalRevenue = num.tryParse(json['total_revenue']?.toString() ?? '0') ?? 0;
     totalService = json['total_service'];
     totalActiveHandyman = json['total_active_handyman'];
-    todayCashAmount =
-        num.tryParse(json['today_cash']?.toString() ?? '0') ?? 0;
+    totalCategory=json['total_category'];
+    totalZone=json['total_zone'];
+    todayCashAmount = num.tryParse(json['today_cash']?.toString() ?? '0') ?? 0;
     totalCashInHand =
         num.tryParse(json['total_cash_in_hand']?.toString() ?? '0') ?? 0;
-    commission = json['commission'] != null ? Commission.fromJson(json['commission']) : null;
+    commission = json['commission'] != null
+        ? Commission.fromJson(json['commission'])
+        : null;
     if (json['service'] != null) {
       service = [];
       json['service'].forEach((v) {
@@ -91,8 +97,8 @@ class DashboardResponse {
           RevenueChartData(
             month: months[index],
             revenue: double.tryParse(
-              element[(index + 1).toString()]?.toString() ?? '0',
-            ) ??
+                  element[(index + 1).toString()]?.toString() ?? '0',
+                ) ??
                 0.0,
           ),
         );
@@ -106,13 +112,27 @@ class DashboardResponse {
       }
     });
 
-    providerWallet = json['provider_wallet'] != null ? ProviderWallet.fromJson(json['provider_wallet']) : null;
+    providerWallet = json['provider_wallet'] != null
+        ? ProviderWallet.fromJson(json['provider_wallet'])
+        : null;
 
-    onlineHandyman = json['online_handyman'] != null ? json['online_handyman'].cast<String>() : null;
-    myPostJobData = json['post_requests'] != null ? (json['post_requests'] as List).map((i) => PostJobData.fromJson(i)).toList() : null;
-    upcomingBookings = json['upcomming_booking'] != null ? (json['upcomming_booking'] as List).map((i) => BookingData.fromJson(i)).toList() : null;
+    onlineHandyman = json['online_handyman'] != null
+        ? json['online_handyman'].cast<String>()
+        : null;
+    myPostJobData = json['post_requests'] != null
+        ? (json['post_requests'] as List)
+            .map((i) => PostJobData.fromJson(i))
+            .toList()
+        : null;
+    upcomingBookings = json['upcomming_booking'] != null
+        ? (json['upcomming_booking'] as List)
+            .map((i) => BookingData.fromJson(i))
+            .toList()
+        : null;
     isSubscribed = json['is_subscribed'] ?? 0;
-    subscription = json['subscription'] != null ? ProviderSubscriptionModel.fromJson(json['subscription']) : null;
+    subscription = json['subscription'] != null
+        ? ProviderSubscriptionModel.fromJson(json['subscription'])
+        : null;
     notificationUnreadCount =
         num.tryParse(json['notification_unread_count']?.toString() ?? '0') ?? 0;
     remainingPayout =
@@ -127,6 +147,8 @@ class DashboardResponse {
     data['today_cash'] = this.todayCashAmount;
     data['total_cash_in_hand'] = this.totalCashInHand;
     data['is_email_verified'] = this.isEmailVerified;
+    data['total_category']=this.totalCategory;
+    data['total_zone']=this.totalZone;
     if (this.commission != null) {
       data['commission'] = this.commission!.toJson();
     }
@@ -144,11 +166,13 @@ class DashboardResponse {
     }
 
     if (this.myPostJobData != null) {
-      data['post_requests'] = this.myPostJobData!.map((v) => v.toJson()).toList();
+      data['post_requests'] =
+          this.myPostJobData!.map((v) => v.toJson()).toList();
     }
 
     if (this.upcomingBookings != null) {
-      data['upcomming_booking'] = this.upcomingBookings!.map((v) => v.toJson()).toList();
+      data['upcomming_booking'] =
+          this.upcomingBookings!.map((v) => v.toJson()).toList();
     }
     data['notification_unread_count'] = this.notificationUnreadCount;
     data['remaining_payout'] = this.remainingPayout;
@@ -166,7 +190,14 @@ class CategoryData {
   String? color;
   String? categoryImage;
 
-  CategoryData({this.id, this.name, this.status, this.description, this.isFeatured, this.color, this.categoryImage});
+  CategoryData(
+      {this.id,
+      this.name,
+      this.status,
+      this.description,
+      this.isFeatured,
+      this.color,
+      this.categoryImage});
 
   CategoryData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -201,7 +232,15 @@ class Commission {
   String? type;
   String? updatedAt;
 
-  Commission({this.commission, this.createdAt, this.deletedAt, this.id, this.name, this.status, this.type, this.updatedAt});
+  Commission(
+      {this.commission,
+      this.createdAt,
+      this.deletedAt,
+      this.id,
+      this.name,
+      this.status,
+      this.type,
+      this.updatedAt});
 
   factory Commission.fromJson(Map<String, dynamic> json) {
     return Commission(
@@ -239,7 +278,8 @@ class ProviderWallet {
   String? createdAt;
   String? updatedAt;
 
-  ProviderWallet(this.id, this.title, this.userId, this.amount, this.status, this.createdAt, this.updatedAt);
+  ProviderWallet(this.id, this.title, this.userId, this.amount, this.status,
+      this.createdAt, this.updatedAt);
 
   ProviderWallet.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -272,7 +312,13 @@ class ServiceAddressMapping {
   String? updatedAt;
   ProviderAddressMapping? providerAddressMapping;
 
-  ServiceAddressMapping({this.id, this.serviceId, this.providerAddressId, this.createdAt, this.updatedAt, this.providerAddressMapping});
+  ServiceAddressMapping(
+      {this.id,
+      this.serviceId,
+      this.providerAddressId,
+      this.createdAt,
+      this.updatedAt,
+      this.providerAddressMapping});
 
   ServiceAddressMapping.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -280,7 +326,9 @@ class ServiceAddressMapping {
     providerAddressId = json['provider_address_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    providerAddressMapping = json['provider_address_mapping'] != null ? new ProviderAddressMapping.fromJson(json['provider_address_mapping']) : null;
+    providerAddressMapping = json['provider_address_mapping'] != null
+        ? new ProviderAddressMapping.fromJson(json['provider_address_mapping'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -307,7 +355,15 @@ class ProviderAddressMapping {
   String? createdAt;
   String? updatedAt;
 
-  ProviderAddressMapping({this.id, this.providerId, this.address, this.latitude, this.longitude, this.status, this.createdAt, this.updatedAt});
+  ProviderAddressMapping(
+      {this.id,
+      this.providerId,
+      this.address,
+      this.latitude,
+      this.longitude,
+      this.status,
+      this.createdAt,
+      this.updatedAt});
 
   ProviderAddressMapping.fromJson(Map<String, dynamic> json) {
     id = json['id'];

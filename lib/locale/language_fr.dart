@@ -2677,4 +2677,10 @@ class LanguageFr extends Languages {
 
   @override
   String get selected => 'Sélectionné';
+  
+@override
+String get totalCategory => 'Catégories totales';
+
+@override
+String get totalZone => 'Zones totales';
 }

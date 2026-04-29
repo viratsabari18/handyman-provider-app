@@ -2531,4 +2531,10 @@ String get selectCategories => 'श्रेणियाँ चुनें';
 
 @override
 String get selected => 'चयनित';
+
+@override
+String get totalCategory => 'कुल श्रेणियां';
+
+@override
+String get totalZone => 'कुल क्षेत्र';
 }

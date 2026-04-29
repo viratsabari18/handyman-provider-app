@@ -1687,4 +1687,8 @@ abstract class Languages {
   String get viewPDF;
 
   String get selectServiceZone;
+
+  String get totalZone;
+  
+  String get totalCategory;
 }

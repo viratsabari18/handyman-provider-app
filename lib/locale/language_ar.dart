@@ -2529,4 +2529,10 @@ String get selected => 'محدد';
 @override
 String get selectCategories => 'اختر الفئات';
 
+@override
+String get totalCategory => "إجمالي الفئات";
+
+@override
+String get totalZone => "إجمالي المناطق";
+
 }

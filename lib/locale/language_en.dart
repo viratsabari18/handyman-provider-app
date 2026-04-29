@@ -2532,4 +2532,10 @@ class LanguageEn extends Languages {
 
   @override
   String get selectServiceZone => 'Select Service Zone';
+  
+  @override
+  String get totalCategory => "Total Cetagory";
+  
+  @override
+  String get totalZone => "Total Zone";
 }
