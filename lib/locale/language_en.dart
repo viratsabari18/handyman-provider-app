@@ -2628,5 +2628,20 @@ String get noZonesAvailableToAdd => 'No zones available to add';
 
 @override
 String get deleteZoneConfirmation => 'Do you want to delete this zone?';
+
+@override
+String get arrived => "Arrived";
+
+@override
+String get enterOtp => "Enter OTP";
+
+@override
+String get lblVerify => "Verify";
+
+@override
+String get pleaseEnterOtpToStartService => "Please enter the 4-digit OTP to start the service";
+
+@override
+String get pleaseEnterValidOtp => "Please enter a valid 4-digit OTP";
   
 }

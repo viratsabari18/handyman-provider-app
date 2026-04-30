@@ -59,6 +59,7 @@ class BookingStatusKeys {
   static String pending = BOOKING_STATUS_PENDING;
   static String accept = BOOKING_STATUS_ACCEPT;
   static String onGoing = BOOKING_STATUS_ON_GOING;
+  static String arrived = BOOKING_STATUS_ARRIVED;
   static String inProgress = BOOKING_STATUS_IN_PROGRESS;
   static String hold = BOOKING_STATUS_HOLD;
   static String rejected = BOOKING_STATUS_REJECTED;

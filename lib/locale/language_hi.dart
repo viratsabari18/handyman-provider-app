@@ -2627,4 +2627,19 @@ String get noZonesAvailableToAdd => 'जोड़ने के लिए को�
 
 @override
 String get deleteZoneConfirmation => 'क्या आप इस ज़ोन को हटाना चाहते हैं?';
+
+@override
+String get arrived => "पहुंच गए";
+
+@override
+String get enterOtp => "OTP दर्ज करें";
+
+@override
+String get lblVerify => "सत्यापित करें";
+
+@override
+String get pleaseEnterOtpToStartService => "कृपया सेवा शुरू करने के लिए 4-अंकों का OTP दर्ज करें";
+
+@override
+String get pleaseEnterValidOtp => "कृपया एक वैध 4-अंकों का OTP दर्ज करें";
 }

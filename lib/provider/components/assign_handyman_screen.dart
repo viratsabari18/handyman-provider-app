@@ -20,7 +20,12 @@ class AssignHandymanScreen extends StatefulWidget {
   final Function? onUpdate;
   final int? serviceAddressId;
 
-  const AssignHandymanScreen({Key? key, this.onUpdate, required this.bookingId, required this.serviceAddressId}) : super(key: key);
+  const AssignHandymanScreen(
+      {Key? key,
+      this.onUpdate,
+      required this.bookingId,
+      required this.serviceAddressId})
+      : super(key: key);
 
   @override
   _AssignHandymanScreenState createState() => _AssignHandymanScreenState();
@@ -56,10 +61,11 @@ class _AssignHandymanScreenState extends State<AssignHandymanScreen> {
 
   Future<void> _handleAssignHandyman() async {
     if (appStore.isLoading) return;
-
+    print("handle man assign");
     showConfirmDialogCustom(
       context,
-      title: '${languages.lblAreYouSureYouWantToAssignThisServiceTo(userListData!.firstName.validate())}',
+      title:
+          '${languages.lblAreYouSureYouWantToAssignThisServiceTo(userListData!.firstName.validate())}',
       positiveText: languages.lblYes,
       negativeText: languages.lblNo,
       primaryColor: context.primaryColor,
@@ -127,7 +133,9 @@ class _AssignHandymanScreenState extends State<AssignHandymanScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CachedImageWidget(
-          url: userData.profileImage!.isNotEmpty ? userData.profileImage.validate() : "",
+          url: userData.profileImage!.isNotEmpty
+              ? userData.profileImage.validate()
+              : "",
           height: 60,
           fit: BoxFit.cover,
           circle: true,
@@ -185,7 +193,8 @@ class _AssignHandymanScreenState extends State<AssignHandymanScreen> {
 
   Widget buildRadioListTile({required UserData userData}) {
     if (!userData.isHandymanAvailable.validate()) {
-      return buildHandymanItem(userData: userData).paddingSymmetric(vertical: 13, horizontal: 16);
+      return buildHandymanItem(userData: userData)
+          .paddingSymmetric(vertical: 13, horizontal: 16);
     }
     return RadioListTile<UserData>(
       value: userData,
@@ -228,117 +237,126 @@ class _AssignHandymanScreenState extends State<AssignHandymanScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBarTitle: languages.lblAssignHandyman,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SnapHelperWidget<List<UserData>>(
-            future: future,
-            loadingWidget: LoaderWidget(),
-            onSuccess: (snap) {
-              return AnimatedListView(
-                controller: scrollController,
-                shrinkWrap: true,
-                physics: AlwaysScrollableScrollPhysics(),
-                listAnimationType: ListAnimationType.FadeIn,
-                fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-                slideConfiguration: SlideConfiguration(verticalOffset: 400),
-                padding: EdgeInsets.only(top: 8, bottom: 90),
-                itemCount: snap.length,
-                emptyWidget: NoDataWidget(
-                  title: languages.noHandymanAvailable,
-                  imageWidget: EmptyStateWidget(),
-                  retryText: languages.lblAddHandyman,
-                  onRetry: () {
-                    HandymanAddUpdateScreen(
-                      userType: USER_TYPE_HANDYMAN,
-                      onUpdate: () {
-                        init();
-                        setState(() {});
-                      },
-                    ).launch(context);
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            SnapHelperWidget<List<UserData>>(
+              future: future,
+              loadingWidget: LoaderWidget(),
+              onSuccess: (snap) {
+                return AnimatedListView(
+                  controller: scrollController,
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(),
+                  listAnimationType: ListAnimationType.FadeIn,
+                  fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                  slideConfiguration: SlideConfiguration(verticalOffset: 400),
+                  padding: EdgeInsets.only(top: 8, bottom: 90),
+                  itemCount: snap.length,
+                  emptyWidget: NoDataWidget(
+                    title: languages.noHandymanAvailable,
+                    imageWidget: EmptyStateWidget(),
+                    retryText: languages.lblAddHandyman,
+                    onRetry: () {
+                      HandymanAddUpdateScreen(
+                        userType: USER_TYPE_HANDYMAN,
+                        onUpdate: () {
+                          init();
+                          setState(() {});
+                        },
+                      ).launch(context);
+                    },
+                  ),
+                  onNextPage: () {
+                    if (!isLastPage) {
+                      page++;
+                      appStore.setLoading(true);
+
+                      init();
+                      setState(() {});
+                    }
                   },
-                ),
-                onNextPage: () {
-                  if (!isLastPage) {
-                    page++;
+                  itemBuilder: (BuildContext context, index) {
+                    return Column(
+                      children: [
+                        buildRadioListTile(userData: snap[index])
+                            .paddingOnly(bottom: 2, top: 2),
+                        Divider(
+                            endIndent: 16.0,
+                            indent: 16.0,
+                            height: 0,
+                            color: context.dividerColor),
+                      ],
+                    );
+                  },
+                  onSwipeRefresh: () async {
+                    page = 1;
+
+                    init();
+                    setState(() {});
+
+                    return await 2.seconds.delay;
+                  },
+                  disposeScrollController: false,
+                );
+              },
+              errorBuilder: (error) {
+                return NoDataWidget(
+                  title: error,
+                  imageWidget: ErrorStateWidget(),
+                  retryText: languages.reload,
+                  onRetry: () {
+                    page = 1;
                     appStore.setLoading(true);
 
                     init();
                     setState(() {});
-                  }
-                },
-                itemBuilder: (BuildContext context, index) {
-                  return Column(
-                    children: [
-                      buildRadioListTile(userData: snap[index]).paddingOnly(bottom: 2, top: 2),
-                      Divider(endIndent: 16.0, indent: 16.0, height: 0, color: context.dividerColor),
-                    ],
-                  );
-                },
-                onSwipeRefresh: () async {
-                  page = 1;
-
-                  init();
-                  setState(() {});
-
-                  return await 2.seconds.delay;
-                },
-                disposeScrollController: false,
-              );
-            },
-            errorBuilder: (error) {
-              return NoDataWidget(
-                title: error,
-                imageWidget: ErrorStateWidget(),
-                retryText: languages.reload,
-                onRetry: () {
-                  page = 1;
-                  appStore.setLoading(true);
-
-                  init();
-                  setState(() {});
-                },
-              );
-            },
-          ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            left: 16,
-            child: Row(
-              children: [
-                AppButton(
-                  onTap: () {
-                    _handleAssignToMyself();
                   },
-                  width: context.width(),
-                  shapeBorder: RoundedRectangleBorder(borderRadius: radius(), side: BorderSide(color: context.primaryColor)),
-                  color: context.scaffoldBackgroundColor,
-                  elevation: 0,
-                  textColor: context.primaryColor,
-                  text: languages.lblAssignToMyself,
-                ).expand(),
-                if (userListData != null) 16.width,
-                if (userListData != null)
+                );
+              },
+            ),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              left: 16,
+              child: Row(
+                children: [
                   AppButton(
                     onTap: () {
-                      if (userListData != null) {
-                        _handleAssignHandyman();
-                      } else {
-                        toast(languages.lblSelectHandyman);
-                      }
+                      _handleAssignToMyself();
                     },
-                    color: primaryColor,
                     width: context.width(),
-                    text: languages.lblAssign,
+                    shapeBorder: RoundedRectangleBorder(
+                        borderRadius: radius(),
+                        side: BorderSide(color: context.primaryColor)),
+                    color: context.scaffoldBackgroundColor,
+                    elevation: 0,
+                    textColor: context.primaryColor,
+                    text: languages.lblAssignToMyself,
                   ).expand(),
-              ],
+                  if (userListData != null) 16.width,
+                  if (userListData != null)
+                    AppButton(
+                      onTap: () {
+                        if (userListData != null) {
+                          _handleAssignHandyman();
+                        } else {
+                          toast(languages.lblSelectHandyman);
+                        }
+                      },
+                      color: primaryColor,
+                      width: context.width(),
+                      text: languages.lblAssign,
+                    ).expand(),
+                ],
+              ),
             ),
-          ),
-          Observer(
-            builder: (context) => LoaderWidget().visible(appStore.isLoading),
-          )
-        ],
+            Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -51,7 +51,8 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
 
         window.onPlatformBrightnessChanged = () async {
           if (getIntAsync(THEME_MODE_INDEX) == THEME_MODE_SYSTEM) {
-            appStore.setDarkMode(context.platformBrightness() == Brightness.light);
+            appStore
+                .setDarkMode(context.platformBrightness() == Brightness.light);
           }
         };
       },
@@ -114,24 +115,23 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
           message: languages.lblCloseAppMsg,
           child: Scaffold(
             appBar: appBarWidget(
-              titles[currentIndex], 
-         
+              titles[currentIndex],
               elevation: 0,
-              
-             systemUiOverlayStyle: SystemUiOverlayStyle(
-    statusBarColor: Colors.white,
-    statusBarIconBrightness: Brightness.light,
-  ),
-
-             color: !isDark ? Colors.white : Colors.black,
-             textColor: isDark ? Colors.white : Colors.black, 
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,
               showBack: false,
               actions: [
                 IconButton(
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      ic_notification.iconImage(color: isDark ? Colors.white : Colors.black, size: 20),
+                      ic_notification.iconImage(
+                          color: isDark ? Colors.white : Colors.black,
+                          size: 20),
                       Positioned(
                         top: -14,
                         right: -6,
@@ -143,10 +143,12 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                                 child: FittedBox(
                                   child: Text(
                                     appStore.notificationCount.toString(),
-                                    style: primaryTextStyle(size: 12, color: Colors.white),
+                                    style: primaryTextStyle(
+                                        size: 12, color: Colors.white),
                                   ),
                                 ),
-                                decoration: boxDecorationDefault(color: Colors.red, shape: BoxShape.circle),
+                                decoration: boxDecorationDefault(
+                                    color: Colors.red, shape: BoxShape.circle),
                               );
                             return Offstage();
                           },
@@ -167,7 +169,9 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                           IconButton(
                             icon: ic_filter.iconImage(color: white, size: 20),
                             onPressed: () async {
-                              BookingFilterScreen().launch(context).then((value) {
+                              BookingFilterScreen()
+                                  .launch(context)
+                                  .then((value) {
                                 if (value != null) {
                                   LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
                                   setState(() {});
@@ -181,11 +185,15 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                               top: 0,
                               child: Container(
                                 padding: EdgeInsets.all(5),
-                                decoration: boxDecorationDefault(color: Colors.red, shape: BoxShape.circle),
+                                decoration: boxDecorationDefault(
+                                    color: Colors.red, shape: BoxShape.circle),
                                 child: FittedBox(
                                   child: Text(
                                     '$filterCount',
-                                    style: TextStyle(color: white, fontSize: 10, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        color: white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -204,7 +212,8 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                 data: NavigationBarThemeData(
                   backgroundColor: context.primaryColor.withAlpha(5),
                   indicatorColor: context.primaryColor.withAlpha(25),
-                  labelTextStyle: WidgetStateProperty.all(primaryTextStyle(size: 12)),
+                  labelTextStyle:
+                      WidgetStateProperty.all(primaryTextStyle(size: 12)),
                   surfaceTintColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                 ),
@@ -217,24 +226,38 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                       label: languages.home,
                     ),
                     NavigationDestination(
-                      icon: total_booking.iconImage(color: appTextSecondaryColor),
-                      selectedIcon: total_booking.iconImage(color: primaryColor),
+                      icon:
+                          total_booking.iconImage(color: appTextSecondaryColor),
+                      selectedIcon:
+                          total_booking.iconImage(color: primaryColor),
                       label: languages.lblBooking,
                     ),
                     if (appConfigurationStore.isEnableChat)
                       NavigationDestination(
-                        icon: Image.asset(chat, height: 20, width: 20, color: appTextSecondaryColor),
+                        icon: Image.asset(chat,
+                            height: 20,
+                            width: 20,
+                            color: appTextSecondaryColor),
                         selectedIcon: chat.iconImage(color: primaryColor),
                         label: languages.lblChat,
                       ),
                     Observer(builder: (context) {
                       return NavigationDestination(
-                        icon: (appStore.isLoggedIn && appStore.userProfileImage.isNotEmpty)
-                            ? IgnorePointer(ignoring: true, child: ImageBorder(src: appStore.userProfileImage, height: 26))
+                        icon: (appStore.isLoggedIn &&
+                                appStore.userProfileImage.isNotEmpty)
+                            ? IgnorePointer(
+                                ignoring: true,
+                                child: ImageBorder(
+                                    src: appStore.userProfileImage, height: 26))
                             : profile.iconImage(color: appTextSecondaryColor),
-                        selectedIcon: (appStore.isLoggedIn && appStore.userProfileImage.isNotEmpty)
-                            ? IgnorePointer(ignoring: true, child: ImageBorder(src: appStore.userProfileImage, height: 26))
-                            : ic_fill_profile.iconImage(color: context.primaryColor),
+                        selectedIcon: (appStore.isLoggedIn &&
+                                appStore.userProfileImage.isNotEmpty)
+                            ? IgnorePointer(
+                                ignoring: true,
+                                child: ImageBorder(
+                                    src: appStore.userProfileImage, height: 26))
+                            : ic_fill_profile.iconImage(
+                                color: context.primaryColor),
                         label: languages.lblProfile,
                       );
                     }),

@@ -1711,17 +1711,21 @@ abstract class Languages {
   String get delete;
   String get cancel;
 
-
-String get zoneListTitle;
-String get addZones;
-String get noZonesFound;
-String get noZonesAvailable;
-String get noZonesAvailableForProvider;
-String get failedToLoadZones;
-String get pleaseSelectAtLeastOneZone;
-String get zonesAddedSuccessfully;
-String get zoneDeletedSuccessfully;
-String get addNewZones;
-String get noZonesAvailableToAdd;
-String get deleteZoneConfirmation;
+  String get zoneListTitle;
+  String get addZones;
+  String get noZonesFound;
+  String get noZonesAvailable;
+  String get noZonesAvailableForProvider;
+  String get failedToLoadZones;
+  String get pleaseSelectAtLeastOneZone;
+  String get zonesAddedSuccessfully;
+  String get zoneDeletedSuccessfully;
+  String get addNewZones;
+  String get noZonesAvailableToAdd;
+  String get deleteZoneConfirmation;
+  String get enterOtp;
+  String get pleaseEnterOtpToStartService;
+  String get pleaseEnterValidOtp;
+  String get arrived;
+  String get lblVerify;
 }
