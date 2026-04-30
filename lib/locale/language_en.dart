@@ -2538,4 +2538,95 @@ class LanguageEn extends Languages {
   
   @override
   String get totalZone => "Total Zone";
+  
+ @override
+String get addCategories => 'Add Categories';
+
+@override
+String get addNewCategories => 'Add New Categories';
+
+@override
+String get cancel => 'Cancel';
+
+@override
+String get categoriesAddedSuccessfully => 'Categories added successfully';
+
+@override
+String get categoryDeletedSuccessfully => 'Category deleted successfully';
+
+@override
+String get categoryListTitle => 'Category List';
+
+@override
+String get changeView => 'Change View';
+
+@override
+String get clearAll => 'Clear All';
+
+@override
+String get delete => 'Delete';
+
+@override
+String get deleteCategoryConfirmation => 'Do you want to delete this category?';
+
+@override
+String get error => 'Error';
+
+@override
+String get failedToAddCategories => 'Failed to add categories';
+
+@override
+String get failedToDeleteCategory => 'Failed to delete category';
+
+@override
+String get failedToLoadCategories => 'Failed to load categories';
+
+@override
+String get noCategoriesAvailable => 'No categories available';
+
+@override
+String get noCategoriesAvailableToAdd => 'No categories available to add';
+
+@override
+String get noCategoriesFound => 'No Categories Found';
+
+@override
+String get pleaseSelectAtLeastOneCategory => 'Please select at least one category';
+
+@override
+String get zoneListTitle => 'Zone List';
+
+@override
+String get addZones => 'Add Zones';
+
+@override
+String get noZonesFound => 'No Zones Found';
+
+@override
+String get noZonesAvailable => 'No zones available';
+
+@override
+String get noZonesAvailableForProvider => 'No zones available for your provider account';
+
+@override
+String get failedToLoadZones => 'Failed to load zones';
+
+@override
+String get pleaseSelectAtLeastOneZone => 'Please select at least one zone';
+
+@override
+String get zonesAddedSuccessfully => 'Zones added successfully';
+
+@override
+String get zoneDeletedSuccessfully => 'Zone deleted successfully';
+
+@override
+String get addNewZones => 'Add New Zones';
+
+@override
+String get noZonesAvailableToAdd => 'No zones available to add';
+
+@override
+String get deleteZoneConfirmation => 'Do you want to delete this zone?';
+  
 }

@@ -2683,4 +2683,95 @@ String get totalCategory => 'Catégories totales';
 
 @override
 String get totalZone => 'Zones totales';
+
+ @override
+String get addCategories => 'Ajouter des catégories';
+
+@override
+String get addNewCategories => 'Ajouter de nouvelles catégories';
+
+@override
+String get cancel => 'Annuler';
+
+@override
+String get categoriesAddedSuccessfully => 'Catégories ajoutées avec succès';
+
+@override
+String get categoryDeletedSuccessfully => 'Catégorie supprimée avec succès';
+
+@override
+String get categoryListTitle => 'Liste des catégories';
+
+@override
+String get changeView => 'Changer la vue';
+
+@override
+String get clearAll => 'Tout effacer';
+
+@override
+String get delete => 'Supprimer';
+
+@override
+String get deleteCategoryConfirmation => 'Voulez-vous supprimer cette catégorie ?';
+
+@override
+String get error => 'Erreur';
+
+@override
+String get failedToAddCategories => 'Échec de l\'ajout des catégories';
+
+@override
+String get failedToDeleteCategory => 'Échec de la suppression de la catégorie';
+
+@override
+String get failedToLoadCategories => 'Échec du chargement des catégories';
+
+@override
+String get noCategoriesAvailable => 'Aucune catégorie disponible';
+
+@override
+String get noCategoriesAvailableToAdd => 'Aucune catégorie disponible à ajouter';
+
+@override
+String get noCategoriesFound => 'Aucune catégorie trouvée';
+
+@override
+String get pleaseSelectAtLeastOneCategory => 'Veuillez sélectionner au moins une catégorie';
+
+@override
+String get zoneListTitle => 'Liste des zones';
+
+@override
+String get addZones => 'Ajouter des zones';
+
+@override
+String get noZonesFound => 'Aucune zone trouvée';
+
+@override
+String get noZonesAvailable => 'Aucune zone disponible';
+
+@override
+String get noZonesAvailableForProvider => 'Aucune zone disponible pour votre compte prestataire';
+
+@override
+String get failedToLoadZones => 'Échec du chargement des zones';
+
+@override
+String get pleaseSelectAtLeastOneZone => 'Veuillez sélectionner au moins une zone';
+
+@override
+String get zonesAddedSuccessfully => 'Zones ajoutées avec succès';
+
+@override
+String get zoneDeletedSuccessfully => 'Zone supprimée avec succès';
+
+@override
+String get addNewZones => 'Ajouter de nouvelles zones';
+
+@override
+String get noZonesAvailableToAdd => 'Aucune zone disponible à ajouter';
+
+@override
+String get deleteZoneConfirmation => 'Voulez-vous supprimer cette zone ?';
+
 }

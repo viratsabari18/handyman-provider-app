@@ -17,7 +17,6 @@ import 'package:handyman_provider_flutter/networks/rest_apis.dart';
 import '../../utils/colors.dart';
 import '../../utils/configs.dart';
 
-
 class CategoryList extends StatefulWidget {
   const CategoryList({super.key});
 
@@ -55,11 +54,10 @@ class _CategoryListState extends State<CategoryList> {
 
   Future<void> fetchCategories() async {
     setState(() {
- 
       isError = false;
       errorMessage = '';
     });
-        appStore.setLoading(true);
+    appStore.setLoading(true);
 
     try {
       final response = await getProviderCategoryList();
@@ -67,18 +65,18 @@ class _CategoryListState extends State<CategoryList> {
       if (response != null && response.data != null) {
         setState(() {
           categories = response.data!;
-           appStore.setLoading(false);
+          appStore.setLoading(false);
         });
       } else {
         setState(() {
-             appStore.setLoading(false);
+          appStore.setLoading(false);
           isError = true;
-          errorMessage = 'No categories found';
+          errorMessage = languages.noCategoriesFound; // ✅ Using language getter
         });
       }
     } catch (e) {
       setState(() {
-           appStore.setLoading(false);
+        appStore.setLoading(false);
         isError = true;
         errorMessage = e.toString();
       });
@@ -103,7 +101,7 @@ class _CategoryListState extends State<CategoryList> {
               .toList();
         } else {
           availableCategories = [];
-          dropdownError = 'No categories available';
+          dropdownError = languages.noCategoriesAvailable; // ✅ Using language getter
         }
         isLoadingCategories = false;
       });
@@ -111,7 +109,7 @@ class _CategoryListState extends State<CategoryList> {
       setState(() {
         availableCategories = [];
         isLoadingCategories = false;
-        dropdownError = 'Failed to load categories: $e';
+        dropdownError = '${languages.failedToLoadCategories}: $e'; // ✅ Using language getter
       });
       toast(dropdownError!);
     }
@@ -119,7 +117,7 @@ class _CategoryListState extends State<CategoryList> {
 
   Future<void> addProviderCategories() async {
     if (selectedCategoryIds.isEmpty) {
-      toast('Please select at least one category');
+      toast(languages.pleaseSelectAtLeastOneCategory); // ✅ Using language getter
       return;
     }
 
@@ -133,7 +131,7 @@ class _CategoryListState extends State<CategoryList> {
       final response = await addProviderCategoryList(request);
 
       if (response.message != null) {
-        toast(response.message ?? 'Categories added successfully');
+        toast(response.message ?? languages.categoriesAddedSuccessfully); // ✅ Using language getter
 
         setState(() {
           showCategoryDropdown = false;
@@ -143,10 +141,10 @@ class _CategoryListState extends State<CategoryList> {
         await fetchCategories();
         await fetchAvailableCategories();
       } else {
-        toast(response.message ?? 'Failed to add categories');
+        toast(response.message ?? languages.failedToAddCategories); // ✅ Using language getter
       }
     } catch (e) {
-      toast('Error: ${e.toString()}');
+      toast('${languages.error}: ${e.toString()}'); // ✅ Using language getter
     } finally {
       appStore.setLoading(false);
     }
@@ -163,14 +161,14 @@ class _CategoryListState extends State<CategoryList> {
       final response = await deleteProviderCategoryList(request);
 
       if (response.message != null) {
-        toast(response.message ?? 'Category deleted successfully');
+        toast(response.message ?? languages.categoryDeletedSuccessfully); // ✅ Using language getter
         await fetchCategories();
         await fetchAvailableCategories();
       } else {
-        toast(response.message ?? 'Failed to delete category');
+        toast(response.message ?? languages.failedToDeleteCategory); // ✅ Using language getter
       }
     } catch (e) {
-      toast('Error: ${e.toString()}');
+      toast('${languages.error}: ${e.toString()}'); // ✅ Using language getter
     } finally {
       appStore.setLoading(false);
     }
@@ -193,7 +191,7 @@ class _CategoryListState extends State<CategoryList> {
     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBarWidget(
-        'Category List',
+        languages.categoryListTitle, // ✅ Using language getter
         elevation: 0,
         systemUiOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.white,
@@ -201,7 +199,7 @@ class _CategoryListState extends State<CategoryList> {
         ),
         color: !isDark ? Colors.white : Colors.black,
         textColor: isDark ? Colors.white : Colors.black,
-        backWidget: BackWidget(color:isDark ? Colors.white : Colors.black ,),
+        backWidget: BackWidget(color: isDark ? Colors.white : Colors.black),
         textSize: APP_BAR_TEXT_SIZE,
         actions: [
           IconButton(
@@ -220,6 +218,7 @@ class _CategoryListState extends State<CategoryList> {
                 color: isDark ? Colors.white : Colors.black,
               ),
             ),
+            tooltip: languages.changeView, // ✅ Using language getter
           ),
           IconButton(
             onPressed: () {
@@ -231,7 +230,7 @@ class _CategoryListState extends State<CategoryList> {
               });
             },
             icon: Icon(Icons.add, size: 28, color: isDark ? Colors.white : Colors.black),
-            tooltip: 'Add Categories',
+            tooltip: languages.addCategories, // ✅ Using language getter
           ),
         ],
       ),
@@ -241,15 +240,15 @@ class _CategoryListState extends State<CategoryList> {
             NoDataWidget(
               title: errorMessage,
               imageWidget: const ErrorStateWidget(),
-              retryText: 'Reload',
+              retryText: languages.reload, // ✅ Using language getter
               onRetry: () {
                 fetchCategories();
               },
             )
           else if (categories.isEmpty && !appStore.isLoading)
-            const NoDataWidget(
-              title: 'No Categories Found',
-              imageWidget: EmptyStateWidget(),
+            NoDataWidget(
+              title: languages.noCategoriesFound, // ✅ Using language getter
+              imageWidget: const EmptyStateWidget(),
             )
           else
             Column(
@@ -311,7 +310,7 @@ class _CategoryListState extends State<CategoryList> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Add New Categories',
+                  languages.addNewCategories, // ✅ Using language getter
                   style: boldTextStyle(size: 16),
                 ),
                 IconButton(
@@ -325,6 +324,7 @@ class _CategoryListState extends State<CategoryList> {
                   icon: Icon(Icons.close, size: 20),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  tooltip: languages.close, // ✅ Using language getter
                 ),
               ],
             ),
@@ -363,7 +363,7 @@ class _CategoryListState extends State<CategoryList> {
               padding: const EdgeInsets.all(32),
               child: Center(
                 child: Text(
-                  'No categories available to add',
+                  languages.noCategoriesAvailableToAdd, // ✅ Using language getter
                   style: secondaryTextStyle(size: 14),
                 ),
               ),
@@ -420,7 +420,7 @@ class _CategoryListState extends State<CategoryList> {
                 runSpacing: 8,
                 children: [
                   Text(
-                    'Selected: ${selectedCategoryIds.length}',
+                    '${languages.selected}: ${selectedCategoryIds.length}', // ✅ Using language getter
                     style: secondaryTextStyle(size: 14),
                   ),
                   Wrap(
@@ -432,7 +432,7 @@ class _CategoryListState extends State<CategoryList> {
                             selectedCategoryIds.clear();
                           });
                         },
-                        child: Text('Clear All'),
+                        child: Text(languages.clearAll), // ✅ Using language getter
                       ),
                       ElevatedButton(
                         onPressed: selectedCategoryIds.isEmpty
@@ -445,7 +445,7 @@ class _CategoryListState extends State<CategoryList> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Add Categories'),
+                        child: Text(languages.addCategories), // ✅ Using language getter
                       ),
                     ],
                   ),
@@ -491,140 +491,90 @@ class _CategoryListState extends State<CategoryList> {
     );
   }
 
- Widget _buildCategoryCard(CategoryData category) {
-  return AnimatedContainer(
-    duration: 400.milliseconds,
-    decoration: boxDecorationWithRoundedCorners(
-      borderRadius: radius(),
-      backgroundColor: appStore.isDarkMode ? cardDarkColor : cardColor,
-    ),
-    width: context.width() * 0.5 - 24,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 205,
-          width: context.width(),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              CachedImageWidget(
-                url: category.categoryImage.validate(),
-                fit: BoxFit.cover,
-                height: 180,
-                width: context.width(),
-              ).cornerRadiusWithClipRRectOnly(topRight: defaultRadius.toInt(), topLeft: defaultRadius.toInt()),
-              Positioned(
-                top: 12,
-                left: 6,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                  constraints: BoxConstraints(maxWidth: context.width() * 0.3),
-                  decoration: boxDecorationWithShadow(
-                    backgroundColor: context.cardColor.withValues(alpha: 0.9),
-                    borderRadius: radius(24),
-                  ),
-                  child: Marquee(
-                    directionMarguee: DirectionMarguee.oneDirection,
-                    child: Text(
-                      category.name.validate().toUpperCase(),
-                      style: boldTextStyle(color: appStore.isDarkMode ? white : primaryColor, size: 12),
-                    ).paddingSymmetric(horizontal: 8, vertical: 4),
-                  ),
-                ),
-              ),
-             
-              Positioned(
-                top: 8,
-                right: 2,
-                child: InkWell(
-                  onTap: () {
-                    showConfirmDialogCustom(
-                      context,
-                      dialogType: DialogType.DELETE,
-                      title: 'Do you want to delete this category?',
-                      positiveText: 'Delete',
-                      negativeText: 'Cancel',
-                      onAccept: (v) async {
-                        await deleteProviderCategories(category.id ?? 0);
-                      },
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(20),
+  Widget _buildCategoryCard(CategoryData category) {
+    return AnimatedContainer(
+      duration: 400.milliseconds,
+      decoration: boxDecorationWithRoundedCorners(
+        borderRadius: radius(),
+        backgroundColor: appStore.isDarkMode ? cardDarkColor : cardColor,
+      ),
+      width: context.width() * 0.5 - 24,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 205,
+            width: context.width(),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CachedImageWidget(
+                  url: category.categoryImage.validate(),
+                  fit: BoxFit.cover,
+                  height: 180,
+                  width: context.width(),
+                ).cornerRadiusWithClipRRectOnly(topRight: defaultRadius.toInt(), topLeft: defaultRadius.toInt()),
+                Positioned(
+                  top: 12,
+                  left: 6,
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.9),
-                      shape: BoxShape.circle,
+                    padding: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                    constraints: BoxConstraints(maxWidth: context.width() * 0.3),
+                    decoration: boxDecorationWithShadow(
+                      backgroundColor: context.cardColor.withValues(alpha: 0.9),
+                      borderRadius: radius(24),
                     ),
-                    child: const Icon(
-                      Icons.delete_outline,
-                      size: 18,
-                      color: Colors.white,
+                    child: Marquee(
+                      directionMarguee: DirectionMarguee.oneDirection,
+                      child: Text(
+                        category.name.validate().toUpperCase(),
+                        style: boldTextStyle(color: appStore.isDarkMode ? white : primaryColor, size: 12),
+                      ).paddingSymmetric(horizontal: 8, vertical: 4),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                category.name.validate(),
-                style: boldTextStyle(size: 14),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              if (category.description.validate().isNotEmpty) ...[
-                4.height,
-                Text(
-                  category.description.validate(),
-                  style: secondaryTextStyle(size: 12),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                Positioned(
+                  top: 8,
+                  right: 2,
+                  child: InkWell(
+                    onTap: () {
+                      showConfirmDialogCustom(
+                        context,
+                        dialogType: DialogType.DELETE,
+                        title: languages.deleteCategoryConfirmation, 
+                        positiveText: languages.delete, 
+                        negativeText: languages.cancel, 
+                        onAccept: (v) async {
+                          await deleteProviderCategories(category.id ?? 0);
+                        },
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ],
-            ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
- Widget _buildCategoryListItem(CategoryData category) {
-  return AnimatedContainer(
-    duration: 400.milliseconds,
-    decoration: boxDecorationWithRoundedCorners(
-      borderRadius: radius(),
-      backgroundColor: appStore.isDarkMode ? cardDarkColor : cardColor,
-    ),
-    width: context.width(),
-    child: Row(
-      children: [
-        SizedBox(
-          height: 100,
-          width: 100,
-          child: CachedImageWidget(
-            url: category.categoryImage.validate(),
-            fit: BoxFit.cover,
-            height: 100,
-            width: 100,
-          ).cornerRadiusWithClipRRectOnly(topLeft: defaultRadius.toInt(), bottomLeft: defaultRadius.toInt()),
-        ),
-        Expanded(
-          child: Padding(
+          Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   category.name.validate(),
-                  style: boldTextStyle(size: 16),
+                  style: boldTextStyle(size: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -637,45 +587,92 @@ class _CategoryListState extends State<CategoryList> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                8.height,
-              
               ],
             ),
           ),
-        ),
-        // Delete Icon - Right Side
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: InkWell(
-            onTap: () {
-              showConfirmDialogCustom(
-                context,
-                dialogType: DialogType.DELETE,
-                title: 'Do you want to delete this category?',
-                positiveText: 'Delete',
-                negativeText: 'Cancel',
-                onAccept: (v) async {
-                  await deleteProviderCategories(category.id ?? 0);
-                },
-              );
-            },
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.delete_outline,
-                size: 20,
-                color: Colors.red.shade700,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryListItem(CategoryData category) {
+    return AnimatedContainer(
+      duration: 400.milliseconds,
+      decoration: boxDecorationWithRoundedCorners(
+        borderRadius: radius(),
+        backgroundColor: appStore.isDarkMode ? cardDarkColor : cardColor,
+      ),
+      width: context.width(),
+      child: Row(
+        children: [
+          SizedBox(
+            height: 100,
+            width: 100,
+            child: CachedImageWidget(
+              url: category.categoryImage.validate(),
+              fit: BoxFit.cover,
+              height: 100,
+              width: 100,
+            ).cornerRadiusWithClipRRectOnly(topLeft: defaultRadius.toInt(), bottomLeft: defaultRadius.toInt()),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.name.validate(),
+                    style: boldTextStyle(size: 16),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (category.description.validate().isNotEmpty) ...[
+                    4.height,
+                    Text(
+                      category.description.validate(),
+                      style: secondaryTextStyle(size: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  8.height,
+                ],
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: InkWell(
+              onTap: () {
+                showConfirmDialogCustom(
+                  context,
+                  dialogType: DialogType.DELETE,
+                  title: languages.deleteCategoryConfirmation, // ✅ Using language getter
+                  positiveText: languages.delete, // ✅ Using language getter
+                  negativeText: languages.cancel, // ✅ Using language getter
+                  onAccept: (v) async {
+                    await deleteProviderCategories(category.id ?? 0);
+                  },
+                );
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: Colors.red.shade700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 abstract class Languages {
-  static Languages of(BuildContext context) => Localizations.of<Languages>(context, Languages)!;
+  static Languages of(BuildContext context) =>
+      Localizations.of<Languages>(context, Languages)!;
 
   String planAboutToExpire(int days);
-
 
   String get appName;
 
@@ -50,12 +50,11 @@ abstract class Languages {
 
   String get saveChanges;
 
-    String get plzSelectOneCategory;
+  String get plzSelectOneCategory;
   String get selected;
   String get selectCategories;
   String get selectZones;
   String get plzSelectOneZone;
-
 
   String get camera;
 
@@ -1666,8 +1665,6 @@ abstract class Languages {
 
   String get selectServiceZones;
 
-
-  
   String get lblNext;
 
   String get uploadDocuments;
@@ -1679,7 +1676,7 @@ abstract class Languages {
   String get requiredDocumentsMustBe;
 
   String get dropYourFilesHereOr;
-  
+
   String get browse;
 
   String get pleaseUploadAllRequired;
@@ -1689,6 +1686,42 @@ abstract class Languages {
   String get selectServiceZone;
 
   String get totalZone;
-  
+
   String get totalCategory;
+
+  String get categoryListTitle;
+  String get changeView;
+  String get addCategories;
+
+  String get noCategoriesFound;
+  String get noCategoriesAvailable;
+  String get failedToLoadCategories;
+  String get pleaseSelectAtLeastOneCategory;
+  String get categoriesAddedSuccessfully;
+  String get failedToAddCategories;
+  String get error;
+  String get categoryDeletedSuccessfully;
+  String get failedToDeleteCategory;
+  String get addNewCategories;
+
+  String get noCategoriesAvailableToAdd;
+
+  String get clearAll;
+  String get deleteCategoryConfirmation;
+  String get delete;
+  String get cancel;
+
+
+String get zoneListTitle;
+String get addZones;
+String get noZonesFound;
+String get noZonesAvailable;
+String get noZonesAvailableForProvider;
+String get failedToLoadZones;
+String get pleaseSelectAtLeastOneZone;
+String get zonesAddedSuccessfully;
+String get zoneDeletedSuccessfully;
+String get addNewZones;
+String get noZonesAvailableToAdd;
+String get deleteZoneConfirmation;
 }

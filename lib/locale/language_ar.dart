@@ -2514,7 +2514,7 @@ class LanguageAr  extends Languages {
   String get pleaseUploadAllRequired => 'يرجى تحميل جميع المستندات المطلوبة';
 
   @override
- @override
+
 String get viewPDF => 'عرض ملف PDF';
 
 @override
@@ -2535,4 +2535,92 @@ String get totalCategory => "إجمالي الفئات";
 @override
 String get totalZone => "إجمالي المناطق";
 
+  @override
+String get addCategories => 'إضافة فئات';
+
+@override
+String get addNewCategories => 'إضافة فئات جديدة';
+
+@override
+String get cancel => 'إلغاء';
+
+@override
+String get categoriesAddedSuccessfully => 'تمت إضافة الفئات بنجاح';
+
+@override
+String get categoryDeletedSuccessfully => 'تم حذف الفئة بنجاح';
+
+@override
+String get categoryListTitle => 'قائمة الفئات';
+
+@override
+String get changeView => 'تغيير العرض';
+
+@override
+String get clearAll => 'مسح الكل';
+
+@override
+String get delete => 'حذف';
+
+@override
+String get deleteCategoryConfirmation => 'هل تريد حذف هذه الفئة؟';
+
+@override
+String get error => 'خطأ';
+
+@override
+String get failedToAddCategories => 'فشل في إضافة الفئات';
+
+@override
+String get failedToDeleteCategory => 'فشل في حذف الفئة';
+
+@override
+String get failedToLoadCategories => 'فشل في تحميل الفئات';
+
+@override
+String get noCategoriesAvailable => 'لا توجد فئات متاحة';
+
+@override
+String get noCategoriesAvailableToAdd => 'لا توجد فئات متاحة للإضافة';
+
+@override
+String get noCategoriesFound => 'لم يتم العثور على فئات';
+
+@override
+String get pleaseSelectAtLeastOneCategory => 'الرجاء تحديد فئة واحدة على الأقل';
+@override
+String get zoneListTitle => 'قائمة المناطق';
+
+@override
+String get addZones => 'إضافة مناطق';
+
+@override
+String get noZonesFound => 'لم يتم العثور على مناطق';
+
+@override
+String get noZonesAvailable => 'لا توجد مناطق متاحة';
+
+@override
+String get noZonesAvailableForProvider => 'لا توجد مناطق متاحة لحساب مقدم الخدمة الخاص بك';
+
+@override
+String get failedToLoadZones => 'فشل في تحميل المناطق';
+
+@override
+String get pleaseSelectAtLeastOneZone => 'الرجاء تحديد منطقة واحدة على الأقل';
+
+@override
+String get zonesAddedSuccessfully => 'تمت إضافة المناطق بنجاح';
+
+@override
+String get zoneDeletedSuccessfully => 'تم حذف المنطقة بنجاح';
+
+@override
+String get addNewZones => 'إضافة مناطق جديدة';
+
+@override
+String get noZonesAvailableToAdd => 'لا توجد مناطق متاحة للإضافة';
+
+@override
+String get deleteZoneConfirmation => 'هل تريد حذف هذه المنطقة؟';
 }

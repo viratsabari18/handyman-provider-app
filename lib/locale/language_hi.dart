@@ -2537,4 +2537,94 @@ String get totalCategory => 'कुल श्रेणियां';
 
 @override
 String get totalZone => 'कुल क्षेत्र';
+
+ @override
+String get addCategories => 'श्रेणियाँ जोड़ें';
+
+@override
+String get addNewCategories => 'नई श्रेणियाँ जोड़ें';
+
+@override
+String get cancel => 'रद्द करें';
+
+@override
+String get categoriesAddedSuccessfully => 'श्रेणियाँ सफलतापूर्वक जोड़ी गईं';
+
+@override
+String get categoryDeletedSuccessfully => 'श्रेणी सफलतापूर्वक हटाई गई';
+
+@override
+String get categoryListTitle => 'श्रेणी सूची';
+
+@override
+String get changeView => 'दृश्य बदलें';
+
+@override
+String get clearAll => 'सभी साफ़ करें';
+
+@override
+String get delete => 'हटाएं';
+
+@override
+String get deleteCategoryConfirmation => 'क्या आप इस श्रेणी को हटाना चाहते हैं?';
+
+@override
+String get error => 'त्रुटि';
+
+@override
+String get failedToAddCategories => 'श्रेणियाँ जोड़ने में विफल';
+
+@override
+String get failedToDeleteCategory => 'श्रेणी हटाने में विफल';
+
+@override
+String get failedToLoadCategories => 'श्रेणियाँ लोड करने में विफल';
+
+@override
+String get noCategoriesAvailable => 'कोई श्रेणी उपलब्ध नहीं है';
+
+@override
+String get noCategoriesAvailableToAdd => 'जोड़ने के लिए कोई श्रेणी उपलब्ध नहीं है';
+
+@override
+String get noCategoriesFound => 'कोई श्रेणी नहीं मिली';
+
+@override
+String get pleaseSelectAtLeastOneCategory => 'कृपया कम से कम एक श्रेणी चुनें';
+
+@override
+String get zoneListTitle => 'ज़ोन सूची';
+
+@override
+String get addZones => 'ज़ोन जोड़ें';
+
+@override
+String get noZonesFound => 'कोई ज़ोन नहीं मिला';
+
+@override
+String get noZonesAvailable => 'कोई ज़ोन उपलब्ध नहीं है';
+
+@override
+String get noZonesAvailableForProvider => 'आपके प्रोवाइडर खाते के लिए कोई ज़ोन उपलब्ध नहीं है';
+
+@override
+String get failedToLoadZones => 'ज़ोन लोड करने में विफल';
+
+@override
+String get pleaseSelectAtLeastOneZone => 'कृपया कम से कम एक ज़ोन चुनें';
+
+@override
+String get zonesAddedSuccessfully => 'ज़ोन सफलतापूर्वक जोड़े गए';
+
+@override
+String get zoneDeletedSuccessfully => 'ज़ोन सफलतापूर्वक हटा दिया गया';
+
+@override
+String get addNewZones => 'नए ज़ोन जोड़ें';
+
+@override
+String get noZonesAvailableToAdd => 'जोड़ने के लिए कोई ज़ोन उपलब्ध नहीं है';
+
+@override
+String get deleteZoneConfirmation => 'क्या आप इस ज़ोन को हटाना चाहते हैं?';
 }

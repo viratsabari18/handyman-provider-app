@@ -57,7 +57,7 @@ class _ZoneListState extends State<ZoneList> {
       } else {
         setState(() {
           isError = true;
-          errorMessage = 'No zones found';
+          errorMessage = languages.noZonesFound;
         });
       }
     } catch (e) {
@@ -88,13 +88,13 @@ class _ZoneListState extends State<ZoneList> {
               .toList();
         } else {
           availableZones = [];
-          dropdownError = 'No zones available';
+          dropdownError = languages.noZonesAvailable;
         }
       });
     } catch (e) {
       setState(() {
         availableZones = [];
-        dropdownError = 'Failed to load zones: $e';
+        dropdownError = '${languages.failedToLoadZones}: $e';
       });
       toast(dropdownError!);
     } finally {
@@ -104,19 +104,18 @@ class _ZoneListState extends State<ZoneList> {
 
   Future<void> addProviderZones() async {
     if (selectedZoneIds.isEmpty) {
-      toast('Please select at least one zone');
+      toast(languages.pleaseSelectAtLeastOneZone);
       return;
     }
 
     appStore.setLoading(true);
 
     try {
-      // Add your add zones API call here
       final request = AddProviderZoneRequest(zoneId: selectedZoneIds);
 
       await addProviderZoneList(request);
 
-      toast('Zones added successfully');
+      toast(languages.zonesAddedSuccessfully);
 
       setState(() {
         showZoneDropdown = false;
@@ -125,7 +124,7 @@ class _ZoneListState extends State<ZoneList> {
 
       await fetchZones();
     } catch (e) {
-      toast('Error: ${e.toString()}');
+      toast('${languages.error}: ${e.toString()}');
     } finally {
       appStore.setLoading(false);
     }
@@ -142,10 +141,10 @@ class _ZoneListState extends State<ZoneList> {
         zones.removeWhere((zone) => zone.id == id);
       });
 
-      toast('Zone deleted successfully');
+      toast(languages.zoneDeletedSuccessfully);
       await fetchZones();
     } catch (e) {
-      toast('Error: ${e.toString()}');
+      toast('${languages.error}: ${e.toString()}');
     } finally {
       appStore.setLoading(false);
     }
@@ -162,7 +161,7 @@ class _ZoneListState extends State<ZoneList> {
 
     return Scaffold(
       appBar: appBarWidget(
-        'Zone List',
+        languages.zoneListTitle,
         elevation: 0,
         systemUiOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: isDark ? Colors.black : Colors.white,
@@ -184,7 +183,7 @@ class _ZoneListState extends State<ZoneList> {
             },
             icon: Icon(Icons.add,
                 size: 28, color: isDark ? Colors.white : Colors.black),
-            tooltip: 'Add Zones',
+            tooltip: languages.addZones,
           ),
         ],
       ),
@@ -194,16 +193,16 @@ class _ZoneListState extends State<ZoneList> {
             NoDataWidget(
               title: errorMessage,
               imageWidget: const ErrorStateWidget(),
-              retryText: 'Reload',
+              retryText: languages.reload,
               onRetry: () {
                 fetchZones();
               },
             )
           else if (zones.isEmpty && !appStore.isLoading)
-            const NoDataWidget(
-              title: 'No Zones Found',
-              subTitle: 'No zones available for your provider account',
-              imageWidget: EmptyStateWidget(),
+            NoDataWidget(
+              title: languages.noZonesFound,
+              subTitle: languages.noZonesAvailableForProvider,
+              imageWidget: const EmptyStateWidget(),
             )
           else
             Column(
@@ -255,14 +254,13 @@ class _ZoneListState extends State<ZoneList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Add New Zones',
+                  languages.addNewZones,
                   style: boldTextStyle(size: 16),
                 ),
                 IconButton(
@@ -276,13 +274,13 @@ class _ZoneListState extends State<ZoneList> {
                   icon: Icon(Icons.close, size: 20),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  tooltip: languages.close,
                 ),
               ],
             ),
           ),
           const Divider(height: 1),
 
-          // Loading or Error state
           if (appStore.isLoading)
             const Padding(
               padding: EdgeInsets.all(32),
@@ -316,13 +314,12 @@ class _ZoneListState extends State<ZoneList> {
               padding: const EdgeInsets.all(32),
               child: Center(
                 child: Text(
-                  'No zones available to add',
+                  languages.noZonesAvailableToAdd,
                   style: secondaryTextStyle(size: 14),
                 ),
               ),
             )
           else
-            // Zones List with Checkboxes
             Container(
               constraints: BoxConstraints(
                 maxHeight: context.height() * 0.5,
@@ -375,7 +372,7 @@ class _ZoneListState extends State<ZoneList> {
                 runSpacing: 8,
                 children: [
                   Text(
-                    'Selected: ${selectedZoneIds.length}',
+                    '${languages.selected}: ${selectedZoneIds.length}',
                     style: secondaryTextStyle(size: 14),
                   ),
                   Wrap(
@@ -387,7 +384,7 @@ class _ZoneListState extends State<ZoneList> {
                             selectedZoneIds.clear();
                           });
                         },
-                        child: Text('Clear All'),
+                        child: Text(languages.clearAll),
                       ),
                       ElevatedButton(
                         onPressed:
@@ -399,7 +396,7 @@ class _ZoneListState extends State<ZoneList> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Add Zones'),
+                        child: Text(languages.addZones),
                       ),
                     ],
                   ),
@@ -479,7 +476,6 @@ class _ZoneListState extends State<ZoneList> {
               ),
             ),
           ),
-          // Delete Icon - Right Side
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: InkWell(
@@ -487,9 +483,9 @@ class _ZoneListState extends State<ZoneList> {
                 showConfirmDialogCustom(
                   context,
                   dialogType: DialogType.DELETE,
-                  title: 'Do you want to delete this zone?',
-                  positiveText: 'Delete',
-                  negativeText: 'Cancel',
+                  title: languages.deleteZoneConfirmation,
+                  positiveText: languages.delete,
+                  negativeText: languages.cancel,
                   onAccept: (v) async {
                     await deleteZone(zone.id ?? 0);
                   },
