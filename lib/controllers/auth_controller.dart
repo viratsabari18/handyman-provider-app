@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:handyman_provider_flutter/models/user_data.dart';
 
 import '../Models new/register_request_model.dart';
 import '../Models new/register_response_model.dart';
-import '../Models new/user_model.dart';
 import '../service new/auth service/auth_service.dart';
 
 class AuthController extends ChangeNotifier {
@@ -42,7 +42,7 @@ class AuthController extends ChangeNotifier {
   }
 
   /// LOGIN with proper error handling
-  Future<UserModel?> login({
+  Future<UserData?> login({
     required String email,
     required String password,
   }) async {

@@ -1,13 +1,14 @@
-import 'package:handyman_provider_flutter/Models%20new/user_model.dart';
+
+import 'package:handyman_provider_flutter/models/user_data.dart';
 
 class LoginResponse {
-  UserModel? data;
+  UserData? data;
 
   LoginResponse({this.data});
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
-      data: json['data'] != null ? UserModel.fromJson(json['data']) : null,
+      data: json['data'] != null ? UserData.fromJson(json['data']) : null,
     );
   }
 }

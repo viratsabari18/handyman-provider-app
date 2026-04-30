@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:handyman_provider_flutter/models/user_data.dart';
 import 'package:http/http.dart' as http;
 
 import '../../Models new/register_request_model.dart';
 import '../../Models new/register_response_model.dart';
-import '../../Models new/user_model.dart';
 
 class AuthService {
   static const String baseUrl = "https://ethically-thaw-bok.ngrok-free.dev/api";
@@ -101,7 +101,7 @@ class AuthService {
   }
 
   /// 🔥 LOGIN API with improved error handling
-  static Future<UserModel?> loginUser({
+  static Future<UserData?> loginUser({
     required String email,
     required String password,
   }) async {
@@ -126,7 +126,7 @@ class AuthService {
       if (response.statusCode == 200) {
         // Success - return user data
         if (data['data'] != null) {
-          return UserModel.fromJson(data['data']);
+          return UserData.fromJson(data['data']);
         } else {
           throw Exception(data['message'] ?? "Login failed. No user data received.");
         }

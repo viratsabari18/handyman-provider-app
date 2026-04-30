@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:handyman_provider_flutter/Models%20new/user_model.dart';
 import 'package:handyman_provider_flutter/auth/component/user_demo_mode_screen.dart';
 import 'package:handyman_provider_flutter/auth/forgot_password_dialog.dart';
 import 'package:handyman_provider_flutter/auth/sign_up_screen.dart';
@@ -395,8 +394,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
       await setValue(USER_PASSWORD, passwordCont.text);
       await setValue(IS_REMEMBERED, isRemember);
-      // await saveUserData(user);
-      await saveLoginUserData(user);
+      await saveUserData(user);
+
 
       // authService.verifyFirebaseUser();
 
@@ -442,7 +441,7 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
- void redirectWidget({required UserModel res}) async {
+ void redirectWidget({required UserData res}) async {
   appStore.setLoading(false);
 
   /// SAVE TOKEN

@@ -212,8 +212,14 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
     }
   }
 
-  // ✅ UPDATED: Register method with proper file handling and error handling
+  // ✅ UPDATED: Register method with proper file handling - using appStore.isLoading to prevent multiple clicks
   Future<void> register() async {
+    // ✅ Check if already loading - prevents multiple clicks
+    if (appStore.isLoading) {
+      toast("Please wait, registration in progress...");
+      return;
+    }
+    
     // Clear previous errors
     _clearUploadError();
     _clearZonesCategoriesError();
@@ -271,6 +277,7 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
       }
     }
 
+    // ✅ Set loading to true - this will disable the button
     appStore.setLoading(true);
 
     try {
@@ -338,9 +345,10 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
         hasUploadError = true;
       });
       print("Registration error: $e");
+    } finally {
+      // ✅ Always set loading to false when done (success or error)
+      appStore.setLoading(false);
     }
-
-    appStore.setLoading(false);
   }
 
   // Check if document is uploaded
@@ -843,14 +851,18 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
                     margin: EdgeInsets.only(bottom: 12),
                     text: languages.lblSignup,
                     height: 40,
-                    color: appStore.isLoading ? primaryColor.withValues(alpha: 0.5) : primaryColor,
+                    // ✅ Button is disabled when appStore.isLoading is true
+                    color: appStore.isLoading 
+                        ? primaryColor.withValues(alpha: 0.5) 
+                        : primaryColor,
                     textStyle: boldTextStyle(color: white),
                     width: context.width() - context.navigationBarHeight,
                     onTap: () {
+                      // ✅ Only allow tap when not loading
                       if (!appStore.isLoading) {
                         register();
                       }
-                    }
+                    },
                   ),
                 ).paddingOnly(left: 16.0, right: 16.0, bottom: 16.0)
               ],

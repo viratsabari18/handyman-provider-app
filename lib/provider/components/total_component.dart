@@ -4,6 +4,7 @@ import 'package:handyman_provider_flutter/models/dashboard_response.dart';
 import 'package:handyman_provider_flutter/provider/components/total_widget.dart';
 import 'package:handyman_provider_flutter/provider/services/service_list_screen.dart';
 import 'package:handyman_provider_flutter/screens%20new/category_list.dart';
+import 'package:handyman_provider_flutter/screens%20new/zone_list.dart';
 import 'package:handyman_provider_flutter/screens/total_earning_screen.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:handyman_provider_flutter/utils/extensions/num_extenstions.dart';
@@ -82,13 +83,13 @@ class TotalComponent extends StatelessWidget {
           icon: ic_location,
           color: Color.fromARGB(255, 206, 245, 209),
         )
-        // .onTap(
-        //   () {
-        //     CategoryList().launch(context);
-        //   },
-        //   highlightColor: Colors.transparent,
-        //   splashColor: Colors.transparent,
-        // ),
+        .onTap(
+          () {
+            ZoneList().launch(context);
+          },
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+        ),
       ],
     ).paddingAll(16);
   }

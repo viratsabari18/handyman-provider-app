@@ -152,7 +152,7 @@ class UserData {
     this.cityName,
     this.providerType,
     this.handymanType,
-    this.handymanCommissionId,
+    this.handymanCommissionId, 
     this.handymanCommission,
     this.isHandymanAvailable,
     this.loginType,

@@ -5,7 +5,13 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:handyman_provider_flutter/Models%20new/user_model.dart';
+import 'package:handyman_provider_flutter/Models%20new/add_provider_category_requset_and_response.dart';
+import 'package:handyman_provider_flutter/Models%20new/add_provider_zones_requst_and_response.dart';
+import 'package:handyman_provider_flutter/Models%20new/delete_provider_category_request_response.dart';
+import 'package:handyman_provider_flutter/Models%20new/delete_provider_zones_request_and_responses.dart';
+import 'package:handyman_provider_flutter/Models%20new/provider_categories.dart';
+import 'package:handyman_provider_flutter/Models%20new/provider_zones.dart';
+
 import 'package:handyman_provider_flutter/auth/sign_in_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/main.dart';
@@ -337,32 +343,6 @@ Future<void> saveUserData(UserData data) async {
   }
 }
 
-Future<void> saveLoginUserData(UserModel data) async {
-  /// 🔥 NO STATUS CHECK (IMPORTANT)
-  /// Save data for both status = 0 and 1
-
-  await appStore.setUserId(data.id ?? 0);
-  await appStore.setFirstName(data.firstName ?? "");
-  await appStore.setLastName(data.lastName ?? "");
-  await appStore.setUserEmail(data.email ?? "");
-  await appStore.setUserName(data.username ?? "");
-  await appStore.setUserType(data.userType ?? "");
-  await appStore.setContactNumber(data.contactNumber ?? "");
-  await appStore.setUserProfile(data.profileImage ?? "");
-
-
-  /// TOKEN (VERY IMPORTANT)
-  await appStore.setToken(data.apiToken ?? "");
-
-  /// MARK USER LOGGED IN
-  await appStore.setLoggedIn(true);
-
-  /// OPTIONAL (if using config sync)
-  await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
-
-  /// OPTIONAL Firebase
-  // subscribeToFirebaseTopic();
-}
 
 Future<BaseResponseModel> changeUserPassword(Map request) async {
   return BaseResponseModel.fromJson(await handleResponse(await buildHttpResponse('change-password', request: request, method: HttpMethodType.POST)));
@@ -427,6 +407,33 @@ Future<List<CityListResponse>> getCityList(Map request) async {
   return res.map((e) => CityListResponse.fromJson(e)).toList();
 }
 //endregion
+
+Future<ProviderCategories> getProviderCategoryList() async {
+  return ProviderCategories.fromJson(await handleResponse(await buildHttpResponse('provider-categories', method: HttpMethodType.GET)));
+}
+
+
+Future<AddProviderCategoryResponse> addProviderCategoryList(AddProviderCategoryRequest req) async {
+  return AddProviderCategoryResponse.fromJson(await handleResponse(await buildHttpResponse('add-provider-category', method: HttpMethodType.POST,request: req.toJson())));
+}
+
+Future<deleteProviderCategoryResponse> deleteProviderCategoryList(deleteProviderCategoryRequest req) async {
+  return deleteProviderCategoryResponse.fromJson(await handleResponse(await buildHttpResponse('delete-provider-category', method: HttpMethodType.POST,request: req.toJson())));
+}
+
+Future<ProviderZones> getProviderZoneList() async {
+  return ProviderZones.fromJson(await handleResponse(await buildHttpResponse('provider-zones', method: HttpMethodType.GET)));
+}
+
+
+Future<AddProviderZoneResponse> addProviderZoneList(AddProviderZoneRequest req) async {
+  return AddProviderZoneResponse.fromJson(await handleResponse(await buildHttpResponse('add-provider-zone', method: HttpMethodType.POST,request: req.toJson())));
+}
+
+Future<deleteProviderZoneResponse> deleteProviderZoneList(deleteProviderZoneRequest req) async {
+  return deleteProviderZoneResponse.fromJson(await handleResponse(await buildHttpResponse('delete-provider-zone', method: HttpMethodType.POST,request: req.toJson())));
+}
+
 
 //region Category API
 Future<CategoryResponse> getCategoryList({String perPage = ''}) async {

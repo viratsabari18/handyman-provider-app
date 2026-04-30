@@ -1,3 +1,5 @@
+import 'package:handyman_provider_flutter/models/user_data.dart';
+
 class RegisterResponse {
   String? message;
   UserData? data;
@@ -12,18 +14,3 @@ class RegisterResponse {
   }
 }
 
-class UserData {
-  int? id;
-  String? firstName;
-  String? email;
-
-  UserData({this.id, this.firstName, this.email});
-
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['id'],
-      firstName: json['first_name'],
-      email: json['email'],
-    );
-  }
-}
