@@ -117,7 +117,6 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     }
   }
 
-  //region Methods
   Future<void> confirmationRequestDialog(
       BuildContext context, String status, BookingDetailResponse res) async {
     if (status == BookingStatusKeys.complete &&
@@ -177,10 +176,12 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     };
 
     try {
-      await bookingUpdate(request);
+      var response = await bookingUpdate(request);
 
-      // after success → move to next state
+    // ✅ Only move forward if success
+    if (response != null) {
       await updateBooking(res, '', BookingStatusKeys.inProgress);
+    }
     } catch (e) {
       toast(e.toString());
     }
@@ -207,10 +208,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     if (updatedStatus == BookingStatusKeys.inProgress) {
       startDateTime = DateFormat(BOOKING_SAVE_FORMAT).format(now);
       endDateTime = bookDetail.bookingDetail!.endAt.validate();
-      timeInterval =
-          bookDetail.bookingDetail!.durationDiff.validate().isEmptyOrNull
-              ? "0"
-              : bookDetail.bookingDetail!.durationDiff.validate();
+timeInterval = "0"; 
       paymentStatus = bookDetail.bookingDetail!.isAdvancePaymentDone
           ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
           : bookDetail.bookingDetail!.paymentStatus.validate();
@@ -223,9 +221,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           .difference(
               DateTime.parse(bookDetail.bookingDetail!.startAt.validate()))
           .inMinutes;
-      num count =
-          int.parse(bookDetail.bookingDetail!.durationDiff.validate()) + diff;
-      timeInterval = count.toString();
+   timeInterval = diff.toString(); 
       paymentStatus = bookDetail.bookingDetail!.isAdvancePaymentDone
           ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
           : bookDetail.bookingDetail!.paymentStatus.validate();
@@ -348,6 +344,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     required BookingDetailResponse val,
     bool isAddExtraCharges = false,
     bool isEditExtraCharges = false,
+    String? otp,
   }) async {
     appStore.setLoading(true);
 
@@ -375,6 +372,10 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                     : val.bookingDetail!.paymentStatus.validate(),
           };
 
+    if (otp != null && otp.isNotEmpty) {
+      req["otp"] = otp;
+    }
+
     if (chargesList.isNotEmpty && isAddExtraCharges) {
       List<Map<String, dynamic>> charges = [];
 
@@ -385,7 +386,8 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           "price": element.price.validate(),
         });
       });
-      req.putIfAbsent(BookingServiceKeys.extraCharges, () => charges);
+
+      req[BookingServiceKeys.extraCharges] = charges;
     }
 
     if (chargesList.isNotEmpty && isEditExtraCharges) {
@@ -399,15 +401,16 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           "price": element.price.validate(),
         });
       });
-      req.putIfAbsent(BookingServiceKeys.extraCharges, () => charges);
+
+      req[BookingServiceKeys.extraCharges] = charges;
     }
 
     await bookingUpdate(req).then((res) async {
-      //
       init(flag: true);
     }).catchError((e) {
-      toast(e.toString(), print: true);
+      toast(e.toString());
     });
+
     appStore.setLoading(false);
   }
 
@@ -938,18 +941,16 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
         10.height,
         Row(
           children: [
-            AppButton(
-              onTap: () {
-                TrackLocation(
-                  bookingId: widget.bookingId,
-                ).launch(context);
-              },
-              padding: EdgeInsets.only(top: 0, left: 8, right: 8),
-              height: 42,
-              color: Color(0xFF39A81D),
-              textColor: white,
-              text: languages.track,
-            ).expand(),
+            (data!.bookingDetail!.status == BookingStatusKeys.onGoing)
+                ? AppButton(
+                    onTap: () {
+                      TrackLocation(
+                        bookingId: widget.bookingId,
+                      ).launch(context);
+                    },
+                    text: languages.track,
+                  )
+                : Offstage(),
             16.width,
             Container(
               width: 42,
@@ -1317,67 +1318,53 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
         child: Row(
           children: [
             AppButton(
-              text: languages.lblCompleted,
-              textStyle: boldTextStyle(color: white),
-              color: context.primaryColor,
-              onTap: () {
-                bool isAnyServiceAddonUnCompleted = res
-                    .bookingDetail!.serviceaddon
-                    .validate()
-                    .any((element) => element.status.getBoolInt() == false);
-                showConfirmDialogCustom(
-                  context,
-                  onAccept: (_) {
-                    _handlePendingApproval(val: res, isAddExtraCharges: false);
-                  },
-                  primaryColor: context.primaryColor,
-                  positiveText: languages.lblYes,
-                  negativeText: languages.lblNo,
-                  subTitle: isAnyServiceAddonUnCompleted
-                      ? languages.pleaseNoteThatAllServiceMarkedCompleted
-                      : null,
-                  title: languages.confirmationRequestTxt,
-                );
-              },
-            ).expand(),
+                text: languages.lblCompleted,
+                textStyle: boldTextStyle(color: white),
+                color: context.primaryColor,
+                onTap: () {
+                  showOtpCompleteDialog(res);
+                }).expand(),
             if (!res.bookingDetail!.isFreeService &&
                 res.bookingDetail!.bookingPackage == null)
               AppButton(
-                margin: EdgeInsets.only(left: 16),
-                child: Text(
-                  languages.lblAddExtraCharges,
-                  style: boldTextStyle(color: Colors.white),
-                ).fit(),
-                color: addExtraCharge,
-                onTap: () async {
-                  chargesList.clear();
-                  bool? a = await AddExtraChargesScreen().launch(context);
+                  margin: EdgeInsets.only(left: 16),
+                  child: Text(
+                    languages.lblAddExtraCharges,
+                    style: boldTextStyle(color: Colors.white),
+                  ).fit(),
+                  color: addExtraCharge,
+                  onTap: () async {
+                    chargesList.clear();
 
-                  if (a ?? false) {
-                    _handlePendingApproval(val: res, isAddExtraCharges: true);
-                  }
-                },
-              ).expand(),
+                    bool? a = await AddExtraChargesScreen().launch(context);
+
+                    if (a ?? false) {
+                      showOtpCompleteDialog(
+                        res,
+                        isAddExtraCharges: true,
+                      );
+                    }
+                  }).expand(),
           ],
         ),
       );
     } else if (res.bookingDetail!.status == BookingStatusKeys.onGoing) {
       showBottomActionBar = true;
 
-      return Text(languages.lblWaitingForResponse, style: boldTextStyle())
-          .center();
-    } else if (res.bookingDetail!.status == BookingStatusKeys.arrived) {
-      showBottomActionBar = true;
-
       return AppButton(
         text: languages.arrived,
         color: primaryColor,
         textColor: white,
-        onTap: () {
+        onTap: () async {
+        appStore.setLoading(true);
+            await updateBooking(res, '', BookingStatusKeys.arrived);
+          appStore.setLoading(false);
           showOtpDialog(res);
         },
       );
-    } else if (res.bookingDetail!.status == BookingStatusKeys.complete) {
+    } else if (res.bookingDetail!.status == BookingStatusKeys.arrived) {
+      showBottomActionBar = true;
+      } else if (res.bookingDetail!.status == BookingStatusKeys.complete) {
       if (res.bookingDetail!.paymentMethod == PAYMENT_METHOD_COD &&
           res.bookingDetail!.paymentStatus == PENDING) {
         showBottomActionBar = true;
@@ -1409,9 +1396,19 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     } else if (res.bookingDetail!.status == BookingStatusKeys.inProgress) {
       showBottomActionBar = true;
 
-      return Text(res.bookingDetail!.statusLabel.validate(),
-              style: boldTextStyle())
-          .center();
+      return AppButton(
+        text: "Mark as Done",
+        color: primaryColor,
+        onTap: () async {
+          appStore.setLoading(true);
+          await updateBooking(
+            res,
+            '',
+            BookingStatusKeys.pendingApproval,
+          );
+          appStore.setLoading(false);
+        },
+      );
     }
     return Offstage();
   }
@@ -1441,7 +1438,10 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                         .launch(context);
 
                 if (a ?? false) {
-                  _handlePendingApproval(val: res, isEditExtraCharges: true);
+                  showOtpCompleteDialog(
+                    res,
+                    isEditExtraCharges: true,
+                  );
                 }
               },
             ).visible(res.bookingDetail!.paymentStatus != PAID &&
@@ -1909,7 +1909,9 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           child: SafeArea(
             child: AppScaffold(
               appBarTitle: snap.hasData
-                  ? snap.data!.bookingDetail!.status.validate().toBookingStatus()
+                  ? snap.data!.bookingDetail!.status
+                      .validate()
+                      .toBookingStatus()
                   : "",
               body: buildBodyWidget(snap),
             ),
@@ -1986,7 +1988,6 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                     decoration: inputDecoration(
                       context,
                       hint: "****",
-                   
                     ),
                     onChanged: (value) {
                       if (value.length == 4) {
@@ -2029,6 +2030,138 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                               finish(context);
                               await verifyOtpAndUpdate(
                                   res, otpController.text.trim());
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showOtpCompleteDialog(
+    BookingDetailResponse res, {
+    bool isAddExtraCharges = false,
+    bool isEditExtraCharges = false,
+  }) {
+    TextEditingController otpController = TextEditingController();
+    FocusNode otpFocus = FocusNode();
+    final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: radius(16)),
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: boxDecorationWithRoundedCorners(
+              backgroundColor: context.cardColor,
+              borderRadius: radius(16),
+            ),
+            child: Form(
+              key: otpFormKey,
+              autovalidateMode: AutovalidateMode.disabled,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        languages.enterOtp,
+                        style: boldTextStyle(size: 18),
+                      ),
+                      InkWell(
+                        onTap: () => finish(context),
+                        borderRadius: radius(20),
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: context.dividerColor.withValues(alpha: 0.5),
+                          ),
+                          child: Icon(Icons.close, size: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                  12.height,
+
+                  // Subtitle
+                  Text(
+                    "Enter The OTP",
+                    style: secondaryTextStyle(size: 13),
+                  ),
+                  24.height,
+
+                  // OTP Text Field
+                  AppTextField(
+                    controller: otpController,
+                    focus: otpFocus,
+                    textFieldType: TextFieldType.NUMBER,
+                    autoFocus: true,
+                    maxLength: 4,
+                    textAlign: TextAlign.center,
+                    textStyle: boldTextStyle(size: 24),
+                    decoration: inputDecoration(
+                      context,
+                      hint: "****",
+                    ),
+                    onChanged: (value) {
+                      if (value.length == 4) {
+                        otpFocus.unfocus();
+                      }
+                    },
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return languages.hintRequired;
+                      }
+                      if (val.length != 4) {
+                        return languages.pleaseEnterValidOtp;
+                      }
+                      return null;
+                    },
+                  ),
+                  24.height,
+
+           
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppButton(
+                          text: languages.lblCancel,
+                          color: Colors.redAccent.withValues(alpha: 0.1),
+                          textColor: Colors.redAccent,
+                          height: 45,
+                          onTap: () => finish(context),
+                        ),
+                      ),
+                      16.width,
+                      Expanded(
+                        child: AppButton(
+                          text: languages.lblVerify,
+                          color: primaryColor,
+                          textColor: white,
+                          height: 45,
+                          onTap: () async {
+                            if (otpFormKey.currentState?.validate() ?? false) {
+                              finish(context);
+                              _handlePendingApproval(
+                                val: res,
+                                otp: otpController.text.trim(),
+                                isAddExtraCharges: isAddExtraCharges,
+                                isEditExtraCharges: isEditExtraCharges,
+                              );
                             }
                           },
                         ),

@@ -9,104 +9,14 @@ import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-// Future<List<PaymentHistoryData>> getPaymentHistory({required String bookingId}) async {
-//   String bId = "booking_id=$bookingId";
-//   PaymentHistoryModel res = PaymentHistoryModel.fromJson(await handleResponse(await buildHttpResponse('payment-history?$bId', method: HttpMethodType.GET)));
-
-//   return res.data.validate();
-// }
-
 Future<List<PaymentHistoryData>> getPaymentHistory({required String bookingId}) async {
-  // Simulate network delay
-  await Future.delayed(Duration(seconds: 1));
-  
-  // Create mock payment history data
-  List<PaymentHistoryData> mockData = [
-    PaymentHistoryData(
-      id: 1,
-      paymentId: 1001,
-      bookingId: int.tryParse(bookingId) ?? 1,
-      action: "credit",
-      text: "Payment received from customer",
-  
-      status: "completed",
-      senderId: 5,  // customer id
-      receiverId: 2, // provider id
-      parentId: null,
-      txnId: "TXN_${DateTime.now().millisecondsSinceEpoch}_001",
-      otherTransactionDetail: "Payment for AC Repair service",
-      datetime: DateTime.now().subtract(Duration(days: 2)),
-      totalAmount: 500,
-    ),
-    PaymentHistoryData(
-      id: 2,
-      paymentId: 1002,
-      bookingId: int.tryParse(bookingId) ?? 1,
-      action: "debit",
-      text: "Platform fee deducted",
+  String bId = "booking_id=$bookingId";
+  PaymentHistoryModel res = PaymentHistoryModel.fromJson(await handleResponse(await buildHttpResponse('payment-history?$bId', method: HttpMethodType.GET)));
 
-      status: "completed",
-      senderId: 2,  // provider id
-      receiverId: 1, // admin id
-      parentId: null,
-      txnId: "TXN_${DateTime.now().millisecondsSinceEpoch}_002",
-      otherTransactionDetail: "Service fee (10%)",
-      datetime: DateTime.now().subtract(Duration(days: 2, hours: 1)),
-      totalAmount: 50,
-    ),
-    PaymentHistoryData(
-      id: 3,
-      paymentId: 1003,
-      bookingId: int.tryParse(bookingId) ?? 1,
-      action: "credit",
-      text: "Handyman payment",
-
-      status: "pending",
-      senderId: 2,  // provider id
-      receiverId: 3, // handyman id
-      parentId: null,
-      txnId: "TXN_${DateTime.now().millisecondsSinceEpoch}_003",
-      otherTransactionDetail: "Payment to handyman for service completion",
-      datetime: DateTime.now().subtract(Duration(days: 1)),
-      totalAmount: 300,
-    ),
-    PaymentHistoryData(
-      id: 4,
-      paymentId: 1004,
-      bookingId: int.tryParse(bookingId) ?? 1,
-      action: "credit",
-      text: "Wallet payment",
-      type: "wallet",
-      status: "completed",
-      senderId: 5,  // customer id
-      receiverId: 2, // provider id
-      parentId: 1001,
-      txnId: "TXN_${DateTime.now().millisecondsSinceEpoch}_004",
-      otherTransactionDetail: "Partial payment via wallet",
-      datetime: DateTime.now().subtract(Duration(days: 3)),
-      totalAmount: 200,
-    ),
-    PaymentHistoryData(
-      id: 5,
-      paymentId: 1005,
-      bookingId: int.tryParse(bookingId) ?? 1,
-      action: "debit",
-      text: "Refund processed",
-
-      status: "completed",
-      senderId: 2,  // provider id
-      receiverId: 5, // customer id
-      parentId: null,
-      txnId: "TXN_${DateTime.now().millisecondsSinceEpoch}_005",
-      otherTransactionDetail: "Refund due to cancellation",
-      datetime: DateTime.now().subtract(Duration(days: 4)),
-      totalAmount: 100,
-    ),
-  ];
-  
-  // Return only relevant data for this booking
-  return mockData.where((item) => item.bookingId == int.tryParse(bookingId)).toList();
+  return res.data.validate();
 }
+
+
 
 Future<(num, num, List<PaymentHistoryData>)> getCashDetails({
   int? page,
