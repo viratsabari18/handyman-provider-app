@@ -178,12 +178,24 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     try {
       var response = await bookingUpdate(request);
 
-    // ✅ Only move forward if success
-    if (response != null) {
-      await updateBooking(res, '', BookingStatusKeys.inProgress);
-    }
+      if (response != null) {
+        await updateBooking(res, '', BookingStatusKeys.inProgress);
+      }
     } catch (e) {
-      toast(e.toString());
+      appStore.setLoading(false);
+
+      try {
+        String errorMessage = e.toString();
+
+        if (errorMessage.contains('message')) {
+          final msg = errorMessage.split('message:').last;
+          toast(msg.replaceAll('}', '').trim());
+        } else {
+          toast('Invalid OTP');
+        }
+      } catch (_) {
+        toast('Invalid OTP');
+      }
     }
 
     appStore.setLoading(false);
@@ -208,7 +220,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     if (updatedStatus == BookingStatusKeys.inProgress) {
       startDateTime = DateFormat(BOOKING_SAVE_FORMAT).format(now);
       endDateTime = bookDetail.bookingDetail!.endAt.validate();
-timeInterval = "0"; 
+      timeInterval = "0";
       paymentStatus = bookDetail.bookingDetail!.isAdvancePaymentDone
           ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
           : bookDetail.bookingDetail!.paymentStatus.validate();
@@ -221,7 +233,7 @@ timeInterval = "0";
           .difference(
               DateTime.parse(bookDetail.bookingDetail!.startAt.validate()))
           .inMinutes;
-   timeInterval = diff.toString(); 
+      timeInterval = diff.toString();
       paymentStatus = bookDetail.bookingDetail!.isAdvancePaymentDone
           ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
           : bookDetail.bookingDetail!.paymentStatus.validate();
@@ -408,7 +420,13 @@ timeInterval = "0";
     await bookingUpdate(req).then((res) async {
       init(flag: true);
     }).catchError((e) {
-      toast(e.toString());
+      appStore.setLoading(false);
+
+      if (e is Map && e['message'] != null) {
+        toast(e['message']);
+      } else {
+        toast('Invalid OTP');
+      }
     });
 
     appStore.setLoading(false);
@@ -1356,15 +1374,15 @@ timeInterval = "0";
         color: primaryColor,
         textColor: white,
         onTap: () async {
-        appStore.setLoading(true);
-            await updateBooking(res, '', BookingStatusKeys.arrived);
+          appStore.setLoading(true);
+          await updateBooking(res, '', BookingStatusKeys.arrived);
           appStore.setLoading(false);
           showOtpDialog(res);
         },
       );
     } else if (res.bookingDetail!.status == BookingStatusKeys.arrived) {
       showBottomActionBar = true;
-      } else if (res.bookingDetail!.status == BookingStatusKeys.complete) {
+    } else if (res.bookingDetail!.status == BookingStatusKeys.complete) {
       if (res.bookingDetail!.paymentMethod == PAYMENT_METHOD_COD &&
           res.bookingDetail!.paymentStatus == PENDING) {
         showBottomActionBar = true;
@@ -2134,7 +2152,6 @@ timeInterval = "0";
                   ),
                   24.height,
 
-           
                   Row(
                     children: [
                       Expanded(

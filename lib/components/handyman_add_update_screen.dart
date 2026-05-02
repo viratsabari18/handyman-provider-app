@@ -1,5 +1,6 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/back_widget.dart';
@@ -7,8 +8,8 @@ import 'package:handyman_provider_flutter/components/cached_image_widget.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/selectZoneModel.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
-import 'package:handyman_provider_flutter/models/user_type_response.dart';
 import 'package:handyman_provider_flutter/networks/rest_apis.dart';
+import 'package:handyman_provider_flutter/screens%20new/handyman_upload_screen.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
@@ -17,6 +18,8 @@ import 'package:handyman_provider_flutter/utils/extensions/string_extension.dart
 import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:handyman_provider_flutter/Models new/registration_data.dart';
+import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
 
 import '../provider/earning/handyman_payout_list_screen.dart';
 
@@ -59,13 +62,17 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
   List<ZoneResponse> providerZoneList = [];
   ZoneResponse? selectedServiceZone;
 
-  List<UserTypeData> commissionList = [UserTypeData(name: languages.lblSelectCommission, id: -1)];
-  UserTypeData? selectedHandymanCommission;
+  // New commission variables
+  RegistrationData? registrationData;
+  List<HandymanType> uniqueHandymanCommissions = [];
+  HandymanType? selectedHandymanCommission;
 
   int? serviceZoneId;
-  int? commissionId;
 
   bool isUpdate = false;
+  
+  // Add this variable to track if form has been attempted
+  bool _formAttempted = false;
 
   @override
   void initState() {
@@ -79,7 +86,6 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
       userNameCont.text = widget.data!.username.validate();
       mobileCont.text = widget.data!.contactNumber?.split("-").last.validate() ?? "";
       serviceZoneId = widget.data!.handymanZoneID.validate();
-      commissionId = widget.data!.handymanCommissionId.validate();
       designationCont.text = widget.data!.designation.validate();
       selectedCountry = Country(
         phoneCode: widget.data!.contactNumber?.split("-").first.validate() ?? "",
@@ -93,7 +99,6 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
         displayNameNoCountryCode: "",
         e164Key: "",
       );
-      widget.data!.contactNumber?.split("-").first.validate();
     }
 
     init();
@@ -103,8 +108,47 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
   }
 
   Future<void> init() async {
-    getAddressList();
-    getCommissionList();
+    await Future.wait([
+      getAddressList(),
+      fetchRegistrationData(),
+    ]);
+  }
+
+  Future<void> fetchRegistrationData() async {
+    appStore.setLoading(true);
+    try {
+      final data = await RegistrationDataController.getRegistrationFields();
+      setState(() {
+        registrationData = data;
+        uniqueHandymanCommissions = _getUniqueHandymanCommissions(data.handymanTypes ?? []);
+        
+        // Set selected commission if this is an update
+        if (widget.data != null && widget.data!.handymanCommissionId != null) {
+          selectedHandymanCommission = uniqueHandymanCommissions.firstWhere(
+            (commission) => commission.id == widget.data!.handymanCommissionId,
+          );
+        }
+      });
+    } catch (e) {
+      toast('Failed to load commission data: $e');
+      log(e.toString());
+    } finally {
+      appStore.setLoading(false);
+    }
+  }
+
+  // Method to remove duplicate handyman commissions based on commission percentage
+  List<HandymanType> _getUniqueHandymanCommissions(List<HandymanType> commissions) {
+    final seenCommissions = <int>{};
+    return commissions.where((commission) {
+      if (commission.commission == null) return false;
+      if (seenCommissions.contains(commission.commission)) {
+        return false;
+      } else {
+        seenCommissions.add(commission.commission!);
+        return true;
+      }
+    }).toList();
   }
 
   Future<void> getAddressList() async {
@@ -124,44 +168,91 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
     });
   }
 
-  Future<void> getCommissionList() async {
-    getCommissionType(type: USER_TYPE_HANDYMAN, providerId: appStore.userId).then((value) {
-      appStore.setLoading(false);
-      commissionList.addAll(value.userTypeData!);
-
-      commissionList.forEach((e) {
-        if (e.id == commissionId) {
-          selectedHandymanCommission = e;
-        }
-      });
-      setState(() {});
-    }).catchError((e) {
-      appStore.setLoading(false);
-      commissionList = [UserTypeData(name: languages.lblSelectCommission, id: -1)];
-      log(e.toString());
-    });
-  }
-
   // Build mobile number with phone code and number
   String buildMobileNumber() {
     return '${selectedCountry.phoneCode}-${mobileCont.text.trim()}';
   }
 
-  /// Register the Handyman
-  Future<void> register() async {
+  /// Validate and proceed to document upload
+  void proceedToDocumentUpload() {
+    // Mark that user attempted to submit
+    setState(() {
+      _formAttempted = true;
+    });
+    
     if (formKey.currentState!.validate()) {
-      if (selectedHandymanCommission == null || selectedHandymanCommission!.id == -1) {
-        return toast(languages.pleaseSelectCommission);
+      if (selectedHandymanCommission == null) {
+        toast(languages.pleaseSelectCommission);
+        return;
       }
+      
+      if (selectedServiceZone == null && providerZoneList.isNotEmpty) {
+        toast(languages.selectServiceZone);
+        return;
+      }
+      
       formKey.currentState!.save();
       hideKeyboard(context);
-      String? type = widget.userType;
+      
+      // Prepare request data for the upload screen
+      Map<String, dynamic> request = {
+        'first_name': fNameCont.text,
+        'last_name': lNameCont.text,
+        'username': userNameCont.text,
+        'email': emailCont.text,
+        'mobile': buildMobileNumber(),
+        'user_type': widget.userType ?? USER_TYPE_HANDYMAN,
+        'designation': designationCont.text.validate(),
+        'handyman_zone_id': serviceZoneId.validate(),
+        'handyman_type_id': selectedHandymanCommission?.id,
+        'commission': selectedHandymanCommission?.commission,
+        'commission_type': selectedHandymanCommission?.type,
+        'provider_id': appStore.userId, // Current provider's ID
+      };
+      
+      // Add password for new handyman
+      if (!isUpdate) {
+        request['password'] = passwordCont.text;
+      }
+      
+      // If updating, add the handyman ID
+      if (isUpdate) {
+        request['id'] = widget.data!.id;
+        request['is_update'] = true;
+      }
+      
+      // Navigate to upload documents screen
+      HandymanUploadDocumentsScreen(
+        formRequest: request,
+        isUpdate: isUpdate,
+        handymanData: widget.data,
+        onUpdate: widget.onUpdate,
+      ).launch(context, pageRouteAnimation: PageRouteAnimation.SlideBottomTop);
+    }
+  }
+
+  /// Direct save for update (without documents)
+  Future<void> directUpdate() async {
+    // Mark that user attempted to submit
+    setState(() {
+      _formAttempted = true;
+    });
+    
+    if (formKey.currentState!.validate()) {
+      if (selectedHandymanCommission == null) {
+        toast(languages.pleaseSelectCommission);
+        return;
+      }
+      
+      formKey.currentState!.save();
+      hideKeyboard(context);
+      
       var request = {
-        if (isUpdate) CommonKeys.id: widget.data!.id,
+        CommonKeys.id: widget.data!.id,
         UserKeys.firstName: fNameCont.text,
         UserKeys.lastName: lNameCont.text,
         UserKeys.userName: userNameCont.text,
-        UserKeys.userType: type,
+        UserKeys.userType: widget.userType,
         UserKeys.providerId: appStore.userId,
         UserKeys.status: USER_STATUS_CODE,
         UserKeys.contactNumber: buildMobileNumber(),
@@ -169,24 +260,15 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
         if (serviceZoneId != null && serviceZoneId != -1) UserKeys.handyman_zone_id: serviceZoneId.validate(),
         UserKeys.email: emailCont.text,
         UserKeys.handymanTypeId: selectedHandymanCommission?.id,
-        if (!isUpdate) UserKeys.password: passwordCont.text
       };
+      
       appStore.setLoading(true);
-      if (isUpdate) {
-        await updateProfile(request).then((res) async {
-          // toast(res.message.validate());
-          finish(context, widget.onUpdate!.call());
-        }).catchError((e) {
-          toast(e.toString());
-        });
-      } else {
-        await registerUser(request).then((res) async {
-          toast(res.message.validate());
-          finish(context, widget.onUpdate!.call());
-        }).catchError((e) {
-          toast(e.toString());
-        });
-      }
+      await updateProfile(request).then((res) async {
+        toast("Handyman updated successfully");
+        finish(context, widget.onUpdate!.call());
+      }).catchError((e) {
+        toast(e.toString());
+      });
       appStore.setLoading(false);
     }
   }
@@ -196,9 +278,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
     appStore.setLoading(true);
     await deleteHandyman(id.validate()).then((value) {
       appStore.setLoading(false);
-
       finish(context, widget.onUpdate!.call());
-
       toast(languages.lblTrashHandyman, print: true);
     }).catchError((e) {
       appStore.setLoading(false);
@@ -251,15 +331,21 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
     return SafeArea(
       child: Scaffold(
         backgroundColor: context.cardColor,
         appBar: appBarWidget(
           isUpdate ? languages.lblUpdate : languages.lblAddHandyman,
-          textColor: white,
-          color: context.primaryColor,
-          backWidget: BackWidget(),
-          showBack: true,
+          elevation: 0,
+          systemUiOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: isDark ? Colors.black : Colors.white,
+            statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          ),
+          color: !isDark ? Colors.white : Colors.black,
+          textColor: isDark ? Colors.white : Colors.black,
+          backWidget: BackWidget(color: isDark ? Colors.white : Colors.black),
+          textSize: APP_BAR_TEXT_SIZE,
           actions: [
             IconButton(
               onPressed: () {
@@ -344,7 +430,8 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
               padding: EdgeInsets.all(16),
               child: Form(
                 key: formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                // Update this line to only validate after form has been attempted
+                autovalidateMode: _formAttempted ? AutovalidateMode.onUserInteraction : AutovalidateMode.disabled,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -437,11 +524,9 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                                 ),
                               ),
                             ),
-                          )
-                              .onTap(
-                                () => changeCountry(),
-                              )
-                              .paddingOnly(right: 10.0),
+                          ).onTap(
+                            () => changeCountry(),
+                          ).paddingOnly(right: 10.0),
                           Expanded(
                             child: AppTextField(
                               textFieldType: TextFieldType.PHONE,
@@ -478,10 +563,10 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                       ),
                     ),
                     16.height,
-                    // Select commission text field...
+                    // Commission Dropdown
                     IgnorePointer(
                       ignoring: isUpdate ? !rolesAndPermissionStore.handymanEdit : false,
-                      child: DropdownButtonFormField<UserTypeData>(
+                      child: DropdownButtonFormField<HandymanType>(
                         decoration: inputDecoration(
                           context,
                           hint: languages.lblSelectCommission,
@@ -489,32 +574,26 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                         ),
                         isExpanded: true,
                         dropdownColor: context.cardColor,
-                        value: selectedHandymanCommission != null ? selectedHandymanCommission : null,
-                        items: commissionList.map((data) {
-                          return DropdownMenuItem<UserTypeData>(
-                            value: data,
+                        value: selectedHandymanCommission,
+                        items: uniqueHandymanCommissions.map((handymanType) {
+                          return DropdownMenuItem<HandymanType>(
+                            value: handymanType,
                             child: Row(
                               children: [
-                                Text(data.name.toString(), style: primaryTextStyle()),
-                                4.width,
-                                if (data.type == COMMISSION_TYPE_PERCENT)
-                                  Text(
-                                    '(${data.commission.toString()}%)',
-                                    style: primaryTextStyle(),
-                                  )
-                                else if (data.type == COMMISSION_TYPE_FIXED)
-                                  Text('(${data.commission.validate().toPriceFormat()})', style: primaryTextStyle()),
+                                Text(
+                                  '${handymanType.commission}% ${handymanType.type}',
+                                  style: primaryTextStyle(),
+                                ),
                               ],
                             ),
                           );
                         }).toList(),
-                        onChanged: (UserTypeData? value) async {
+                        onChanged: (HandymanType? value) async {
                           selectedHandymanCommission = value;
-                          commissionId = selectedHandymanCommission!.id.validate();
                           setState(() {});
                         },
                       ),
-                    ).visible(commissionList.isNotEmpty),
+                    ).visible(uniqueHandymanCommissions.isNotEmpty),
                     16.height,
                     IgnorePointer(
                       ignoring: isUpdate ? !rolesAndPermissionStore.handymanEdit : false,
@@ -544,32 +623,29 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                       ),
                     ).visible(providerZoneList.isNotEmpty),
                     16.height.visible(!isUpdate),
-                    AppTextField(
-                      textFieldType: TextFieldType.PASSWORD,
-                      controller: passwordCont,
-                      focus: passwordFocus,
-                      enabled: isUpdate ? rolesAndPermissionStore.handymanEdit : true,
-                      obscureText: true,
-                      decoration: inputDecoration(
-                        context,
-                        hint: languages.hintPassword,
-                        fillColor: context.scaffoldBackgroundColor,
+                    // Password field for new handyman
+                    if (!isUpdate)
+                      AppTextField(
+                        textFieldType: TextFieldType.PASSWORD,
+                        controller: passwordCont,
+                        focus: passwordFocus,
+                        enabled: rolesAndPermissionStore.handymanEdit,
+                        obscureText: true,
+                        decoration: inputDecoration(
+                          context,
+                          hint: languages.hintPassword,
+                          fillColor: context.scaffoldBackgroundColor,
+                        ),
+                        isValidationRequired: true,
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return languages.hintRequired;
+                          } else if (val.length < 8 || val.length > 12) {
+                            return languages.passwordLengthShouldBe;
+                          }
+                          return null;
+                        },
                       ),
-                      isValidationRequired: true,
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return languages.hintRequired;
-                        } else if (val.length < 8 || val.length > 12) {
-                          return languages.passwordLengthShouldBe;
-                        }
-                        return null;
-                      },
-                      onFieldSubmitted: (s) {
-                        ifNotTester(context, () {
-                          register();
-                        });
-                      },
-                    ).visible(!isUpdate),
                     16.height,
                     if (isUpdate)
                       Column(
@@ -592,7 +668,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                     24.height,
                     Observer(
                       builder: (context) => AppButton(
-                        text: languages.btnSave,
+                        text: isUpdate ? languages.btnSave : languages.lblNext,
                         height: 40,
                         color: primaryColor,
                         textColor: white,
@@ -600,18 +676,13 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                         onTap: appStore.isLoading
                             ? null
                             : () {
-                                register();
-                                /*   ifNotTester(context, () {
-                                  if (isUpdate) {
-                                    if (rolesAndPermissionStore.handymanEdit) {
-                                      register();
-                                    } else {
-                                      toast(languages.permissionDeniedUnableTo);
-                                    }
-                                  } else {
-                                    register();
-                                  }
-                                });*/
+                                if (isUpdate) {
+                                  // For update, directly save
+                                  directUpdate();
+                                } else {
+                                  // For new handyman, go to document upload
+                                  proceedToDocumentUpload();
+                                }
                               },
                       ),
                     )
@@ -643,7 +714,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
           ),
         ),
       ),
-      showPhoneCode: true, // optional. Shows phone code before the country name.
+      showPhoneCode: true,
       onSelect: (Country country) {
         selectedCountry = country;
         _valueNotifier.notifyListeners();
