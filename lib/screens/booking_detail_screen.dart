@@ -166,36 +166,54 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     );
   }
 
-  Future<void> verifyOtpAndUpdate(BookingDetailResponse res, String otp) async {
+  Future<void> verifyOtpAndUpdate(
+    BookingDetailResponse res,
+    String otp,
+  ) async {
     appStore.setLoading(true);
 
-    var request = {
-      "id": res.bookingDetail!.id,
-      "otp": otp,
-      "status": BookingStatusKeys.inProgress,
-    };
-
     try {
-      var response = await bookingUpdate(request);
+      var request = {
+        "id": res.bookingDetail!.id,
+        "otp": otp,
+        "status": BookingStatusKeys.inProgress,
+      };
 
-      if (response != null) {
-        await updateBooking(res, '', BookingStatusKeys.inProgress);
+      appStore.setLoading(true);
+      var response = await bookingUpdate(request);
+           appStore.setLoading(false);
+      /// 🔴 HANDLE WRONG OTP
+      if (response != null && response is Map && response.status == false) {
+        appStore.setLoading(false);
+
+        toast(response.message ?? "Invalid OTP");
+        appStore.setLoading(true);
+        await updateBooking(res, '', BookingStatusKeys.onGoing);
+        appStore.setLoading(false);
+        return;
       }
+
+      init(flag: true);
+      toast("OTP verified successfully");
     } catch (e) {
       appStore.setLoading(false);
 
-      try {
-        String errorMessage = e.toString();
+      String errorMsg = "Invalid OTP";
 
-        if (errorMessage.contains('message')) {
-          final msg = errorMessage.split('message:').last;
-          toast(msg.replaceAll('}', '').trim());
-        } else {
-          toast('Invalid OTP');
+      try {
+        if (e is Map && e['message'] != null) {
+          errorMsg = e['message'];
+        } else if (e.toString().contains("Wrong OTP")) {
+          errorMsg =
+              "Wrong OTP provided. Please ask the customer for the arrival code.";
         }
-      } catch (_) {
-        toast('Invalid OTP');
-      }
+      } catch (_) {}
+
+      toast(errorMsg);
+      appStore.setLoading(true);
+      await updateBooking(res, '', BookingStatusKeys.onGoing);
+      appStore.setLoading(true);
+      return;
     }
 
     appStore.setLoading(false);
@@ -417,16 +435,24 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
       req[BookingServiceKeys.extraCharges] = charges;
     }
 
+    appStore.setLoading(true);
+
     await bookingUpdate(req).then((res) async {
+      appStore.setLoading(false);
       init(flag: true);
+      toast('Booking completed successfully');
     }).catchError((e) {
       appStore.setLoading(false);
 
+      String errorMsg = 'Invalid OTP';
       if (e is Map && e['message'] != null) {
-        toast(e['message']);
-      } else {
-        toast('Invalid OTP');
+        errorMsg = e['message'];
+      } else if (e.toString().contains("Wrong OTP")) {
+        errorMsg =
+            "Wrong OTP provided. Please ask the customer for the arrival code.";
       }
+
+      toast(errorMsg);
     });
 
     appStore.setLoading(false);
