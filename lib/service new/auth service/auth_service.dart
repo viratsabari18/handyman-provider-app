@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:handyman_provider_flutter/models/user_data.dart';
 import 'package:http/http.dart' as http;
 
-import '../../Models new/register_request_model.dart';
-import '../../Models new/register_response_model.dart';
+import '../../Models_new/register_request_model.dart';
+import '../../Models_new/register_response_model.dart';
 
 class AuthService {
   static const String baseUrl = "https://ethically-thaw-bok.ngrok-free.dev/api";

@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 
-import 'package:handyman_provider_flutter/Models%20new/registration_data.dart';
+import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:http/http.dart' as http;
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/back_widget.dart';
@@ -106,19 +105,11 @@ class _ServiceListScreenState extends State<ServiceListScreen> {
 
   @override
   Widget build(BuildContext context) {
-     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBarWidget(
-          elevation: 0,
-              systemUiOverlayStyle: SystemUiOverlayStyle(
-                statusBarColor: Colors.white,
-                statusBarIconBrightness: Brightness.light,
-              ),
-              color: !isDark ? Colors.white : Colors.black,
-              textColor: isDark ? Colors.white : Colors.black,
-     
         languages.lblAllService,
-  
+        textColor: white,
+        color: context.primaryColor,
         backWidget: BackWidget(),
         textSize: APP_BAR_TEXT_SIZE,
         actions: [

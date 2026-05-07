@@ -9,7 +9,7 @@ import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/selectZoneModel.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
 import 'package:handyman_provider_flutter/networks/rest_apis.dart';
-import 'package:handyman_provider_flutter/screens%20new/handyman_upload_screen.dart';
+import 'package:handyman_provider_flutter/screens_new/handyman_upload_screen.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
@@ -18,7 +18,7 @@ import 'package:handyman_provider_flutter/utils/extensions/string_extension.dart
 import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:handyman_provider_flutter/Models new/registration_data.dart';
+import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
 import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
 
 import '../provider/earning/handyman_payout_list_screen.dart';

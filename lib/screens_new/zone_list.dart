@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:handyman_provider_flutter/Models%20new/add_provider_zones_requst_and_response.dart';
-import 'package:handyman_provider_flutter/Models%20new/delete_provider_zones_request_and_responses.dart';
-import 'package:handyman_provider_flutter/Models%20new/registration_data.dart';
+import 'package:handyman_provider_flutter/Models_new/add_provider_zones_requst_and_response.dart';
+import 'package:handyman_provider_flutter/Models_new/delete_provider_zones_request_and_responses.dart';
+import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/back_widget.dart';
 import 'package:handyman_provider_flutter/components/empty_error_state_widget.dart';

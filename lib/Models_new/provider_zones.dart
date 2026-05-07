@@ -1,4 +1,4 @@
-import 'package:handyman_provider_flutter/Models%20new/registration_data.dart';
+import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
 
 class ProviderZones {
   List<Zone>? data;

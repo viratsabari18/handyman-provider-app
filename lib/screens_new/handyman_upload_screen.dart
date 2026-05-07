@@ -12,9 +12,9 @@ import 'package:handyman_provider_flutter/provider/components/assign_handyman_sc
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../Models new/register_request_model.dart';
-import '../Models new/registration_data.dart';
-import '../Models new/upload_doucment_model.dart';
+import '../Models_new/register_request_model.dart';
+import '../Models_new/registration_data.dart';
+import '../Models_new/upload_doucment_model.dart';
 import '../components/app_widgets.dart';
 import '../components/empty_error_state_widget.dart';
 import '../components/pdf_viewer_component.dart';

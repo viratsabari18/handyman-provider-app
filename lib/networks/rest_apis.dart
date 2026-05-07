@@ -5,12 +5,13 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:handyman_provider_flutter/Models%20new/add_provider_category_requset_and_response.dart';
-import 'package:handyman_provider_flutter/Models%20new/add_provider_zones_requst_and_response.dart';
-import 'package:handyman_provider_flutter/Models%20new/delete_provider_category_request_response.dart';
-import 'package:handyman_provider_flutter/Models%20new/delete_provider_zones_request_and_responses.dart';
-import 'package:handyman_provider_flutter/Models%20new/provider_categories.dart';
-import 'package:handyman_provider_flutter/Models%20new/provider_zones.dart';
+import 'package:handyman_provider_flutter/Models_new/add_provider_category_requset_and_response.dart';
+import 'package:handyman_provider_flutter/Models_new/add_provider_zones_requst_and_response.dart';
+import 'package:handyman_provider_flutter/Models_new/delete_provider_category_request_response.dart';
+import 'package:handyman_provider_flutter/Models_new/delete_provider_zones_request_and_responses.dart';
+import 'package:handyman_provider_flutter/Models_new/provider_categories.dart';
+import 'package:handyman_provider_flutter/Models_new/provider_zones.dart';
+import 'package:handyman_provider_flutter/Models_new/providers_services.dart';
 
 import 'package:handyman_provider_flutter/auth/sign_in_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
@@ -946,6 +947,10 @@ Future<SelectZoneModelResponse> selectedZones({int? providerId}) async {
   return SelectZoneModelResponse.fromJson(await handleResponse(await buildHttpResponse('provider-zones?provider_id=$providerId', method: HttpMethodType.GET)));
 }
 
+
+Future<ProvidersServices> getProviderServices() async {
+  return ProvidersServices.fromJson(await handleResponse(await buildHttpResponse('provider-service-list', method: HttpMethodType.GET)));
+}
 
 Future<List<ZoneResponse>> getZoneWithPagination({
   int? page,

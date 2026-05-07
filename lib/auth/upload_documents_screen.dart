@@ -11,9 +11,9 @@ import 'package:handyman_provider_flutter/controllers/registration_data_controll
 
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../Models new/register_request_model.dart';
-import '../Models new/registration_data.dart' show Zone, Category;
-import '../Models new/upload_doucment_model.dart';
+import '../Models_new/register_request_model.dart';
+import '../Models_new/registration_data.dart' show Zone, Category;
+import '../Models_new/upload_doucment_model.dart';
 import '../components/app_widgets.dart';
 import '../components/empty_error_state_widget.dart';
 import '../components/pdf_viewer_component.dart';
@@ -213,143 +213,141 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
   }
 
   // ✅ UPDATED: Register method with proper file handling - using appStore.isLoading to prevent multiple clicks
-  Future<void> register() async {
-    // ✅ Check if already loading - prevents multiple clicks
-    if (appStore.isLoading) {
-      toast("Please wait, registration in progress...");
-      return;
-    }
+Future<void> register() async {
+  // ✅ Set loading to true IMMEDIATELY when method is called
+  appStore.setLoading(true);
+  
+  // Clear previous errors
+  _clearUploadError();
+  _clearZonesCategoriesError();
+  
+  if (!isAcceptedTc) {
+    toast("Accept Terms & Conditions");
+    setState(() {
+      uploadError = "Please accept Terms & Conditions to proceed";
+      hasUploadError = true;
+    });
+    appStore.setLoading(false); // ❌ Turn off loading on validation failure
+    return;
+  }
+
+  // Check if all required documents are uploaded
+  final requiredDocIds = getMockDocuments()
+      .where((doc) => doc.isRequired == 1)
+      .map((doc) => doc.id)
+      .toList();
+  
+  final uploadedDocIds = uploadDocs.map((doc) => doc.id).toList();
+  final missingDocs = requiredDocIds.where((id) => !uploadedDocIds.contains(id)).toList();
+  
+  if (missingDocs.isNotEmpty) {
+    final missingDocNames = getMockDocuments()
+        .where((doc) => missingDocs.contains(doc.id))
+        .map((doc) => doc.name)
+        .join(', ');
     
-    // Clear previous errors
-    _clearUploadError();
-    _clearZonesCategoriesError();
-    
-    if (!isAcceptedTc) {
-      toast("Accept Terms & Conditions");
+    toast("Please upload all required documents");
+    setState(() {
+      uploadError = "Missing required documents: $missingDocNames";
+      hasUploadError = true;
+    });
+    appStore.setLoading(false); // ❌ Turn off loading on validation failure
+    return;
+  }
+
+  // Validate zones and categories for provider
+  if (isProvider) {
+    if (selectedZoneIds.isEmpty) {
+      toast("Please select at least one service zone");
       setState(() {
-        uploadError = "Please accept Terms & Conditions to proceed";
+        uploadError = "Please select at least one service zone for your service area";
         hasUploadError = true;
       });
+      appStore.setLoading(false); // ❌ Turn off loading on validation failure
       return;
     }
-
-    // Check if all required documents are uploaded
-    final requiredDocIds = getMockDocuments()
-        .where((doc) => doc.isRequired == 1)
-        .map((doc) => doc.id)
-        .toList();
     
-    final uploadedDocIds = uploadDocs.map((doc) => doc.id).toList();
-    final missingDocs = requiredDocIds.where((id) => !uploadedDocIds.contains(id)).toList();
-    
-    if (missingDocs.isNotEmpty) {
-      final missingDocNames = getMockDocuments()
-          .where((doc) => missingDocs.contains(doc.id))
-          .map((doc) => doc.name)
-          .join(', ');
-      
-      toast("Please upload all required documents");
+    if (selectedCategoryIds.isEmpty) {
+      toast("Please select at least one category");
       setState(() {
-        uploadError = "Missing required documents: $missingDocNames";
+        uploadError = "Please select at least one service category";
         hasUploadError = true;
       });
+      appStore.setLoading(false); // ❌ Turn off loading on validation failure
       return;
     }
+  }
 
-    // Validate zones and categories for provider
-    if (isProvider) {
-      if (selectedZoneIds.isEmpty) {
-        toast("Please select at least one service zone");
-        setState(() {
-          uploadError = "Please select at least one service zone for your service area";
-          hasUploadError = true;
-        });
-        return;
-      }
+  try {
+    // ✅ ONLY send IDs (not the files)
+    final request = RegisterRequest(
+      firstName: widget.formRequest['first_name'],
+      lastName: widget.formRequest['last_name'],
+      username: widget.formRequest['username'],
+      email: widget.formRequest['email'],
+      password: widget.formRequest['password'],
+      contactNumber: widget.formRequest['mobile'],
+      userType: widget.formRequest['user_type'],
+
+      /// Provider
+      providerTypeId: widget.formRequest['provider_type_id'],
+
+      /// Handyman
+      providerId: widget.formRequest['provider_id'],
+      handymanTypeId: widget.formRequest['handyman_type_id'],
+
+      categoryIds: isProvider
+          ? selectedCategoryIds.map((e) => int.parse(e)).toList()
+          : null,
+
+      serviceZones: isProvider
+          ? selectedZoneIds.map((e) => int.parse(e)).toList()
+          : null,
+
+      /// 🔥 ONLY DOCUMENT IDs (NOT FILES)
+      documentIds: uploadDocs.map((e) => e.id).toList(),
+    );
+    
+    // ✅ Send FILES separately
+    final files = uploadDocs.map((doc) => doc.file).toList();
+    
+    final response = await AuthService.registerUser(
+      request: request,
+      files: files,
+    );
+
+    if (response != null && response.data?.id != null) {
+      toast(response.message ?? "Registration Success");
       
-      if (selectedCategoryIds.isEmpty) {
-        toast("Please select at least one category");
-        setState(() {
-          uploadError = "Please select at least one service category";
-          hasUploadError = true;
-        });
-        return;
-      }
-    }
-
-    // ✅ Set loading to true - this will disable the button
-    appStore.setLoading(true);
-
-    try {
-      // ✅ ONLY send IDs (not the files)
-      final request = RegisterRequest(
-        firstName: widget.formRequest['first_name'],
-        lastName: widget.formRequest['last_name'],
-        username: widget.formRequest['username'],
-        email: widget.formRequest['email'],
-        password: widget.formRequest['password'],
-        contactNumber: widget.formRequest['mobile'],
-        userType: widget.formRequest['user_type'],
-
-        /// Provider
-        providerTypeId: widget.formRequest['provider_type_id'],
-
-        /// Handyman
-        providerId: widget.formRequest['provider_id'],
-        handymanTypeId: widget.formRequest['handyman_type_id'],
-
-        categoryIds: isProvider
-            ? selectedCategoryIds.map((e) => int.parse(e)).toList()
-            : null,
-
-        serviceZones: isProvider
-            ? selectedZoneIds.map((e) => int.parse(e)).toList()
-            : null,
-
-        /// 🔥 ONLY DOCUMENT IDs (NOT FILES)
-        documentIds: uploadDocs.map((e) => e.id).toList(),
+      // Clear sensitive data after successful registration
+      uploadDocs.clear();
+      
+      push(
+        SignInScreen(),
+        isNewTask: true,
+        pageRouteAnimation: PageRouteAnimation.Fade,
       );
-      
-      // ✅ Send FILES separately
-      final files = uploadDocs.map((doc) => doc.file).toList();
-      
-      final response = await AuthService.registerUser(
-        request: request,
-        files: files,
-      );
-
-      if (response != null && response.data?.id != null) {
-        toast(response.message ?? "Registration Success");
-        
-        // Clear sensitive data after successful registration
-        uploadDocs.clear();
-        
-        push(
-          SignInScreen(),
-          isNewTask: true,
-          pageRouteAnimation: PageRouteAnimation.Fade,
-        );
-      } else {
-        final errorMsg = response?.message ?? "Registration failed";
-        toast(errorMsg);
-        setState(() {
-          uploadError = errorMsg;
-          hasUploadError = true;
-        });
-      }
-    } catch (e) {
-      final errorMsg = "Registration error: ${e.toString()}";
+    } else {
+      final errorMsg = response?.message ?? "Registration failed";
       toast(errorMsg);
       setState(() {
         uploadError = errorMsg;
         hasUploadError = true;
       });
-      print("Registration error: $e");
-    } finally {
-      // ✅ Always set loading to false when done (success or error)
-      appStore.setLoading(false);
     }
+  } catch (e) {
+    final errorMsg = "Registration error: ${e.toString()}";
+    toast(errorMsg);
+    setState(() {
+      uploadError = errorMsg;
+      hasUploadError = true;
+    });
+    print("Registration error: $e");
+  } finally {
+    // ✅ Always set loading to false when done (success or error)
+    appStore.setLoading(false);
   }
+}
 
   // Check if document is uploaded
   bool isDocumentUploaded(int documentId) {
