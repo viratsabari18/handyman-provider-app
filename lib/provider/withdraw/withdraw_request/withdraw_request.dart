@@ -13,7 +13,7 @@ import 'package:handyman_provider_flutter/utils/extensions/num_extenstions.dart'
 import 'package:handyman_provider_flutter/utils/extensions/string_extension.dart';
 import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:nb_utils/nb_utils.dart';
-import '../../../components/app_widgets.dart';
+import '../../../components/app_widgets.dart';   
 import '../../../components/price_widget.dart';
 import '../../../components/success_dialog.dart';
 import '../../../models/bank_list_response.dart';
@@ -42,7 +42,7 @@ class _WithdrawRequestState extends State<WithdrawRequest> {
 
   List<String> withdrawalMethodList = [
     PAYMENT_METHOD_BANK,
-    PAYMENT_METHOD_COD,
+    // PAYMENT_METHOD_COD,
   ];
 
   int page = 1;

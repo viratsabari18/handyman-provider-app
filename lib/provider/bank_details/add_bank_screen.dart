@@ -46,6 +46,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
   FocusNode panNumberFocus = FocusNode();
 
   Future<void> update() async {
+    
+    appStore.setLoading(true);
     MultipartRequest multiPartRequest = await getMultiPartRequest('save-bank');
     multiPartRequest.fields[UserKeys.id] = isUpdate ? widget.data!.id.toString() : "";
     multiPartRequest.fields[UserKeys.providerId] = appStore.userId.toString();
@@ -62,17 +64,17 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
     multiPartRequest.headers.addAll(buildHeaderTokens());
 
-    appStore.setLoading(true);
 
     sendMultiPartRequest(
       multiPartRequest,
       onSuccess: (data) async {
-        appStore.setLoading(false);
+   
         if (data != null) {
           print(data);
           if ((data as String).isJson()) {
             BaseResponseModel res = BaseResponseModel.fromJson(jsonDecode(data));
             finish(context, [true, bankNameCont.text]);
+                 appStore.setLoading(false);
             if (res.status ?? false) {}
             toast( res.message!);
           }
