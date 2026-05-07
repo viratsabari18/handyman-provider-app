@@ -127,6 +127,7 @@ class BookingData {
   num? finalDiscountAmount;
   num? finalCouponDiscountAmount;
   String? txnId;
+  List<BookingServiceOption>? bookingServiceOption;
 
   //Local
   double get totalAmountWithExtraCharges => totalAmount.validate() + extraCharges.validate().sumByDouble((e) => e.qty.validate() * e.price.validate());
@@ -175,6 +176,7 @@ class BookingData {
     this.paymentStatus,
     this.providerId,
     this.providerName,
+    this.bookingServiceOption,
     //this.serviceAttachments,
     this.taxes,
     this.serviceId,
@@ -262,6 +264,11 @@ class BookingData {
       finalCouponDiscountAmount: json['final_coupon_discount_amount'],
       serviceaddon: json['BookingAddonService'] != null ? (json['BookingAddonService'] as List).map((i) => ServiceAddon.fromJson(i)).toList() : null,
       txnId: json['txn_id'],
+      bookingServiceOption: json['BookingServiceOption'] != null
+    ? (json['BookingServiceOption'] as List)
+        .map((i) => BookingServiceOption.fromJson(i))
+        .toList()
+    : null,
     );
   }
 
@@ -332,9 +339,18 @@ class BookingData {
       data['BookingAddonService'] = this.serviceaddon!.map((v) => v.toJson()).toList();
     }
     data['txn_id'] = this.txnId;
-    return data;
-  }
+   if (bookingServiceOption != null) {
+  data['BookingServiceOption'] =
+      bookingServiceOption!.map((v) => v.toJson()).toList();
 }
+    return data;
+
+
+
+}
+  }
+
+
 
 class Handyman {
   int? id;

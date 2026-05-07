@@ -78,102 +78,105 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
+      
       appBarTitle: languages.helpDesk,
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(16),
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(languages.subject, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                        8.height,
-                        AppTextField(
-                          controller: subjectCont,
-                          focus: subjectFocus,
-                          nextFocus: descriptionFocus,
-                          textFieldType: TextFieldType.NAME,
-                          decoration: inputDecoration(
-                            context,
-                            hintText: languages.eGDamagedFurniture,
-                          ),
-                          maxLength: 120,
-                          suffix: ic_document.iconImage(size: 10).paddingAll(14),
-                        ),
-                        16.height,
-                        Text(languages.hintDescription, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                        8.height,
-                        AppTextField(
-                          textFieldType: TextFieldType.MULTILINE,
-                          controller: descriptionCont,
-                          focus: descriptionFocus,
-                          maxLines: 10,
-                          minLines: 3,
-                          enableChatGPT: appConfigurationStore.chatGPTStatus,
-                          promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
-                            hintText: languages.writeHere,
-                            fillColor: context.scaffoldBackgroundColor,
-                            filled: true,
-                            hintStyle: primaryTextStyle(),
-                          ),
-                          testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
-                          loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
-                          decoration: inputDecoration(
-                            context,
-                            hintText: languages.eGDuringTheService,
-                          ),
-                        ),
-                        16.height,
-                        CustomImagePicker(
-                          key: uniqueKey,
-                          isMultipleImages: false,
-                          onRemoveClick: (value) {
-                            showConfirmDialogCustom(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(16),
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(languages.subject, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                          8.height,
+                          AppTextField(
+                            controller: subjectCont,
+                            focus: subjectFocus,
+                            nextFocus: descriptionFocus,
+                            textFieldType: TextFieldType.NAME,
+                            decoration: inputDecoration(
                               context,
-                              dialogType: DialogType.DELETE,
-                              positiveText: languages.lblDelete,
-                              negativeText: languages.lblCancel,
-                              onAccept: (p0) {
-                                imageFiles.removeWhere((element) => element.path == value);
-                                setState(() {});
-                              },
-                            );
-                          },
-                          onFileSelected: (List<File> files) async {
-                            imageFiles = files;
-                            setState(() {});
-                          },
-                        ),
-                      ],
+                              hintText: languages.eGDamagedFurniture,
+                            ),
+                            maxLength: 120,
+                            suffix: ic_document.iconImage(size: 10).paddingAll(14),
+                          ),
+                          16.height,
+                          Text(languages.hintDescription, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                          8.height,
+                          AppTextField(
+                            textFieldType: TextFieldType.MULTILINE,
+                            controller: descriptionCont,
+                            focus: descriptionFocus,
+                            maxLines: 10,
+                            minLines: 3,
+                            enableChatGPT: appConfigurationStore.chatGPTStatus,
+                            promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
+                              hintText: languages.writeHere,
+                              fillColor: context.scaffoldBackgroundColor,
+                              filled: true,
+                              hintStyle: primaryTextStyle(),
+                            ),
+                            testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
+                            loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
+                            decoration: inputDecoration(
+                              context,
+                              hintText: languages.eGDuringTheService,
+                            ),
+                          ),
+                          16.height,
+                          CustomImagePicker(
+                            key: uniqueKey,
+                            isMultipleImages: false,
+                            onRemoveClick: (value) {
+                              showConfirmDialogCustom(
+                                context,
+                                dialogType: DialogType.DELETE,
+                                positiveText: languages.lblDelete,
+                                negativeText: languages.lblCancel,
+                                onAccept: (p0) {
+                                  imageFiles.removeWhere((element) => element.path == value);
+                                  setState(() {});
+                                },
+                              );
+                            },
+                            onFileSelected: (List<File> files) async {
+                              imageFiles = files;
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Observer(
-                builder: (_) => AppButton(
-                  margin: EdgeInsets.only(left: 16, bottom: 16, right: 16),
-                  text: languages.lblSubmit,
-                  height: 40,
-                  color: appStore.isLoading ? primaryColor.withValues(alpha:0.5) : primaryColor,
-                  textStyle: boldTextStyle(color: white),
-                  width: context.width() - context.navigationBarHeight,
-                  onTap: appStore.isLoading
-                      ? () {}
-                      : () {
-                          checkValidation();
-                        },
+                Observer(
+                  builder: (_) => AppButton(
+                    margin: EdgeInsets.only(left: 16, bottom: 16, right: 16),
+                    text: languages.lblSubmit,
+                    height: 40,
+                    color: appStore.isLoading ? primaryColor.withValues(alpha:0.5) : primaryColor,
+                    textStyle: boldTextStyle(color: white),
+                    width: context.width() - context.navigationBarHeight,
+                    onTap: appStore.isLoading
+                        ? () {}
+                        : () {
+                            checkValidation();
+                          },
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
-        ],
+              ],
+            ),
+            Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
+          ],
+        ),
       ),
     );
   }

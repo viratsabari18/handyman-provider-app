@@ -23,41 +23,56 @@ class BookingDetailResponse {
   List<TaxData>? taxes;
   List<ServiceProof>? serviceProof;
   PostJobData? postRequestDetail;
+  List<ServiceAddon>? serviceaddon;
 
-  bool get isMe => handymanData.validate().isNotEmpty ? handymanData.validate().first.id.validate() == appStore.userId.validate() : false;
+  bool get isMe => handymanData.validate().isNotEmpty
+      ? handymanData.validate().first.id.validate() ==
+          appStore.userId.validate()
+      : false;
 
-  BookingDetailResponse({
-    this.bookingDetail,
-    this.service,
-    this.customer,
-    this.bookingActivity,
-    this.ratingData,
-    this.providerData,
-    this.handymanData,
-    this.couponData,
-    this.taxes,
-    this.serviceProof,
-    this.postRequestDetail,
-  });
+  BookingDetailResponse(
+      {this.bookingDetail,
+      this.service,
+      this.customer,
+      this.bookingActivity,
+      this.ratingData,
+      this.providerData,
+      this.handymanData,
+      this.serviceaddon,
+      this.couponData,
+      this.taxes,
+      this.serviceProof,
+      this.postRequestDetail,
+ });
 
   BookingDetailResponse.fromJson(Map<String, dynamic> json) {
-    bookingDetail = json['booking_detail'] != null ? new BookingData.fromJson(json['booking_detail']) : null;
-    service = json['service'] != null ? new ServiceData.fromJson(json['service']) : null;
-    customer = json['customer'] != null ? new UserData.fromJson(json['customer']) : null;
+    bookingDetail = json['booking_detail'] != null
+        ? new BookingData.fromJson(json['booking_detail'])
+        : null;
+    service = json['service'] != null
+        ? new ServiceData.fromJson(json['service'])
+        : null;
+    customer = json['customer'] != null
+        ? new UserData.fromJson(json['customer'])
+        : null;
     if (json['booking_activity'] != null) {
       bookingActivity = [];
       json['booking_activity'].forEach((v) {
         bookingActivity!.add(new BookingActivity.fromJson(v));
       });
     }
-    providerData = json['provider_data'] != null ? new UserData.fromJson(json['provider_data']) : null;
+    providerData = json['provider_data'] != null
+        ? new UserData.fromJson(json['provider_data'])
+        : null;
     if (json['rating_data'] != null) {
       ratingData = [];
       json['rating_data'].forEach((v) {
         ratingData!.add(new RatingData.fromJson(v));
       });
     }
-    couponData = json['coupon_data'] != null ? new CouponData.fromJson(json['coupon_data']) : null;
+    couponData = json['coupon_data'] != null
+        ? new CouponData.fromJson(json['coupon_data'])
+        : null;
 
     if (json['handyman_data'] != null) {
       handymanData = [];
@@ -71,7 +86,16 @@ class BookingDetailResponse {
         serviceProof!.add(new ServiceProof.fromJson(v));
       });
     }
-    postRequestDetail = json['post_request_detail'] != null ? PostJobData.fromJson(json['post_request_detail']) : null;
+
+    postRequestDetail = json['post_request_detail'] != null
+        ? PostJobData.fromJson(json['post_request_detail'])
+        : null;
+    serviceaddon=json['BookingAddonService'] != null
+        ? (json['BookingAddonService'] as List)
+            .map((i) => ServiceAddon.fromJson(i))
+            .toList()
+        : null;
+
   }
 
   Map<String, dynamic> toJson() {
@@ -79,6 +103,8 @@ class BookingDetailResponse {
     if (this.bookingDetail != null) {
       data['booking_detail'] = this.bookingDetail!.toJson();
     }
+
+    
     if (this.service != null) {
       data['service'] = this.service!.toJson();
     }
@@ -86,7 +112,8 @@ class BookingDetailResponse {
       data['customer'] = this.customer!.toJson();
     }
     if (this.bookingActivity != null) {
-      data['booking_activity'] = this.bookingActivity!.map((v) => v.toJson()).toList();
+      data['booking_activity'] =
+          this.bookingActivity!.map((v) => v.toJson()).toList();
     }
     if (this.ratingData != null) {
       data['rating_data'] = this.ratingData!.map((v) => v.toJson()).toList();
@@ -98,15 +125,51 @@ class BookingDetailResponse {
       data['provider_data'] = this.providerData!.toJson();
     }
     if (this.handymanData != null) {
-      data['handyman_data'] = this.handymanData!.map((v) => v.toJson()).toList();
+      data['handyman_data'] =
+          this.handymanData!.map((v) => v.toJson()).toList();
     }
     if (this.serviceProof != null) {
-      data['service_proof'] = this.serviceProof!.map((v) => v.toJson()).toList();
+      data['service_proof'] =
+          this.serviceProof!.map((v) => v.toJson()).toList();
     }
     if (postRequestDetail != null) {
       data['post_request_detail'] = postRequestDetail?.toJson();
     }
     return data;
+  }
+}
+
+class BookingServiceOption {
+  int? id;
+  int? bookingId;
+  int? serviceOptionId;
+  String? name;
+  num? price;
+
+  BookingServiceOption({
+    this.id,
+    this.bookingId,
+    this.serviceOptionId,
+    this.name,
+    this.price,
+  });
+
+  BookingServiceOption.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    bookingId = json['booking_id'];
+    serviceOptionId = json['service_option_id'];
+    name = json['name'];
+    price = json['price'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'booking_id': bookingId,
+      'service_option_id': serviceOptionId,
+      'name': name,
+      'price': price,
+    };
   }
 }
 
@@ -121,7 +184,16 @@ class CouponData {
   String? updatedAt;
   num? totalCalculatedValue;
 
-  CouponData({this.bookingId, this.code, this.createdAt, this.deletedAt, this.discount, this.discountType, this.id, this.updatedAt, this.totalCalculatedValue});
+  CouponData(
+      {this.bookingId,
+      this.code,
+      this.createdAt,
+      this.deletedAt,
+      this.discount,
+      this.discountType,
+      this.id,
+      this.updatedAt,
+      this.totalCalculatedValue});
 
   factory CouponData.fromJson(Map<String, dynamic> json) {
     return CouponData(
@@ -160,7 +232,15 @@ class BookingActivity {
   String? createdAt;
   String? updatedAt;
 
-  BookingActivity({this.id, this.bookingId, this.datetime, this.activityType, this.activityMessage, this.activityData, this.createdAt, this.updatedAt});
+  BookingActivity(
+      {this.id,
+      this.bookingId,
+      this.datetime,
+      this.activityType,
+      this.activityMessage,
+      this.activityData,
+      this.createdAt,
+      this.updatedAt});
 
   BookingActivity.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -238,7 +318,11 @@ class RatingData {
     handymanId = json['handyman_id'];
     customerId = json['customer_id'];
     handymanName = json['handyman_name'];
-    attachments = json['attchments_array'] != null ? (json['attchments_array'] as List).map((i) => Attachments.fromJson(i)).toList() : null;
+    attachments = json['attchments_array'] != null
+        ? (json['attchments_array'] as List)
+            .map((i) => Attachments.fromJson(i))
+            .toList()
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -258,7 +342,8 @@ class RatingData {
     data['customer_id'] = this.customerId;
     data['handyman_name'] = this.handymanName;
     if (this.attachments != null) {
-      data['attchments_array'] = this.attachments!.map((v) => v.toJson()).toList();
+      data['attchments_array'] =
+          this.attachments!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -329,46 +414,48 @@ class ServiceAddon {
   bool isSelected = false;
   Map<String, MultiLanguageRequest>? translations;
 
-  ServiceAddon({
-    this.id = -1,
-    this.name = "",
-    this.serviceName = "",
-    this.serviceAddonImage = "",
-    this.serviceId = -1,
-    this.serviceAddonId = -1,
-    this.price = 0,
-    this.status = -1,
-    this.deletedAt = "",
-    this.createdAt = "",
-    this.updatedAt = "",
-    this.translations
-  });
+  ServiceAddon(
+      {this.id = -1,
+      this.name = "",
+      this.serviceName = "",
+      this.serviceAddonImage = "",
+      this.serviceId = -1,
+      this.serviceAddonId = -1,
+      this.price = 0,
+      this.status = -1,
+      this.deletedAt = "",
+      this.createdAt = "",
+      this.updatedAt = "",
+      this.translations});
 
   factory ServiceAddon.fromJson(Map<String, dynamic> json) {
     return ServiceAddon(
       id: json['id'] is int ? json['id'] : -1,
       name: json['name'] is String ? json['name'] : "",
       serviceName: json['service_name'] is String ? json['service_name'] : "",
-      serviceAddonImage: json['serviceaddon_image'] is String ? json['serviceaddon_image'] : "",
+      serviceAddonImage: json['serviceaddon_image'] is String
+          ? json['serviceaddon_image']
+          : "",
       serviceId: json['service_id'] is int ? json['service_id'] : -1,
-      serviceAddonId: json['service_addon_id'] is int ? json['service_addon_id'] : -1,
+      serviceAddonId:
+          json['service_addon_id'] is int ? json['service_addon_id'] : -1,
       price: json['price'] is num ? json['price'] : 0,
       status: json['status'] is int ? json['status'] : -1,
       deletedAt: json['deleted_at'] is String ? json['deleted_at'] : "",
       createdAt: json['created_at'] is String ? json['created_at'] : "",
       updatedAt: json['updated_at'] is String ? json['updated_at'] : "",
-      translations:  json['translations'] != null
-    ? (jsonDecode(json['translations']) as Map<String, dynamic>).map(
-        (key, value) {
-          if (value is Map<String, dynamic>) {
-            return MapEntry(key, MultiLanguageRequest.fromJson(value));
-          } else {
-            print('Unexpected translation value for key $key: $value');
-            return MapEntry(key, MultiLanguageRequest());
-          }
-        },
-      )
-    : null,
+      translations: json['translations'] != null
+          ? (jsonDecode(json['translations']) as Map<String, dynamic>).map(
+              (key, value) {
+                if (value is Map<String, dynamic>) {
+                  return MapEntry(key, MultiLanguageRequest.fromJson(value));
+                } else {
+                  print('Unexpected translation value for key $key: $value');
+                  return MapEntry(key, MultiLanguageRequest());
+                }
+              },
+            )
+          : null,
     );
   }
 
@@ -385,8 +472,9 @@ class ServiceAddon {
       if (deletedAt.isNotEmpty) 'deleted_at': deletedAt,
       if (createdAt.isNotEmpty) 'created_at': createdAt,
       if (updatedAt.isNotEmpty) 'updated_at': updatedAt,
-      if (translations != null) 
-      'translations': translations!.map((key, value) => MapEntry(key, value.toJson())),
+      if (translations != null)
+        'translations':
+            translations!.map((key, value) => MapEntry(key, value.toJson())),
     };
   }
 }

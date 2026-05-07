@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/app_theme.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
@@ -550,92 +551,101 @@ class _AddPackageScreenState extends State<AddPackageScreen> {
 
   @override
   Widget build(BuildContext context) {
+     bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBarWidget(
         isUpdate ? languages.editPackage : languages.addPackage,
-        textColor: white,
-        color: context.primaryColor,
+                    elevation: 0,
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,        
+
       ),
-      body: Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              8.height,
-              MultiLanguageWidget(onTap: (LanguageDataModel code) {
-                checkValidation(isSave: false, code: code);
-              }),
-              8.height,
-              SingleChildScrollView(
-                padding: EdgeInsets.only(top: 16, left: 16.0, right: 16.0, bottom: 25.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    CustomImagePicker(
-                      key: uniqueKey,
-                      onRemoveClick: (value) {
-                        if (tempAttachments.validate().isNotEmpty && imageFiles.isNotEmpty) {
-                          showConfirmDialogCustom(
-                            context,
-                            dialogType: DialogType.DELETE,
-                            positiveText: languages.lblDelete,
-                            negativeText: languages.lblCancel,
-                            onAccept: (p0) {
-                              imageFiles.removeWhere((element) => element.path == value);
-                              if (value.startsWith('http')) {
-                                removeAttachment(id: tempAttachments.validate().firstWhere((element) => element.url == value).id.validate());
-                              }
-                            },
-                          );
-                        } else {
-                          showConfirmDialogCustom(
-                            context,
-                            dialogType: DialogType.DELETE,
-                            positiveText: languages.lblDelete,
-                            negativeText: languages.lblCancel,
-                            onAccept: (p0) {
-                              imageFiles.removeWhere((element) => element.path == value);
-                              if (isUpdate) {
-                                uniqueKey = UniqueKey();
-                              }
-                              setState(() {});
-                            },
-                          );
-                        }
-                      },
-                      selectedImages: widget.data != null ? imageFiles.validate().map((e) => e.path.validate()).toList() : null,
-                      onFileSelected: (List<File> files) async {
-                        imageFiles = files;
-                        setState(() {});
-                      },
-                    ),
-                    8.height,
-                    buildFormWidget(),
-                    Observer(
-                        builder: (context) => AppButton(
-                              text: context.translate.btnSave,
-                              height: 40,
-                              color: context.primaryColor,
-                              textStyle: boldTextStyle(color: white),
-                              width: context.width() - context.navigationBarHeight,
-                              onTap: appStore.isLoading
-                                  ? null
-                                  : () {
-                                      ifNotTester(context, () {
-                                        checkValidation(isSave: true);
-                                      });
-                                    },
-                            ))
-                  ],
-                ),
-              ).expand(),
-            ],
-          ),
-          Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
-        ],
+      body: SafeArea(
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                8.height,
+                MultiLanguageWidget(onTap: (LanguageDataModel code) {
+                  checkValidation(isSave: false, code: code);
+                }),
+                8.height,
+                SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 16, left: 16.0, right: 16.0, bottom: 25.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      CustomImagePicker(
+                        key: uniqueKey,
+                        onRemoveClick: (value) {
+                          if (tempAttachments.validate().isNotEmpty && imageFiles.isNotEmpty) {
+                            showConfirmDialogCustom(
+                              context,
+                              dialogType: DialogType.DELETE,
+                              positiveText: languages.lblDelete,
+                              negativeText: languages.lblCancel,
+                              onAccept: (p0) {
+                                imageFiles.removeWhere((element) => element.path == value);
+                                if (value.startsWith('http')) {
+                                  removeAttachment(id: tempAttachments.validate().firstWhere((element) => element.url == value).id.validate());
+                                }
+                              },
+                            );
+                          } else {
+                            showConfirmDialogCustom(
+                              context,
+                              dialogType: DialogType.DELETE,
+                              positiveText: languages.lblDelete,
+                              negativeText: languages.lblCancel,
+                              onAccept: (p0) {
+                                imageFiles.removeWhere((element) => element.path == value);
+                                if (isUpdate) {
+                                  uniqueKey = UniqueKey();
+                                }
+                                setState(() {});
+                              },
+                            );
+                          }
+                        },
+                        selectedImages: widget.data != null ? imageFiles.validate().map((e) => e.path.validate()).toList() : null,
+                        onFileSelected: (List<File> files) async {
+                          imageFiles = files;
+                          setState(() {});
+                        },
+                      ),
+                      8.height,
+                      buildFormWidget(),
+                      Observer(
+                          builder: (context) => AppButton(
+                                text: context.translate.btnSave,
+                                height: 40,
+                                color: context.primaryColor,
+                                textStyle: boldTextStyle(color: white),
+                                width: context.width() - context.navigationBarHeight,
+                                onTap: appStore.isLoading
+                                    ? null
+                                    : () {
+                                        ifNotTester(context, () {
+                                          checkValidation(isSave: true);
+                                        });
+                                      },
+                              ))
+                    ],
+                  ),
+                ).expand(),
+              ],
+            ),
+            Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
+          ],
+        ),
       ),
     );
   }

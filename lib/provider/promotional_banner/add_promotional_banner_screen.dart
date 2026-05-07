@@ -453,295 +453,297 @@ class _AddPromotionalBannerScreenState extends State<AddPromotionalBannerScreen>
   Widget build(BuildContext context) {
     return AppScaffold(
       appBarTitle: languages.addPromotionalBanner,
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: 16),
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      width: context.width(),
-                      decoration: BoxDecoration(
-                        color: completed.withValues(alpha: 0.1),
-                        border: Border.all(color: completed, width: 0.5),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: 16),
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        width: context.width(),
+                        decoration: BoxDecoration(
+                          color: completed.withValues(alpha: 0.1),
+                          border: Border.all(color: completed, width: 0.5),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40),
+                                color: completed,
+                              ),
+                              child: Center(
+                                child: Image.asset(ic_outline_banner, height: 26, width: 26, color: Colors.white),
+                              ),
+                            ),
+                            16.width,
+                            Observer(builder: (context) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    languages.promoteYourBusinessBanners(appConfigurationStore.bannerPerDayAmount.toPriceFormat()),
+                                    style: boldTextStyle(size: 14),
+                                  ),
+                                  8.height,
+                                  Text(
+                                    languages.advertiseYourServicesEffectively,
+                                    style: boldTextStyle(color: textSecondaryColor, size: 12),
+                                  ),
+                                ],
+                              ).expand();
+                            }),
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              color: completed,
+                      20.height,
+                      Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomImagePicker(
+                              key: uniqueKey,
+                              isMultipleImages: false,
+                              isCrop: true,
+                              onRemoveClick: (value) {
+                                showConfirmDialogCustom(
+                                  context,
+                                  dialogType: DialogType.DELETE,
+                                  positiveText: languages.lblDelete,
+                                  negativeText: languages.lblCancel,
+                                  onAccept: (p0) {
+                                    imageFiles.removeWhere((element) => element.path == value);
+                                    setState(() {});
+                                  },
+                                );
+                              },
+                              onFileSelected: (List<File> files) async {
+                                imageFiles = files;
+                                setState(() {});
+                              },
                             ),
-                            child: Center(
-                              child: Image.asset(ic_outline_banner, height: 26, width: 26, color: Colors.white),
-                            ),
-                          ),
-                          16.width,
-                          Observer(builder: (context) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  languages.promoteYourBusinessBanners(appConfigurationStore.bannerPerDayAmount.toPriceFormat()),
-                                  style: boldTextStyle(size: 14),
-                                ),
-                                8.height,
-                                Text(
-                                  languages.advertiseYourServicesEffectively,
-                                  style: boldTextStyle(color: textSecondaryColor, size: 12),
-                                ),
-                              ],
-                            ).expand();
-                          }),
-                        ],
-                      ),
-                    ),
-                    20.height,
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomImagePicker(
-                            key: uniqueKey,
-                            isMultipleImages: false,
-                            isCrop: true,
-                            onRemoveClick: (value) {
-                              showConfirmDialogCustom(
-                                context,
-                                dialogType: DialogType.DELETE,
-                                positiveText: languages.lblDelete,
-                                negativeText: languages.lblCancel,
-                                onAccept: (p0) {
-                                  imageFiles.removeWhere((element) => element.path == value);
-                                  setState(() {});
-                                },
-                              );
-                            },
-                            onFileSelected: (List<File> files) async {
-                              imageFiles = files;
-                              setState(() {});
-                            },
-                          ),
-                          if (imageFiles.isNotEmpty) 16.height,
-                          Text(languages.shortDescription, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                          8.height,
-                          AppTextField(
-                            textFieldType: TextFieldType.MULTILINE,
-                            controller: descriptionCont,
-                            focus: descriptionFocus,
-                            minLines: 3,
-                            maxLines: 10,
-                            maxLength: 120,
-                            enableChatGPT: appConfigurationStore.chatGPTStatus,
-                            promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
-                              hintText: languages.writeHere,
-                              fillColor: context.scaffoldBackgroundColor,
-                              filled: true,
-                              hintStyle: primaryTextStyle(),
-                            ),
-                            isValidationRequired: false,
-                            testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
-                            loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
-                            decoration: inputDecoration(
-                              context,
-                              hintText: languages.eGHandymanTrustedService,
-                            ),
-                          ),
-                          16.height,
-                          Text(languages.hintSelectType, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                          8.height,
-                          DropdownButtonFormField<StaticDataModel>(
-                            decoration: inputDecoration(
-                              context,
-                            ),
-                            isExpanded: true,
-                            value: typeStaticData.first,
-                            dropdownColor: context.cardColor,
-                            items: typeStaticData.map((StaticDataModel data) {
-                              return DropdownMenuItem<StaticDataModel>(
-                                value: data,
-                                child: Text(data.value.validate(), style: primaryTextStyle()),
-                              );
-                            }).toList(),
-                            validator: (value) {
-                              if (value == null) return errorThisFieldRequired;
-                              return null;
-                            },
-                            onChanged: (StaticDataModel? value) async {
-                              if (selectedService != null) {
-                                selectedService = null;
-                              } else if (linkCont.text.isNotEmpty) {
-                                linkCont.clear();
-                              }
-
-                              selectedType = value!.key.validate();
-                              setState(() {});
-                            },
-                          ),
-                          16.height,
-                          if (selectedType == PROMOTIONAL_TYPE_SERVICE) ...[
-                            Text(languages.selectService, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                            if (imageFiles.isNotEmpty) 16.height,
+                            Text(languages.shortDescription, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
                             8.height,
-                            DropdownButtonFormField<ServiceData>(
-                              decoration: inputDecoration(context),
-                              hint: Text(languages.chooseService, style: secondaryTextStyle()),
-                              value: selectedService,
-                              dropdownColor: context.scaffoldBackgroundColor,
-                              items: serviceList.map((data) {
-                                return DropdownMenuItem<ServiceData>(
+                            AppTextField(
+                              textFieldType: TextFieldType.MULTILINE,
+                              controller: descriptionCont,
+                              focus: descriptionFocus,
+                              minLines: 3,
+                              maxLines: 10,
+                              maxLength: 120,
+                              enableChatGPT: appConfigurationStore.chatGPTStatus,
+                              promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
+                                hintText: languages.writeHere,
+                                fillColor: context.scaffoldBackgroundColor,
+                                filled: true,
+                                hintStyle: primaryTextStyle(),
+                              ),
+                              isValidationRequired: false,
+                              testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
+                              loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
+                              decoration: inputDecoration(
+                                context,
+                                hintText: languages.eGHandymanTrustedService,
+                              ),
+                            ),
+                            16.height,
+                            Text(languages.hintSelectType, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                            8.height,
+                            DropdownButtonFormField<StaticDataModel>(
+                              decoration: inputDecoration(
+                                context,
+                              ),
+                              isExpanded: true,
+                              value: typeStaticData.first,
+                              dropdownColor: context.cardColor,
+                              items: typeStaticData.map((StaticDataModel data) {
+                                return DropdownMenuItem<StaticDataModel>(
                                   value: data,
-                                  child: Text(data.name.validate(), style: primaryTextStyle()),
+                                  child: Text(data.value.validate(), style: primaryTextStyle()),
                                 );
                               }).toList(),
                               validator: (value) {
                                 if (value == null) return errorThisFieldRequired;
-
                                 return null;
                               },
-                              onChanged: (ServiceData? value) async {
-                                selectedService = value!;
-
+                              onChanged: (StaticDataModel? value) async {
+                                if (selectedService != null) {
+                                  selectedService = null;
+                                } else if (linkCont.text.isNotEmpty) {
+                                  linkCont.clear();
+                                }
+        
+                                selectedType = value!.key.validate();
                                 setState(() {});
                               },
                             ),
-                          ],
-                          if (selectedType == PROMOTIONAL_TYPE_LINK) ...[
-                            Text(languages.enterLink, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                            8.height,
-                            AppTextField(
-                              controller: linkCont,
-                              focus: linkFocus,
-                              textFieldType: TextFieldType.URL,
-                              decoration: inputDecoration(
-                                context,
-                                hintText: languages.eGHttpsWwwYourlinkCom,
-                              ),
-                            ),
-                          ],
-                          DateRangeComponent(
-                            padding: EdgeInsets.only(top: 16),
-                            onApplyCallback: (startDate, endDate, totalDays) {
-                              if (startDate != null && endDate != null && totalDays != null) {
-                                startingDate = startDate;
-                                endingDate = endDate;
-
-                                totalDaysCount = totalDays;
-
-                                setState(() {});
-                              }
-                            },
-                          ),
-                          if (totalDaysCount.isNotEmpty)
-                            Text(
-                              languages.daysSelected(totalDaysCount),
-                              style: boldTextStyle(color: primaryColor, size: 12),
-                            ).paddingTop(8),
-                          if (totalDaysCount.isNotEmpty && DateTime.parse(startingDate).isAfter(DateTime.now())) ...[
                             16.height,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(languages.notes, style: boldTextStyle(size: 12)),
-                                SizedBox(width: 2),
-                                Text(
-                                  languages.selecteDateNote.replaceAll("{startDate}", startingDate.validate()).replaceAll("{endDate}", endingDate.validate()),
-                                  style: secondaryTextStyle(size: 12),
-                                ).expand(),
-                              ],
-                            ),
-                          ],
-                          if (paymentList.isNotEmpty) ...[
-                            20.height,
-                            Text(languages.lblChoosePaymentMethod, style: boldTextStyle()),
-                            4.height,
-                            AnimatedListView(
-                              itemCount: paymentList.length,
-                              shrinkWrap: true,
-                              listAnimationType: ListAnimationType.FadeIn,
-                              physics: NeverScrollableScrollPhysics(),
-                              fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-                              emptyWidget: NoDataWidget(
-                                imageWidget: EmptyStateWidget(),
-                                title: languages.noPaymentMethodsFound,
+                            if (selectedType == PROMOTIONAL_TYPE_SERVICE) ...[
+                              Text(languages.selectService, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                              8.height,
+                              DropdownButtonFormField<ServiceData>(
+                                decoration: inputDecoration(context),
+                                hint: Text(languages.chooseService, style: secondaryTextStyle()),
+                                value: selectedService,
+                                dropdownColor: context.scaffoldBackgroundColor,
+                                items: serviceList.map((data) {
+                                  return DropdownMenuItem<ServiceData>(
+                                    value: data,
+                                    child: Text(data.name.validate(), style: primaryTextStyle()),
+                                  );
+                                }).toList(),
+                                validator: (value) {
+                                  if (value == null) return errorThisFieldRequired;
+        
+                                  return null;
+                                },
+                                onChanged: (ServiceData? value) async {
+                                  selectedService = value!;
+        
+                                  setState(() {});
+                                },
                               ),
-                              itemBuilder: (context, index) {
-                                PaymentSetting paymentData = paymentList[index];
-
-                                return RadioListTile<PaymentSetting>(
-                                  dense: true,
-                                  activeColor: primaryColor,
-                                  value: paymentData,
-                                  controlAffinity: ListTileControlAffinity.trailing,
-                                  groupValue: selectedPaymentSetting,
-                                  contentPadding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
-                                  onChanged: (PaymentSetting? ind) {
-                                    selectedPaymentSetting = ind;
-                                    setState(() {});
-                                  },
-                                  title: Text(paymentData.title.validate(), style: primaryTextStyle()),
-                                );
+                            ],
+                            if (selectedType == PROMOTIONAL_TYPE_LINK) ...[
+                              Text(languages.enterLink, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                              8.height,
+                              AppTextField(
+                                controller: linkCont,
+                                focus: linkFocus,
+                                textFieldType: TextFieldType.URL,
+                                decoration: inputDecoration(
+                                  context,
+                                  hintText: languages.eGHttpsWwwYourlinkCom,
+                                ),
+                              ),
+                            ],
+                            DateRangeComponent(
+                              padding: EdgeInsets.only(top: 16),
+                              onApplyCallback: (startDate, endDate, totalDays) {
+                                if (startDate != null && endDate != null && totalDays != null) {
+                                  startingDate = startDate;
+                                  endingDate = endDate;
+        
+                                  totalDaysCount = totalDays;
+        
+                                  setState(() {});
+                                }
                               },
                             ),
-                            16.height,
-                            Container(
-                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                              decoration: boxDecorationDefault(borderRadius: radius(), color: context.cardColor),
-                              child: Column(
+                            if (totalDaysCount.isNotEmpty)
+                              Text(
+                                languages.daysSelected(totalDaysCount),
+                                style: boldTextStyle(color: primaryColor, size: 12),
+                              ).paddingTop(8),
+                            if (totalDaysCount.isNotEmpty && DateTime.parse(startingDate).isAfter(DateTime.now())) ...[
+                              16.height,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(languages.lblTotalAmount, style: boldTextStyle()),
-                                      16.width,
-                                      Observer(builder: (context) {
-                                        return PriceWidget(price: totalAmount.toDouble(), color: primaryColor);
-                                      }),
-                                    ],
-                                  ),
+                                  Text(languages.notes, style: boldTextStyle(size: 12)),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    languages.selecteDateNote.replaceAll("{startDate}", startingDate.validate()).replaceAll("{endDate}", endingDate.validate()),
+                                    style: secondaryTextStyle(size: 12),
+                                  ).expand(),
                                 ],
                               ),
-                            ),
-                            16.height,
+                            ],
+                            if (paymentList.isNotEmpty) ...[
+                              20.height,
+                              Text(languages.lblChoosePaymentMethod, style: boldTextStyle()),
+                              4.height,
+                              AnimatedListView(
+                                itemCount: paymentList.length,
+                                shrinkWrap: true,
+                                listAnimationType: ListAnimationType.FadeIn,
+                                physics: NeverScrollableScrollPhysics(),
+                                fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                                emptyWidget: NoDataWidget(
+                                  imageWidget: EmptyStateWidget(),
+                                  title: languages.noPaymentMethodsFound,
+                                ),
+                                itemBuilder: (context, index) {
+                                  PaymentSetting paymentData = paymentList[index];
+        
+                                  return RadioListTile<PaymentSetting>(
+                                    dense: true,
+                                    activeColor: primaryColor,
+                                    value: paymentData,
+                                    controlAffinity: ListTileControlAffinity.trailing,
+                                    groupValue: selectedPaymentSetting,
+                                    contentPadding: EdgeInsets.zero,
+                                    visualDensity: VisualDensity.compact,
+                                    onChanged: (PaymentSetting? ind) {
+                                      selectedPaymentSetting = ind;
+                                      setState(() {});
+                                    },
+                                    title: Text(paymentData.title.validate(), style: primaryTextStyle()),
+                                  );
+                                },
+                              ),
+                              16.height,
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: boxDecorationDefault(borderRadius: radius(), color: context.cardColor),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(languages.lblTotalAmount, style: boldTextStyle()),
+                                        16.width,
+                                        Observer(builder: (context) {
+                                          return PriceWidget(price: totalAmount.toDouble(), color: primaryColor);
+                                        }),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              16.height,
+                            ],
                           ],
-                        ],
-                      ),
-                    ).paddingSymmetric(horizontal: 16),
-                  ],
+                        ),
+                      ).paddingSymmetric(horizontal: 16),
+                    ],
+                  ),
+                ).expand(),
+                Observer(
+                  builder: (_) => AppButton(
+                    margin: EdgeInsets.only(left: 16, bottom: 16, right: 16),
+                    text: isPaymentPending ? languages.pay : languages.lblSubmit,
+                    height: 40,
+                    color: appStore.isLoading ? primaryColor.withValues(alpha: 0.5) : primaryColor,
+                    textStyle: boldTextStyle(color: white),
+                    width: context.width(),
+                    onTap: appStore.isLoading
+                        ? () {}
+                        : () {
+                            if (isPaymentPending) {
+                              _handleClick(); // Retry payment if pending
+                            } else {
+                              checkValidation(); // Submit form and proceed to payment
+                            }
+                          },
+                  ),
                 ),
-              ).expand(),
-              Observer(
-                builder: (_) => AppButton(
-                  margin: EdgeInsets.only(left: 16, bottom: 16, right: 16),
-                  text: isPaymentPending ? languages.pay : languages.lblSubmit,
-                  height: 40,
-                  color: appStore.isLoading ? primaryColor.withValues(alpha: 0.5) : primaryColor,
-                  textStyle: boldTextStyle(color: white),
-                  width: context.width(),
-                  onTap: appStore.isLoading
-                      ? () {}
-                      : () {
-                          if (isPaymentPending) {
-                            _handleClick(); // Retry payment if pending
-                          } else {
-                            checkValidation(); // Submit form and proceed to payment
-                          }
-                        },
-                ),
-              ),
-            ],
-          ),
-          Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
-        ],
+              ],
+            ),
+            Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
+          ],
+        ),
       ),
     );
   }

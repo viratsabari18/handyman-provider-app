@@ -24,12 +24,13 @@ class AppScaffold extends StatelessWidget {
     this.scaffoldBackgroundColor,
     this.bottomNavigationBar,
     this.showLoader = true,
-    this.isLoading,
+    this.isLoading, 
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: appBarTitle != null
           ? AppBar(
               title: Text(appBarTitle.validate(),

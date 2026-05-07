@@ -891,9 +891,13 @@ Future<List<ServiceData>> getSearchList(
 }
 
 Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
-  BookingDetailResponse bookingDetailResponse = BookingDetailResponse.fromJson(
+  final bookingDetailResponse = BookingDetailResponse.fromJson(
     await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
   );
+  printLongString(
+  const JsonEncoder.withIndent('  ').convert(bookingDetailResponse),
+);
+
   callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
       bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
   appStore.setLoading(false);
@@ -904,6 +908,19 @@ Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)?
   return bookingDetailResponse;
 }
 
+
+
+void printLongString(String text) {
+  const int chunkSize = 1000;
+
+  for (int i = 0; i < text.length; i += chunkSize) {
+    int end = (i + chunkSize < text.length)
+        ? i + chunkSize
+        : text.length;
+
+    log(text.substring(i, end));
+  }
+}
 
 
 Future<BaseResponseModel> bookingUpdate(Map request) async {

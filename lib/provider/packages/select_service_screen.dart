@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/cached_image_widget.dart';
@@ -179,11 +180,17 @@ class _SelectServiceScreenState extends State<SelectServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+        bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: appBarWidget(
         languages.selectService,
-        textColor: white,
-        color: context.primaryColor,
+              elevation: 0,
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,
       ),
       body: Stack(
         children: [

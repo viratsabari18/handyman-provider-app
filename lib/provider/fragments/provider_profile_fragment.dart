@@ -328,42 +328,42 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                       HandymanCommissionTypeListScreen().launch(context);
                     },
                   ),
-                if (appConfigurationStore.servicePackageStatus && rolesAndPermissionStore.servicePackageList)
-                  SettingItemWidget(
-                    decoration: BoxDecoration(color: context.cardColor),
-                    leading: Image.asset(ic_packages, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
-                    title: languages.packages,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    onTap: () {
-                      PackageListScreen().launch(context);
-                    },
-                  ),
-                if (appConfigurationStore.serviceAddonStatus && rolesAndPermissionStore.serviceAddOnList)
-                  SettingItemWidget(
-                    decoration: BoxDecoration(color: context.cardColor),
-                    leading: Image.asset(ic_addon_service, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
-                    title: languages.addonServices,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    onTap: () {
-                      AddonServiceListScreen().launch(context);
-                    },
-                  ),
-                if (appConfigurationStore.slotServiceStatus)
-                  SettingItemWidget(
-                    decoration: BoxDecoration(color: context.cardColor),
-                    leading: Image.asset(ic_time_slots, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
-                    title: languages.timeSlots,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    onTap: () {
-                      MyTimeSlotsScreen().launch(context);
-                    },
-                  ),
+                // if (appConfigurationStore.servicePackageStatus && rolesAndPermissionStore.servicePackageList)
+                //   SettingItemWidget(
+                //     decoration: BoxDecoration(color: context.cardColor),
+                //     leading: Image.asset(ic_packages, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
+                //     title: languages.packages,
+                //     titleTextStyle: boldTextStyle(size: 12),
+                //     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //     padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //     onTap: () {
+                //       PackageListScreen().launch(context);
+                //     },
+                //   ),
+                // if (appConfigurationStore.serviceAddonStatus && rolesAndPermissionStore.serviceAddOnList)
+                //   SettingItemWidget(
+                //     decoration: BoxDecoration(color: context.cardColor),
+                //     leading: Image.asset(ic_addon_service, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
+                //     title: languages.addonServices,
+                //     titleTextStyle: boldTextStyle(size: 12),
+                //     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //     padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //     onTap: () {
+                //       AddonServiceListScreen().launch(context);
+                //     },
+                //   ),
+                // if (appConfigurationStore.slotServiceStatus)
+                //   SettingItemWidget(
+                //     decoration: BoxDecoration(color: context.cardColor),
+                //     leading: Image.asset(ic_time_slots, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
+                //     title: languages.timeSlots,
+                //     titleTextStyle: boldTextStyle(size: 12),
+                //     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //     padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //     onTap: () {
+                //       MyTimeSlotsScreen().launch(context);
+                //     },
+                //   ),
                 if (rolesAndPermissionStore.postJobList)
                   SettingItemWidget(
                     decoration: BoxDecoration(color: context.cardColor),
@@ -414,18 +414,18 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                       BankDetails().launch(context);
                     },
                   ),
-                if (appStore.userType == USER_TYPE_PROVIDER && appConfigurationStore.isPromotionalBanner)
-                  SettingItemWidget(
-                    decoration: BoxDecoration(color: context.cardColor),
-                    leading: Image.asset(ic_promotional_banner, height: 16, width: 16, color: appStore.isDarkMode ? white.withValues(alpha: 0.9) : appTextSecondaryColor.withValues(alpha: 0.8)),
-                    title: languages.promotionalBanners,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    onTap: () {
-                      PromotionalBannerListScreen().launch(context);
-                    },
-                  ),
+                // if (appStore.userType == USER_TYPE_PROVIDER && appConfigurationStore.isPromotionalBanner)
+                //   SettingItemWidget(
+                //     decoration: BoxDecoration(color: context.cardColor),
+                //     leading: Image.asset(ic_promotional_banner, height: 16, width: 16, color: appStore.isDarkMode ? white.withValues(alpha: 0.9) : appTextSecondaryColor.withValues(alpha: 0.8)),
+                //     title: languages.promotionalBanners,
+                //     titleTextStyle: boldTextStyle(size: 12),
+                //     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //     padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //     onTap: () {
+                //       PromotionalBannerListScreen().launch(context);
+                //     },
+                //   ),
                 SettingItemWidget(
                   decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(16))),
                   title: "",

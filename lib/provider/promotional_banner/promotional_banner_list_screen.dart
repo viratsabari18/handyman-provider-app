@@ -89,148 +89,150 @@ class _PromotionalBannerListScreenState extends State<PromotionalBannerListScree
         ),
       ],
       showLoader: false,
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              16.height,
-              Align(
-                alignment: Alignment.centerLeft,
-                child: HorizontalList(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  spacing: 16,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: promotionalBannerStatus.length,
-                  itemBuilder: (ctx, index) {
-                    PromotionalBannerStatusModel filterStatus = promotionalBannerStatus[index];
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FilterChip(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: radius(defaultRadius),
-                            side: BorderSide(color: selectedTab.status == filterStatus.status ? primaryColor : Colors.transparent),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          label: Text(
-                            filterStatus.name,
-                            style: boldTextStyle(
-                              size: 12,
-                              color: selectedTab.status == filterStatus.status
-                                  ? primaryColor
-                                  : appStore.isDarkMode
-                                      ? Colors.white
-                                      : appTextPrimaryColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                16.height,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: HorizontalList(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    spacing: 16,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: promotionalBannerStatus.length,
+                    itemBuilder: (ctx, index) {
+                      PromotionalBannerStatusModel filterStatus = promotionalBannerStatus[index];
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FilterChip(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: radius(defaultRadius),
+                              side: BorderSide(color: selectedTab.status == filterStatus.status ? primaryColor : Colors.transparent),
                             ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            label: Text(
+                              filterStatus.name,
+                              style: boldTextStyle(
+                                size: 12,
+                                color: selectedTab.status == filterStatus.status
+                                    ? primaryColor
+                                    : appStore.isDarkMode
+                                        ? Colors.white
+                                        : appTextPrimaryColor,
+                              ),
+                            ),
+                            backgroundColor: selectedTab.status == filterStatus.status ? lightPrimaryColor : context.cardColor,
+                            onSelected: (bool selected) {
+                              selectedTab = filterStatus;
+                              page = 1;
+                              appStore.setLoading(true);
+                              getPromotionalBannerListAPI(status: selectedTab.status);
+                              setState(() {});
+                            },
                           ),
-                          backgroundColor: selectedTab.status == filterStatus.status ? lightPrimaryColor : context.cardColor,
-                          onSelected: (bool selected) {
-                            selectedTab = filterStatus;
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                SnapHelperWidget<List<PromotionalBannerListData>>(
+                  initialData: cachedPromotionalBannerListData,
+                  future: future,
+                  loadingWidget: PromotionalBannerListShimmer(),
+                  onSuccess: (promotionBannerList) {
+                    return AnimatedListView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.all(16),
+                      shrinkWrap: true,
+                      listAnimationType: ListAnimationType.FadeIn,
+                      fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                      itemCount: promotionBannerList.length,
+                      emptyWidget: appStore.isLoading
+                          ? Offstage()
+                          : NoDataWidget(
+                              title: selectedTab.status == PROMOTIONAL_BANNER_ALL ? languages.noPromotionalBannerYet : languages.promotionalBannerYet(selectedTab.name),
+                              titleTextStyle: boldTextStyle(),
+                              subTitle: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
+                                  ? languages.toSubmitYourBanner : languages.noRecordsFoundForBanner(selectedTab.name.toLowerCase()),
+                              imageWidget: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
+                                  ? ic_outline_banner.iconImage(
+                                      size: 60,
+                                      color: appStore.isDarkMode ? white.withValues(alpha: 0.9) : appTextSecondaryColor.withValues(alpha: 0.8),
+                                    )
+                                  : EmptyStateWidget(),
+                              retryText: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING) ? languages.hintAdd : null,
+                              onRetry: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
+                                  ? () {
+                                      if (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING) {
+                                        AddPromotionalBannerScreen(
+                                          callback: (p0) {
+                                            selectedTab = promotionalBannerStatus.first;
+                                            page = 1;
+                                            appStore.setLoading(true);
+                                            getPromotionalBannerListAPI(status: selectedTab.status);
+                                            setState(() {});
+                                          },
+                                        ).launch(context);
+                                      }
+                                    }
+                                  : null,
+                            ).paddingSymmetric(horizontal: 16),
+                      onNextPage: () {
+                        if (!isLastPage) {
+                          page++;
+                          appStore.setLoading(true);
+        
+                          getPromotionalBannerListAPI(status: selectedTab.status);
+                          setState(() {});
+                        }
+                      },
+                      onSwipeRefresh: () async {
+                        page = 1;
+        
+                        getPromotionalBannerListAPI(status: selectedTab.status);
+                        setState(() {});
+        
+                        return await 2.seconds.delay;
+                      },
+                      disposeScrollController: true,
+                      itemBuilder: (BuildContext context, index) {
+                        return PromotionalBannerItemComponent(
+                          promotionalBannerData: promotionBannerList[index],
+                          selectedStatus: selectedTab.status,
+                          onCallBack: () {
                             page = 1;
                             appStore.setLoading(true);
+        
                             getPromotionalBannerListAPI(status: selectedTab.status);
                             setState(() {});
                           },
-                        ),
-                      ],
+                        );
+                      },
                     );
                   },
-                ),
-              ),
-              SnapHelperWidget<List<PromotionalBannerListData>>(
-                initialData: cachedPromotionalBannerListData,
-                future: future,
-                loadingWidget: PromotionalBannerListShimmer(),
-                onSuccess: (promotionBannerList) {
-                  return AnimatedListView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.all(16),
-                    shrinkWrap: true,
-                    listAnimationType: ListAnimationType.FadeIn,
-                    fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-                    itemCount: promotionBannerList.length,
-                    emptyWidget: appStore.isLoading
-                        ? Offstage()
-                        : NoDataWidget(
-                            title: selectedTab.status == PROMOTIONAL_BANNER_ALL ? languages.noPromotionalBannerYet : languages.promotionalBannerYet(selectedTab.name),
-                            titleTextStyle: boldTextStyle(),
-                            subTitle: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
-                                ? languages.toSubmitYourBanner : languages.noRecordsFoundForBanner(selectedTab.name.toLowerCase()),
-                            imageWidget: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
-                                ? ic_outline_banner.iconImage(
-                                    size: 60,
-                                    color: appStore.isDarkMode ? white.withValues(alpha: 0.9) : appTextSecondaryColor.withValues(alpha: 0.8),
-                                  )
-                                : EmptyStateWidget(),
-                            retryText: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING) ? languages.hintAdd : null,
-                            onRetry: (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING)
-                                ? () {
-                                    if (selectedTab.status == PROMOTIONAL_BANNER_ALL || selectedTab.status == PROMOTIONAL_BANNER_PENDING) {
-                                      AddPromotionalBannerScreen(
-                                        callback: (p0) {
-                                          selectedTab = promotionalBannerStatus.first;
-                                          page = 1;
-                                          appStore.setLoading(true);
-                                          getPromotionalBannerListAPI(status: selectedTab.status);
-                                          setState(() {});
-                                        },
-                                      ).launch(context);
-                                    }
-                                  }
-                                : null,
-                          ).paddingSymmetric(horizontal: 16),
-                    onNextPage: () {
-                      if (!isLastPage) {
-                        page++;
+                  errorBuilder: (error) {
+                    return NoDataWidget(
+                      title: error,
+                      imageWidget: ErrorStateWidget(),
+                      retryText: languages.reload,
+                      onRetry: () {
+                        page = 1;
                         appStore.setLoading(true);
-
+        
                         getPromotionalBannerListAPI(status: selectedTab.status);
                         setState(() {});
-                      }
-                    },
-                    onSwipeRefresh: () async {
-                      page = 1;
-
-                      getPromotionalBannerListAPI(status: selectedTab.status);
-                      setState(() {});
-
-                      return await 2.seconds.delay;
-                    },
-                    disposeScrollController: true,
-                    itemBuilder: (BuildContext context, index) {
-                      return PromotionalBannerItemComponent(
-                        promotionalBannerData: promotionBannerList[index],
-                        selectedStatus: selectedTab.status,
-                        onCallBack: () {
-                          page = 1;
-                          appStore.setLoading(true);
-
-                          getPromotionalBannerListAPI(status: selectedTab.status);
-                          setState(() {});
-                        },
-                      );
-                    },
-                  );
-                },
-                errorBuilder: (error) {
-                  return NoDataWidget(
-                    title: error,
-                    imageWidget: ErrorStateWidget(),
-                    retryText: languages.reload,
-                    onRetry: () {
-                      page = 1;
-                      appStore.setLoading(true);
-
-                      getPromotionalBannerListAPI(status: selectedTab.status);
-                      setState(() {});
-                    },
-                  );
-                },
-              ).expand(),
-            ],
-          ),
-          Observer(builder: (_) => LoaderWidget().visible(appStore.isLoading)),
-        ],
+                      },
+                    );
+                  },
+                ).expand(),
+              ],
+            ),
+            Observer(builder: (_) => LoaderWidget().visible(appStore.isLoading)),
+          ],
+        ),
       ),
     );
   }

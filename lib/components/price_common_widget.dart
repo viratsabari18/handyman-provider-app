@@ -35,6 +35,11 @@ class PriceCommonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if service addons or service options exist
+    final bool hasServiceAddons = bookingDetail.serviceaddon.validate().isNotEmpty;
+    final bool hasServiceOptions = bookingDetail.bookingServiceOption.validate().isNotEmpty;
+    final bool shouldHidePriceRow = hasServiceAddons || hasServiceOptions;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -112,42 +117,126 @@ class PriceCommonWidget extends StatelessWidget {
             decoration: boxDecorationWithRoundedCorners(backgroundColor: context.cardColor),
             child: Column(
               children: [
-                if (bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE || bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                /// Price Row - Hide if service addons or service options exist
+                if (bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE || 
+                    bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                  if (!shouldHidePriceRow)
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(languages.hintPrice, style: secondaryTextStyle(size: 14)).expand(),
+                            16.width,
+                            if (bookingDetail.isFixedService)
+                              Marquee(
+                                child: Row(
+                                  children: [
+                                    PriceWidget(
+                                      price: bookingDetail.amount.validate(),
+                                      size: 12,
+                                      isBoldText: false,
+                                      color: appTextSecondaryColor,
+                                    ),
+                                    Text(' * ${bookingDetail.quantity != 0 ? bookingDetail.quantity : 1}  = ', style: secondaryTextStyle()),
+                                    PriceWidget(
+                                      price: (bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                                          ? bookingDetail.amount.validate()
+                                          : bookingDetail.finalTotalServicePrice.validate(),
+                                      isBoldText: true,
+                                      color: textPrimaryColorGlobal,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              PriceWidget(price: bookingDetail.finalTotalServicePrice.validate(), color: textPrimaryColorGlobal, isBoldText: true),
+                          ],
+                        ),
+                        16.height,
+                      ],
+                    ),
+                
+                /// Coupon Row
+                if (couponData != null)
                   Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(languages.hintPrice, style: secondaryTextStyle(size: 14)).expand(),
-                          16.width,
-                          if (bookingDetail.isFixedService)
-                            Marquee(
-                              child: Row(
-                                children: [
-                                  PriceWidget(
-                                    price: bookingDetail.amount.validate(),
-                                    size: 12,
-                                    isBoldText: false,
-                                    color: appTextSecondaryColor,
-                                  ),
-                                  Text(' * ${bookingDetail.quantity != 0 ? bookingDetail.quantity : 1}  = ', style: secondaryTextStyle()),
-                                  PriceWidget(
-                                    price: (bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
-                                        ? bookingDetail.amount.validate()
-                                        : bookingDetail.finalTotalServicePrice.validate(),
-                                    isBoldText: true,
-                                    color: textPrimaryColorGlobal,
-                                  ),
-                                ],
-                              ),
-                            )
-                          else
-                            PriceWidget(price: bookingDetail.finalTotalServicePrice.validate(), color: textPrimaryColorGlobal, isBoldText: true),
+                          Text(languages.lblCoupon, style: secondaryTextStyle(size: 14)),
+                          Text(" (${couponData!.code})", style: boldTextStyle(size: 14, color: primaryColor)).expand(),
+                          PriceWidget(price: bookingDetail.finalCouponDiscountAmount.validate(), color: Colors.green, isBoldText: true, isDiscountedPrice: true),
                         ],
                       ),
                       16.height,
                     ],
                   ),
+
+                /// Service Add-On Price
+                if (bookingDetail.serviceaddon.validate().isNotEmpty)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            languages.serviceAddOns,
+                            style: secondaryTextStyle(size: 14),
+                          ).flexible(fit: FlexFit.loose),
+                          16.width,
+                          PriceWidget(
+                            price: bookingDetail.serviceaddon
+                                .validate()
+                                .sumByDouble((p0) => p0.price.validate()),
+                            color: textPrimaryColorGlobal,
+                          ),
+                        ],
+                      ),
+                      16.height,
+                    ],
+                  ),
+                
+                /// Service Option Price
+                if (bookingDetail.bookingServiceOption.validate().isNotEmpty)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Service Options",
+                            style: secondaryTextStyle(size: 14),
+                          ).flexible(fit: FlexFit.loose),
+                          16.width,
+                          PriceWidget(
+                            price: bookingDetail.bookingServiceOption
+                                .validate()
+                                .sumByDouble((p0) => p0.price.validate()),
+                            color: textPrimaryColorGlobal,
+                          ),
+                        ],
+                      ),
+                      16.height,
+                    ],
+                  ),
+
+                /// Total Extra Charge
+                if ((bookingDetail.isHourlyService || bookingDetail.isFixedService))
+                  if (bookingDetail.totalExtraChargeAmount != 0)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(languages.lblTotalCharges, style: secondaryTextStyle(size: 14)).expand(),
+                            PriceWidget(price: bookingDetail.totalExtraChargeAmount, color: textPrimaryColorGlobal),
+                          ],
+                        ),
+                        16.height,
+                      ],
+                    ),
+                
+                /// DISCOUNT ROW - Positioned here (below service options and above subtotal)
                 if (bookingDetail.finalDiscountAmount != 0 && bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE)
                   Column(
                     children: [
@@ -178,50 +267,8 @@ class PriceCommonWidget extends StatelessWidget {
                       16.height,
                     ],
                   ),
-                if (couponData != null)
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(languages.lblCoupon, style: secondaryTextStyle(size: 14)),
-                          Text(" (${couponData!.code})", style: boldTextStyle(size: 14, color: primaryColor)).expand(),
-                          PriceWidget(price: bookingDetail.finalCouponDiscountAmount.validate(), color: Colors.green, isBoldText: true, isDiscountedPrice: true),
-                        ],
-                      ),
-                      16.height,
-                    ],
-                  ),
-
-                /// Show Service Add-On Price
-                if (bookingDetail.serviceaddon.validate().isNotEmpty)
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(languages.serviceAddOns, style: secondaryTextStyle(size: 14)).flexible(fit: FlexFit.loose),
-                          16.width,
-                          PriceWidget(price: bookingDetail.serviceaddon.validate().sumByDouble((p0) => p0.price), color: textPrimaryColorGlobal)
-                        ],
-                      ),
-                      16.height,
-                    ],
-                  ),
-
-                if ((bookingDetail.isHourlyService || bookingDetail.isFixedService))
-                  if (bookingDetail.totalExtraChargeAmount != 0)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(languages.lblTotalCharges, style: secondaryTextStyle(size: 14)).expand(),
-                            PriceWidget(price: bookingDetail.totalExtraChargeAmount, color: textPrimaryColorGlobal),
-                          ],
-                        ),
-                        16.height,
-                      ],
-                    ),
+                
+                /// Sub Total
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -241,6 +288,7 @@ class PriceCommonWidget extends StatelessWidget {
                   ],
                 ),
 
+                /// Tax Row
                 if (bookingDetail.finalTotalTax.validate() != 0 && bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE)
                   Column(
                     children: [
@@ -291,6 +339,8 @@ class PriceCommonWidget extends StatelessWidget {
                       ),
                     ],
                   ),
+                
+                /// Remaining Amount
                 if (serviceDetail.isAdvancePayment && bookingDetail.paidAmount.validate() != 0 && serviceDetail.isFixedService && !serviceDetail.isFreeService && bookingDetail.status.validate().toLowerCase() != BOOKING_STATUS_CANCELLED)
                   Column(
                     children: [

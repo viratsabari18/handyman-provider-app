@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/handyman_add_update_screen.dart';
 import 'package:handyman_provider_flutter/main.dart';
@@ -55,12 +56,20 @@ class HandymanListScreenState extends State<HandymanListScreen> {
 
   @override
   Widget build(BuildContext context) {
+        bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+
       backgroundColor: appStore.isDarkMode ? blackColor : cardColor,
       appBar: appBarWidget(
         languages.lblAllHandyman,
-        textColor: white,
-        color: context.primaryColor,
+          elevation: 0,
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,
+       
         actions: [
           IconButton(
             onPressed: () {

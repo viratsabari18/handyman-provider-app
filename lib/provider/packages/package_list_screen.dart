@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/cached_image_widget.dart';
@@ -11,8 +12,6 @@ import 'package:handyman_provider_flutter/provider/packages/package_detail_scree
 import 'package:handyman_provider_flutter/provider/packages/shimmer/package_list_shimmer.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:nb_utils/nb_utils.dart';
-
-import '../../components/base_scaffold_widget.dart';
 import '../../components/empty_error_state_widget.dart';
 
 class PackageListScreen extends StatefulWidget {
@@ -88,8 +87,18 @@ class _PackageListScreenState extends State<PackageListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.packages,
+              bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
+
+   appBar: appBarWidget(
+             languages.package,
+       
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,
       actions: [
         IconButton(
           icon: Icon(Icons.add, size: 28, color: white),
@@ -105,6 +114,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
           },
         ).visible(appStore.isLoggedIn && rolesAndPermissionStore.servicePackageList && rolesAndPermissionStore.servicePackageAdd),
       ],
+   ),
       body: Stack(
         children: [
           SnapHelperWidget<List<PackageData>>(
@@ -257,6 +267,7 @@ class _PackageListScreenState extends State<PackageListScreen> {
           Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading))
         ],
       ),
+  
     );
   }
 }
