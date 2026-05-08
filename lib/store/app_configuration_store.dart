@@ -46,7 +46,7 @@ abstract class _AppConfigurationStore with Store {
   String googleMapKey = '';
 
   @observable
-  String inquiryEmail = getStringAsync(INQUIRY_EMAIL);
+  String inquiryEmail = getStringAsync(INQUIRY_EMAIL); 
 
   @observable
   String helplineNumber = getStringAsync(HELPLINE_NUMBER);

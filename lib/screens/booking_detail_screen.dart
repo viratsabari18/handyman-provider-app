@@ -1424,18 +1424,18 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
               );
       } else if (res.bookingDetail!.paymentStatus == PAID ||
           res.bookingDetail!.paymentStatus == PENDING_BY_ADMINS) {
-        showBottomActionBar = true;
-        return AppButton(
-          text: languages.lblServiceProof,
-          color: context.primaryColor,
-          onTap: () {
-            ServiceProofScreen(bookingDetail: res)
-                .launch(context, pageRouteAnimation: PageRouteAnimation.Fade)
-                .then((value) {
-              init(flag: true);
-            });
-          },
-        );
+        // showBottomActionBar = true;
+        // return AppButton(
+        //   text: languages.lblServiceProof,
+        //   color: context.primaryColor,
+        //   onTap: () {
+        //     ServiceProofScreen(bookingDetail: res)
+        //         .launch(context, pageRouteAnimation: PageRouteAnimation.Fade)
+        //         .then((value) {
+        //       init(flag: true);
+        //     });
+        //   },
+        // );
       }
     } else if (res.bookingDetail!.status == BookingStatusKeys.inProgress) {
       showBottomActionBar = true;

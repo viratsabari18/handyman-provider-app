@@ -7,7 +7,7 @@ import '../../Models_new/register_request_model.dart';
 import '../../Models_new/register_response_model.dart';
 
 class AuthService {
-  static const String baseUrl = "https://ethically-thaw-bok.ngrok-free.dev/api";
+  static const String baseUrl = "https://luxvam.digital/api";
 
   /// 🔥 REGISTER (your working code) with improved error handling
   static Future<RegisterResponse?> registerUser({

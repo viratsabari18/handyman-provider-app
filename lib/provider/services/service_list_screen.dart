@@ -133,7 +133,7 @@ class _ServiceListScreenState extends State<ServiceListScreen> {
             },
             icon: Icon(Icons.add, size: 28, color: white),
             tooltip: languages.hintAddService,
-          ).visible(rolesAndPermissionStore.serviceAdd),
+          ).visible(rolesAndPermissionStore.serviceAdd ),
         ],
       ),
       body: Stack(
