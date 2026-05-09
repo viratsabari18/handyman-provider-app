@@ -10,17 +10,20 @@ class HandymanDashBoardResponse {
   Commission? commission;
   List<RatingData>? handymanReviews;
   bool? status;
+
   num? todayBooking;
   num? totalBooking;
   num? totalRevenue;
   num? todayCashAmount;
   num? totalCashInHand;
+  num? notificationUnreadCount;
+  num? remainingPayout;
+
   List<BookingData>? upcomingBookings;
+
   int? isHandymanAvailable;
   int? completedBooking;
-  num? notificationUnreadCount;
   int? isEmailVerified;
-  num? remainingPayout;
 
   HandymanDashBoardResponse({
     this.isEmailVerified,
@@ -40,59 +43,140 @@ class HandymanDashBoardResponse {
   });
 
   HandymanDashBoardResponse.fromJson(Map<String, dynamic> json) {
-    commission = json['commission'] != null ? Commission.fromJson(json['commission']) : null;
-    handymanReviews = json['handyman_reviews'] != null ? (json['handyman_reviews'] as List).map((i) => RatingData.fromJson(i)).toList() : null;
+    /// Commission
+    commission = json['commission'] != null
+        ? Commission.fromJson(json['commission'])
+        : null;
+
+    /// Reviews
+    handymanReviews = json['handyman_reviews'] != null
+        ? (json['handyman_reviews'] as List)
+            .map((i) => RatingData.fromJson(i))
+            .toList()
+        : null;
+
+    /// Basic
     status = json['status'];
-    todayBooking = json['today_booking'];
-    todayCashAmount = json['today_cash'];
-    totalCashInHand = json['total_cash_in_hand'];
-    totalBooking = json['total_booking'];
-    totalRevenue = json['total_revenue'];
-    upcomingBookings = json['upcomming_booking'] != null ? (json['upcomming_booking'] as List).map((i) => BookingData.fromJson(i)).toList() : null;
 
-    isHandymanAvailable = json['isHandymanAvailable'];
-    completedBooking = json['completed_booking'];
+    /// Safe numeric parsing
+    todayBooking =
+        num.tryParse(json['today_booking']?.toString() ?? '0');
 
-    Iterable it = json['monthly_revenue']['revenueData'];
+    todayCashAmount =
+        num.tryParse(json['today_cash']?.toString() ?? '0');
+
+    totalCashInHand =
+        num.tryParse(json['total_cash_in_hand']?.toString() ?? '0');
+
+    totalBooking =
+        num.tryParse(json['total_booking']?.toString() ?? '0');
+
+    totalRevenue =
+        num.tryParse(json['total_revenue']?.toString() ?? '0');
+
+    notificationUnreadCount =
+        num.tryParse(
+          json['notification_unread_count']?.toString() ?? '0',
+        );
+
+    remainingPayout =
+        num.tryParse(
+          json['remaining_payout']?.toString() ?? '0',
+        );
+
+    /// Upcoming bookings
+    upcomingBookings = json['upcomming_booking'] != null
+        ? (json['upcomming_booking'] as List)
+            .map((i) => BookingData.fromJson(i))
+            .toList()
+        : null;
+
+    /// Integer parsing
+    isHandymanAvailable = int.tryParse(
+      json['isHandymanAvailable']?.toString() ?? '0',
+    );
+
+    completedBooking = int.tryParse(
+      json['completed_booking']?.toString() ?? '0',
+    );
+
+    isEmailVerified = int.tryParse(
+      json['is_email_verified']?.toString() ?? '0',
+    );
+
+    /// Revenue chart safe handling
     chartData = [];
-    it.forEachIndexed((element, index) {
-      if ((element as Map).containsKey('${index + 1}')) {
-        chartData.add(RevenueChartData(month: months[index], revenue: element[(index + 1).toString()].toString().toDouble()));
-      } else {
-        chartData.add(RevenueChartData(month: months[index], revenue: 0));
-      }
-    });
-    notificationUnreadCount = json['notification_unread_count'];
 
-    isEmailVerified = json['is_email_verified'];
-    remainingPayout = json['remaining_payout'];
+    if (json['monthly_revenue'] != null &&
+        json['monthly_revenue']['revenueData'] != null) {
+      Iterable it = json['monthly_revenue']['revenueData'];
+
+it.forEachIndexed((element, index) {
+  if ((element as Map).containsKey('${index + 1}')) {
+    chartData.add(
+      RevenueChartData(
+        month: months[index],
+        revenue: double.tryParse(
+              element[(index + 1).toString()]
+                  .toString(),
+            ) ??
+            0.0,
+      ),
+    );
+  } else {
+    chartData.add(
+      RevenueChartData(
+        month: months[index],
+        revenue: 0.0,
+      ),
+    );
+  }
+});
+    }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['is_email_verified'] = this.isEmailVerified;
-    data['today_booking'] = this.todayBooking;
-    data['total_booking'] = this.totalBooking;
-    data['total_booking'] = this.totalBooking;
-    data['completed_booking'] = this.completedBooking;
-    if (this.upcomingBookings != null) {
-      data['upcomming_booking'] = this.upcomingBookings!.map((v) => v.toJson()).toList();
-    }
-    if (this.commission != null) {
-      data['commission'] = this.commission!.toJson();
+    final Map<String, dynamic> data = {};
+
+    data['status'] = status;
+
+    data['is_email_verified'] = isEmailVerified;
+
+    data['today_booking'] = todayBooking;
+
+    data['total_booking'] = totalBooking;
+
+    data['completed_booking'] = completedBooking;
+
+    data['today_cash'] = todayCashAmount;
+
+    data['total_cash_in_hand'] = totalCashInHand;
+
+    data['notification_unread_count'] =
+        notificationUnreadCount;
+
+    data['remaining_payout'] = remainingPayout;
+
+    data['isHandymanAvailable'] =
+        isHandymanAvailable;
+
+    if (upcomingBookings != null) {
+      data['upcomming_booking'] =
+          upcomingBookings!
+              .map((v) => v.toJson())
+              .toList();
     }
 
-    if (this.handymanReviews != null) {
-      data['handyman_reviews'] = this.handymanReviews!.map((v) => v.toJson()).toList();
+    if (commission != null) {
+      data['commission'] = commission!.toJson();
     }
 
-    data['isHandymanAvailable'] = this.isHandymanAvailable;
-    data['notification_unread_count'] = this.notificationUnreadCount;
-
-    data['today_cash'] = this.todayCashAmount;
-    data['total_cash_in_hand'] = this.totalCashInHand;
-    data['remaining_payout'] = this.remainingPayout;
+    if (handymanReviews != null) {
+      data['handyman_reviews'] =
+          handymanReviews!
+              .map((v) => v.toJson())
+              .toList();
+    }
 
     return data;
   }
@@ -100,39 +184,67 @@ class HandymanDashBoardResponse {
 
 class Commission {
   num? commission;
+
   String? createdAt;
   String? deletedAt;
-  int? id;
   String? name;
-  int? status;
   String? type;
   String? updatedAt;
 
-  Commission({this.commission, this.createdAt, this.deletedAt, this.id, this.name, this.status, this.type, this.updatedAt});
+  int? id;
+  int? status;
 
-  factory Commission.fromJson(Map<String, dynamic> json) {
+  Commission({
+    this.commission,
+    this.createdAt,
+    this.deletedAt,
+    this.id,
+    this.name,
+    this.status,
+    this.type,
+    this.updatedAt,
+  });
+
+  factory Commission.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return Commission(
-      commission: json['commission'],
-      createdAt: json['created_at'],
-      deletedAt: json['deleted_at'],
-      id: json['id'],
-      name: json['name'],
-      status: json['status'],
-      type: json['type'],
-      updatedAt: json['updated_at'],
+      commission: num.tryParse(
+        json['commission']?.toString() ?? '0',
+      ),
+
+      createdAt: json['created_at']?.toString(),
+
+      deletedAt: json['deleted_at']?.toString(),
+
+      id: int.tryParse(
+        json['id']?.toString() ?? '0',
+      ),
+
+      name: json['name']?.toString(),
+
+      status: int.tryParse(
+        json['status']?.toString() ?? '0',
+      ),
+
+      type: json['type']?.toString(),
+
+      updatedAt: json['updated_at']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['commission'] = this.commission;
-    data['created_at'] = this.createdAt;
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['status'] = this.status;
-    data['type'] = this.type;
-    data['updated_at'] = this.updatedAt;
-    data['deleted_at'] = this.deletedAt;
+    final Map<String, dynamic> data = {};
+
+    data['commission'] = commission;
+    data['created_at'] = createdAt;
+    data['deleted_at'] = deletedAt;
+    data['id'] = id;
+    data['name'] = name;
+    data['status'] = status;
+    data['type'] = type;
+    data['updated_at'] = updatedAt;
+
     return data;
   }
 }

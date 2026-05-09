@@ -143,124 +143,126 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
           },
         ),
       ],
-      body: Stack(
-        children: [
-          DefaultTabController(
-            length: filteredSectionList.length,
-            initialIndex: selectedIndex < filteredSectionList.length ? selectedIndex : 0,
-            child: Column(
-              children: [
-                16.height,
-                Container(
-                  child: TabBar(
-                    isScrollable: true,
-                    indicatorColor: Colors.transparent,
-                    dividerColor: Colors.transparent,
-                    tabAlignment: TabAlignment.start,
-                    padding: EdgeInsets.only(left: 16),
-                    labelPadding: EdgeInsets.only(right: 16),
-                    overlayColor: WidgetStatePropertyAll(WidgetStateColor.transparent),
-                    onTap: (i) {
-                      selectedIndex = i;
-                      setState(() {});
-                    },
-                    tabs: filteredSectionList.map((e) {
-                      int index = filteredSectionList.indexOf(e);
-                      return Tab(
-                        height: 30,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          decoration: boxDecorationWithRoundedCorners(
-                            borderRadius: radius(18),
-                            border: Border.all(color: index == selectedIndex ? primaryColor : Colors.transparent),
-                            backgroundColor: index == selectedIndex ? lightPrimaryColor : context.cardColor,
-                          ),
-                          child: Text(
-                            e.toBookingFilterSectionType(),
-                            style: boldTextStyle(
-                              color: index == selectedIndex
-                                  ? primaryColor
-                                  : appStore.isDarkMode
-                                      ? Colors.white
-                                      : appTextPrimaryColor,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            DefaultTabController(
+              length: filteredSectionList.length,
+              initialIndex: selectedIndex < filteredSectionList.length ? selectedIndex : 0,
+              child: Column(
+                children: [
+                  16.height,
+                  Container(
+                    child: TabBar(
+                      isScrollable: true,
+                      indicatorColor: Colors.transparent,
+                      dividerColor: Colors.transparent,
+                      tabAlignment: TabAlignment.start,
+                      padding: EdgeInsets.only(left: 16),
+                      labelPadding: EdgeInsets.only(right: 16),
+                      overlayColor: WidgetStatePropertyAll(WidgetStateColor.transparent),
+                      onTap: (i) {
+                        selectedIndex = i;
+                        setState(() {});
+                      },
+                      tabs: filteredSectionList.map((e) {
+                        int index = filteredSectionList.indexOf(e);
+                        return Tab(
+                          height: 30,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: boxDecorationWithRoundedCorners(
+                              borderRadius: radius(18),
+                              border: Border.all(color: index == selectedIndex ? primaryColor : Colors.transparent),
+                              backgroundColor: index == selectedIndex ? lightPrimaryColor : context.cardColor,
                             ),
-                          ).center(),
-                        ),
-                      );
-                    }).toList(),
+                            child: Text(
+                              e.toBookingFilterSectionType(),
+                              style: boldTextStyle(
+                                color: index == selectedIndex
+                                    ? primaryColor
+                                    : appStore.isDarkMode
+                                        ? Colors.white
+                                        : appTextPrimaryColor,
+                              ),
+                            ).center(),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-                TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  key: ValueKey(selectedIndex),
-                  children: filteredSectionList.map((e) {
-                    if (e == SERVICE_FILTER) {
-                      return FilterServiceListComponent();
-                    } else if (e == DATE_RANGE) {
-                      return FilterDateRangeComponent();
-                    } else if (e == CUSTOMER) {
-                      return FilterCustomerListComponent();
-                    } else if (e == PROVIDER.toLowerCase()) {
-                      return FilterProviderListComponent();
-                    } else if (e == HANDYMAN.toLowerCase()) {
-                      return FilterHandymanListComponent();
-                    } else if (e == BOOKING_STATUS) {
-                      return FilterBookingStatusComponent(bookingStatusList: bookingStatusList);
-                    } else if (e == PAYMENT_TYPE) {
-                      return PaymentTypeFilter(paymentTypeList: paymentTypeList);
-                    } else if (e == PAYMENT_STATUS) {
-                      return PaymentStatusFilter(paymentStatusList: paymentStatusList);
-                    } else {
-                      return Offstage();
-                    }
-                  }).toList(),
-                ).expand(),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Observer(
-              builder: (_) => Container(
-                decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
-                width: context.width(),
-                padding: EdgeInsets.all(16),
-                child: AppButton(
-                  text: languages.apply,
-                  textColor: Colors.white,
-                  color: context.primaryColor,
-                  onTap: () {
-                    filterStore.bookingStatus = [];
-
-                    bookingStatusList.forEach((element) {
-                      if (element.isSelected.validate()) {
-                        filterStore.addToBookingStatusList(bookingStatusList: element.value.validate());
+                  TabBarView(
+                    physics: NeverScrollableScrollPhysics(),
+                    key: ValueKey(selectedIndex),
+                    children: filteredSectionList.map((e) {
+                      if (e == SERVICE_FILTER) {
+                        return FilterServiceListComponent();
+                      } else if (e == DATE_RANGE) {
+                        return FilterDateRangeComponent();
+                      } else if (e == CUSTOMER) {
+                        return FilterCustomerListComponent();
+                      } else if (e == PROVIDER.toLowerCase()) {
+                        return FilterProviderListComponent();
+                      } else if (e == HANDYMAN.toLowerCase()) {
+                        return FilterHandymanListComponent();
+                      } else if (e == BOOKING_STATUS) {
+                        return FilterBookingStatusComponent(bookingStatusList: bookingStatusList);
+                      } else if (e == PAYMENT_TYPE) {
+                        return PaymentTypeFilter(paymentTypeList: paymentTypeList);
+                      } else if (e == PAYMENT_STATUS) {
+                        return PaymentStatusFilter(paymentStatusList: paymentStatusList);
+                      } else {
+                        return Offstage();
                       }
-                    });
-
-                    filterStore.paymentType = [];
-
-                    paymentTypeList.forEach((element) {
-                      if (element.isSelected.validate()) {
-                        filterStore.addToPaymentTypeList(paymentTypeList: element.type.validate());
-                      }
-                    });
-
-                    filterStore.paymentStatus = [];
-                    paymentStatusList.forEach((element) {
-                      if (element.isSelected.validate()) {
-                        filterStore.addToPaymentStatusList(paymentStatusList: element.status.validate());
-                      }
-                    });
-                    finish(context, true);
-                  },
-                ).visible(filterStore.isAnyFilterApplied),
+                    }).toList(),
+                  ).expand(),
+                ],
               ),
             ),
-          ),
-        ],
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Observer(
+                builder: (_) => Container(
+                  decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+                  width: context.width(),
+                  padding: EdgeInsets.all(16),
+                  child: AppButton(
+                    text: languages.apply,
+                    textColor: Colors.white,
+                    color: context.primaryColor,
+                    onTap: () {
+                      filterStore.bookingStatus = [];
+        
+                      bookingStatusList.forEach((element) {
+                        if (element.isSelected.validate()) {
+                          filterStore.addToBookingStatusList(bookingStatusList: element.value.validate());
+                        }
+                      });
+        
+                      filterStore.paymentType = [];
+        
+                      paymentTypeList.forEach((element) {
+                        if (element.isSelected.validate()) {
+                          filterStore.addToPaymentTypeList(paymentTypeList: element.type.validate());
+                        }
+                      });
+        
+                      filterStore.paymentStatus = [];
+                      paymentStatusList.forEach((element) {
+                        if (element.isSelected.validate()) {
+                          filterStore.addToPaymentStatusList(paymentStatusList: element.status.validate());
+                        }
+                      });
+                      finish(context, true);
+                    },
+                  ).visible(filterStore.isAnyFilterApplied),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
