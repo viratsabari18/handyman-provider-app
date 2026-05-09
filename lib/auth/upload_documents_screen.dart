@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import 'package:handyman_provider_flutter/components/base_scaffold_widget.dart';
@@ -590,9 +591,19 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     final mockDocuments = getMockDocuments();
-
-    return AppScaffold(
-      appBarTitle: languages.uploadDocuments,
+       bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return Scaffold(
+       appBar: appBarWidget(
+              languages.uploadDocuments,
+              elevation: 0,
+              systemUiOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              color: !isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.white : Colors.black,
+            
+       ),
       body: SafeArea(
         child: Stack(
           children: [
