@@ -12,6 +12,7 @@ import 'package:handyman_provider_flutter/Models_new/delete_provider_zones_reque
 import 'package:handyman_provider_flutter/Models_new/provider_categories.dart';
 import 'package:handyman_provider_flutter/Models_new/provider_zones.dart';
 import 'package:handyman_provider_flutter/Models_new/providers_services.dart';
+import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
 
 import 'package:handyman_provider_flutter/auth/sign_in_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
@@ -221,17 +222,29 @@ Future<List<ZoneModel>> getZoneList({
 }
 }
 
+Future<RegistrationData> getRegistrationFields() async {
+  return RegistrationData.fromJson(await handleResponse(await buildHttpResponse('registration-fields',method: HttpMethodType.GET),),
+  );
+}
+
 Future<RegisterResponse> registerUser(Map<String, Object?> request, {List<Documents>? imageFile}) async {
   MultipartRequest multiPartRequest = await getMultiPartRequest('register');
 
   multiPartRequest.fields.addAll(await getMultipartFields(val: request));
 
-  if (imageFile.validate().isNotEmpty) {
-    // Convert List<Documents> to List<File>
-    List<File> files = imageFile!.map((doc) => File(doc.filePath.validate())).toList();
-    multiPartRequest.files.addAll(await getMultipartImages(files: files, name: 'provider_document_'));
-    multiPartRequest.fields[AddServiceKey.attachmentCount] = imageFile.validate().length.toString();
+if (imageFile.validate().isNotEmpty) {
+  for (int i = 0; i < imageFile!.length; i++) {
+    multiPartRequest.files.add(
+      await MultipartFile.fromPath(
+        'provider_document_$i',
+        imageFile[i].filePath.validate(),
+      ),
+    );
   }
+
+  multiPartRequest.fields[AddServiceKey.attachmentCount] =
+      imageFile.length.toString();
+}
 
   log("${multiPartRequest.fields}");
 
@@ -268,41 +281,21 @@ Future changeLanguage(Map request) async {
   return RegisterResponse.fromJson(await (handleResponse(await buildHttpResponse('switch-language', request: request, method: HttpMethodType.POST))));
 }
 
-// Future<UserData> loginUser(Map request) async {
-//   try {
-//     LoginResponse res = LoginResponse.fromJson(await (handleResponse(await buildHttpResponse('login', request: request, method: HttpMethodType.POST))));
-
-//     if (res.data != null) {
-//       return res.data!;
-//     } else {
-//       throw errorSomethingWentWrong;
-//     }
-//   } catch (e) {
-//     throw e;
-//   }
-// }
-
 Future<UserData> loginUser(Map request) async {
-  await Future.delayed(Duration(seconds: 1)); // simulate API delay
+  try {
+    LoginResponse res = LoginResponse.fromJson(await (handleResponse(await buildHttpResponse('login', request: request, method: HttpMethodType.POST))));
 
-  return UserData(
-    id: 1,
-    firstName: "Test",
-    lastName: "User",
-    email: request['email'],
-    username: "testuser",
-    displayName: "Test User",
-    apiToken: "mock_token_123",
-    status: 1, // IMPORTANT: must be 1 for success
-    userType: "provider",
-    profileImage: "",
-    contactNumber: "9999999999",
-    cityName: "Chennai",
-
-    loginType: "email",
-    userRole: ["provider"],
-  );
+    if (res.data != null) {
+      return res.data!;
+    } else {
+      throw errorSomethingWentWrong;
+    }
+  } catch (e) {
+    throw e;
+  }
 }
+
+
 
 Future<void> saveUserData(UserData data) async {
   if (data.status == 1) {

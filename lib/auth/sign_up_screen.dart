@@ -2,8 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
-import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
+
 import 'package:handyman_provider_flutter/main.dart';
+import 'package:handyman_provider_flutter/networks/rest_apis.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
@@ -86,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       hasRegistrationError = false;
     });
     try {
-      final data = await RegistrationDataController.getRegistrationFields();
+      final data = await getRegistrationFields();
       setState(() {
         registrationData = data;
         // Remove duplicates from provider commissions based on commission value

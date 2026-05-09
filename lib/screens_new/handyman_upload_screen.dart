@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/base_scaffold_widget.dart';
 import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
-import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
+
 import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 import 'package:handyman_provider_flutter/provider/components/assign_handyman_screen.dart';
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../Models_new/register_request_model.dart';
-import '../Models_new/registration_data.dart';
+
 import '../Models_new/upload_doucment_model.dart';
 import '../components/app_widgets.dart';
 import '../components/empty_error_state_widget.dart';
@@ -21,7 +19,7 @@ import '../components/pdf_viewer_component.dart';
 import '../main.dart';
 import '../models/user_data.dart';
 import '../models/document_list_response.dart';
-import '../service new/auth service/auth_service.dart';
+
 import '../utils/colors.dart';
 import '../utils/common.dart';
 import '../utils/configs.dart';
@@ -208,41 +206,79 @@ class _HandymanUploadDocumentsScreenState
       appStore.setLoading(false);
     }
   }
+Future<void> registerNewHandyman() async {
+  try {
+    final Map<String, dynamic> request = {
+      'first_name': widget.formRequest['first_name'],
+      'last_name': widget.formRequest['last_name'],
+      'username': widget.formRequest['username'],
+      'email': widget.formRequest['email'],
+      'password': widget.formRequest['password'],
+      'contact_number': widget.formRequest['mobile'],
+      'user_type': widget.formRequest['user_type'],
 
-  Future<void> registerNewHandyman() async {
-    final request = RegisterRequest(
-      firstName: widget.formRequest['first_name'],
-      lastName: widget.formRequest['last_name'],
-      username: widget.formRequest['username'],
-      email: widget.formRequest['email'],
-      password: widget.formRequest['password'],
-      contactNumber: widget.formRequest['mobile'],
-      userType: widget.formRequest['user_type'],
-      providerId: widget.formRequest['provider_id'],
-      handymanTypeId: widget.formRequest['handyman_type_id'],
-      documentIds: uploadDocs.map((e) => e.id).toList(),
-    );
+      /// Handyman fields
+      if (widget.formRequest['provider_id'] != null)
+        'provider_id':
+            widget.formRequest['provider_id'].toString(),
 
-    final files = uploadDocs.map((doc) => doc.file).toList();
+      if (widget.formRequest['handyman_type_id'] != null)
+        'handymantype_id':
+            widget.formRequest['handyman_type_id'].toString(),
 
-    final response = await AuthService.registerUser(
-      request: request,
-      files: files,
+      if (widget.formRequest['is_commission'] != null)
+        'is_commission':
+            widget.formRequest['is_commission'].toString(),
+
+      'attachment_count': uploadDocs.length.toString(),
+    };
+
+    /// Document IDs
+    for (int i = 0; i < uploadDocs.length; i++) {
+      request['document_id[$i]'] =
+          uploadDocs[i].id.toString();
+    }
+
+    /// Convert UploadDocument -> Documents
+    final List<Documents> documentsForApi =
+        uploadDocs.map((doc) {
+      return Documents(
+        id: doc.id,
+        filePath: doc.file.path,
+        name: doc.name,
+      );
+    }).toList();
+
+    final response = await registerUser(
+      request,
+      imageFile: documentsForApi,
     );
 
     if (response != null && response.data?.id != null) {
-      toast(response.message ?? "Handyman registered successfully");
+      toast(response.message ??
+          "Handyman registered successfully");
+
       uploadDocs.clear();
 
       if (widget.onUpdate != null) {
         widget.onUpdate!.call();
       }
-      BookingFragment().launch(context,
-          pageRouteAnimation: PageRouteAnimation.SlideBottomTop);
+
+      BookingFragment().launch(
+        context,
+        pageRouteAnimation:
+            PageRouteAnimation.SlideBottomTop,
+      );
     } else {
-      throw Exception(response?.message ?? "Registration failed");
+      throw Exception(
+        response?.message ?? "Registration failed",
+      );
     }
+  } catch (e) {
+    toast(e.toString());
+    log("Handyman Registration Error: $e");
   }
+}
 
   Future<void> updateHandyman() async {
     var request = {

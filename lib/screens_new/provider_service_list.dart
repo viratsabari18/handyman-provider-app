@@ -121,13 +121,13 @@ class _ProviderServiceListState extends State<ProviderServiceList> {
               );
             },
             loadingWidget: ServiceListShimmer(
-              width: changeListType ? context.width() : context.width() * 0.5 - 24,
+              width:
+                  changeListType ? context.width() : context.width() * 0.5 - 24,
             ),
             onSuccess: (list) {
               if (list.isEmpty) {
                 return NoDataWidget(
-                  title: 'No services found',
-                  subTitle: 'No services available',
+                  title: languages.noDataFound,
                   imageWidget: const EmptyStateWidget(),
                 );
               }
@@ -153,19 +153,24 @@ class _ProviderServiceListState extends State<ProviderServiceList> {
                   if (services.isNotEmpty)
                     Container(
                       alignment: Alignment.topLeft,
-                      padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 24),
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, top: 4, bottom: 24),
                       child: AnimatedWrap(
                         spacing: 16.0,
                         runSpacing: 16.0,
-                        scaleConfiguration: ScaleConfiguration(duration: 400.milliseconds, delay: 50.milliseconds),
+                        scaleConfiguration: ScaleConfiguration(
+                            duration: 400.milliseconds, delay: 50.milliseconds),
                         listAnimationType: ListAnimationType.FadeIn,
-                        fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                        fadeInConfiguration:
+                            FadeInConfiguration(duration: 2.seconds),
                         alignment: WrapAlignment.start,
                         itemCount: services.length,
                         itemBuilder: (context, index) {
                           return ProviderServiceComponent(
                             data: services[index],
-                            width: changeListType ? context.width() : context.width() * 0.5 - 24,
+                            width: changeListType
+                                ? context.width()
+                                : context.width() * 0.5 - 24,
                             changeList: changeListType,
                             onCallBack: () {
                               page = 1;
@@ -181,7 +186,8 @@ class _ProviderServiceListState extends State<ProviderServiceList> {
               );
             },
           ),
-          Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
         ],
       ),
     );
@@ -263,7 +269,8 @@ class ProviderServiceComponent extends StatelessWidget {
                         ),
                       ),
                       if (data.serviceRequestStatus != null &&
-                          data.serviceRequestStatus != ServiceRequestKey.approve)
+                          data.serviceRequestStatus !=
+                              ServiceRequestKey.approve)
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 2, vertical: 2),
@@ -301,7 +308,8 @@ class ProviderServiceComponent extends StatelessWidget {
                     ),
                     child: PriceWidget(
                       price: data.price.validate(),
-                      isHourlyService: data.type.validate() == SERVICE_TYPE_HOURLY,
+                      isHourlyService:
+                          data.type.validate() == SERVICE_TYPE_HOURLY,
                       color: Colors.white,
                       hourlyTextColor: Colors.white,
                       size: 14,

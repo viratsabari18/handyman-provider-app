@@ -19,7 +19,7 @@ import 'package:handyman_provider_flutter/utils/images.dart';
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:handyman_provider_flutter/Models_new/registration_data.dart';
-import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
+
 
 import '../provider/earning/handyman_payout_list_screen.dart';
 
@@ -117,7 +117,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
   Future<void> fetchRegistrationData() async {
     appStore.setLoading(true);
     try {
-      final data = await RegistrationDataController.getRegistrationFields();
+      final data = await getRegistrationFields();
       setState(() {
         registrationData = data;
         uniqueHandymanCommissions = _getUniqueHandymanCommissions(data.handymanTypes ?? []);

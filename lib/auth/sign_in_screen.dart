@@ -5,7 +5,6 @@ import 'package:handyman_provider_flutter/auth/forgot_password_dialog.dart';
 import 'package:handyman_provider_flutter/auth/sign_up_screen.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
-import 'package:handyman_provider_flutter/controllers/auth_controller.dart';
 import 'package:handyman_provider_flutter/handyman/handyman_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
@@ -338,11 +337,13 @@ class _SignInScreenState extends State<SignInScreen> {
     appStore.setLoading(true);
 
     try {
-      final controller = AuthController();
-      final user = await controller.login(
-        email: emailCont.text.trim(),
-        password: passwordCont.text.trim(),
-      );
+      // ✅ FIXED: Create a Map with email and password parameters
+      final Map<String, dynamic> request = {
+        'email': emailCont.text.trim(),
+        'password': passwordCont.text,
+      };
+      
+      final user = await loginUser(request);
 
       if (user == null) {
         setState(() {

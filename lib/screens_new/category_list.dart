@@ -7,7 +7,7 @@ import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/back_widget.dart';
 import 'package:handyman_provider_flutter/components/cached_image_widget.dart';
 import 'package:handyman_provider_flutter/components/empty_error_state_widget.dart';
-import 'package:handyman_provider_flutter/controllers/registration_data_controller.dart';
+
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -91,7 +91,7 @@ class _CategoryListState extends State<CategoryList> {
     });
 
     try {
-      final response = await RegistrationDataController.getRegistrationFields();
+      final response = await getRegistrationFields();
 
       setState(() {
         if (response.categories != null && response.categories!.isNotEmpty) {
