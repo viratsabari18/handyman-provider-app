@@ -32,6 +32,7 @@ class _SwitchPushNotificationSubscriptionComponentState extends State<SwitchPush
 
   @override
   Widget build(BuildContext context) {
+    log("Firebase User => ${FirebaseAuth.instance.currentUser}");
     return Observer(
       builder: (_) => SettingItemWidget(
         leading: ic_notification.iconImage(size: appStore.userType == USER_TYPE_PROVIDER ? 16 : 18),

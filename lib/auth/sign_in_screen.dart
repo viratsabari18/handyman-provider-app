@@ -8,6 +8,7 @@ import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
 import 'package:handyman_provider_flutter/handyman/handyman_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
+
 import 'package:handyman_provider_flutter/provider/provider_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
@@ -94,7 +95,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 key: formKey,
                 autovalidateMode: autovalidateMode,
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -104,7 +106,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       if (loginError != null)
                         Container(
                           margin: EdgeInsets.only(bottom: 16),
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
                             color: Colors.red.shade50,
                             borderRadius: BorderRadius.circular(8),
@@ -112,12 +115,14 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              Icon(Icons.error_outline,
+                                  color: Colors.red, size: 20),
                               SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   loginError!,
-                                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
+                                  style: TextStyle(
+                                      color: Colors.red.shade700, fontSize: 14),
                                 ),
                               ),
                             ],
@@ -139,11 +144,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                 context,
                                 hint: languages.hintEmailAddressTxt,
                               ),
-                              suffix: ic_message.iconImage(size: 10).paddingAll(14),
+                              suffix:
+                                  ic_message.iconImage(size: 10).paddingAll(14),
                               autoFillHints: [AutofillHints.email],
                               onChanged: (value) => _clearLoginError(),
-                              onFieldSubmitted: (val) =>
-                                  FocusScope.of(context).requestFocus(passwordFocus),
+                              onFieldSubmitted: (val) => FocusScope.of(context)
+                                  .requestFocus(passwordFocus),
                             ),
                             16.height,
                             AppTextField(
@@ -158,7 +164,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                   ic_hide.iconImage(size: 10).paddingAll(14),
                               errorMinimumPasswordLength:
                                   "${languages.errorPasswordLength} $passwordLengthGlobal",
-                              decoration: inputDecoration(context, hint: languages.hintPassword),
+                              decoration: inputDecoration(context,
+                                  hint: languages.hintPassword),
                               autoFillHints: [AutofillHints.password],
                               isValidationRequired: true,
                               onChanged: (value) => _clearLoginError(),
@@ -210,7 +217,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               Observer(
-                builder: (_) => LoaderWidget().center().visible(appStore.isLoading),
+                builder: (_) =>
+                    LoaderWidget().center().visible(appStore.isLoading),
               ),
             ],
           ),
@@ -256,7 +264,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     isRemember = !isRemember;
                     setState(() {});
                   },
-                  child: Text(languages.rememberMe, style: secondaryTextStyle()),
+                  child:
+                      Text(languages.rememberMe, style: secondaryTextStyle()),
                 ),
               ],
             ),
@@ -342,7 +351,7 @@ class _SignInScreenState extends State<SignInScreen> {
         'email': emailCont.text.trim(),
         'password': passwordCont.text,
       };
-      
+
       final user = await loginUser(request);
 
       if (user == null) {
@@ -358,7 +367,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       // Save token
       await setValue("TOKEN", user.apiToken ?? "");
-      
+
       // Handle Remember Me: save email/password only if checked
       if (isRemember) {
         await setValue(USER_EMAIL, emailCont.text.trim());
@@ -370,12 +379,13 @@ class _SignInScreenState extends State<SignInScreen> {
       }
       await setValue(IS_REMEMBERED, isRemember);
       await saveUserData(user);
+      await authService.verifyFirebaseUser();
 
       passwordCont.clear();
       redirectWidget(res: user);
     } catch (e) {
       appStore.setLoading(false);
-      
+
       String errorMessage = e.toString();
       if (errorMessage.contains('Exception:')) {
         errorMessage = errorMessage.replaceAll('Exception:', '').trim();
@@ -388,7 +398,7 @@ class _SignInScreenState extends State<SignInScreen> {
           isLoginError = true;
         });
       } else if (errorMessage.toLowerCase().contains('password') ||
-                 errorMessage.toLowerCase().contains('credential')) {
+          errorMessage.toLowerCase().contains('credential')) {
         setState(() {
           loginError = "Incorrect password. Please try again.";
           isLoginError = true;
