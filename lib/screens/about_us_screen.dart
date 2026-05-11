@@ -59,7 +59,7 @@ class AboutUsScreen extends StatelessWidget {
                 checkIfLink(context, appConfigurationStore.inquiryEmail, title: languages.lblHelpAndSupport);
                 }
               } else if (title == languages.lblHelpLineNum) {
-                checkIfLink(context,"7986544683", title: languages.lblHelpLineNum);
+                checkIfLink(context,appConfigurationStore.helplineNumber, title: languages.lblHelpLineNum);
               } else if (title == 'Rate us') { //Todo:
                 {
                   if (isAndroid) {
