@@ -43,23 +43,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
   FocusNode passwordFocus = FocusNode();
 
   String? selectedUserTypeValue;
-  
+
   // For Provider
   ProviderType? selectedProviderCommission;
-  
+
   // For Handyman
   Provider? selectedProvider;
   HandymanType? selectedHandymanCommission;
-  
+
   bool isLoading = false;
-  
+
   // Add error tracking
   String? registrationError;
   bool hasRegistrationError = false;
 
   // API Data
   RegistrationData? registrationData;
-  
+
   // Unique lists for commissions
   List<ProviderType> uniqueProviderCommissions = [];
   List<HandymanType> uniqueHandymanCommissions = [];
@@ -91,9 +91,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       setState(() {
         registrationData = data;
         // Remove duplicates from provider commissions based on commission value
-        uniqueProviderCommissions = _getUniqueProviderCommissions(data.providerTypes ?? []);
+        uniqueProviderCommissions =
+            _getUniqueProviderCommissions(data.providerTypes ?? []);
         // Remove duplicates from handyman commissions based on commission value
-        uniqueHandymanCommissions = _getUniqueHandymanCommissions(data.handymanTypes ?? []);
+        uniqueHandymanCommissions =
+            _getUniqueHandymanCommissions(data.handymanTypes ?? []);
         isLoading = false;
       });
     } catch (e) {
@@ -108,7 +110,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // Method to remove duplicate provider commissions based on commission percentage
-  List<ProviderType> _getUniqueProviderCommissions(List<ProviderType> commissions) {
+  List<ProviderType> _getUniqueProviderCommissions(
+      List<ProviderType> commissions) {
     final seenCommissions = <int>{};
     return commissions.where((commission) {
       if (commission.commission == null) return false;
@@ -122,7 +125,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // Method to remove duplicate handyman commissions based on commission percentage
-  List<HandymanType> _getUniqueHandymanCommissions(List<HandymanType> commissions) {
+  List<HandymanType> _getUniqueHandymanCommissions(
+      List<HandymanType> commissions) {
     final seenCommissions = <int>{};
     return commissions.where((commission) {
       if (commission.commission == null) return false;
@@ -143,15 +147,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     print('Email: ${emailCont.text.trim()}');
     print('Mobile: ${mobileCont.text.trim()}');
     print('Password: ${'*' * passwordCont.text.length}');
-    print('User Type: ${selectedUserTypeValue == USER_TYPE_PROVIDER ? "Provider" : "Handyman"}');
+    print(
+        'User Type: ${selectedUserTypeValue == USER_TYPE_PROVIDER ? "Provider" : "Handyman"}');
     print('Designation: ${designationCont.text.trim()}');
-    
-    if (selectedUserTypeValue == USER_TYPE_PROVIDER && selectedProviderCommission != null) {
-      print('Provider Commission: ${selectedProviderCommission!.commission}% (${selectedProviderCommission!.type})');
+
+    if (selectedUserTypeValue == USER_TYPE_PROVIDER &&
+        selectedProviderCommission != null) {
+      print(
+          'Provider Commission: ${selectedProviderCommission!.commission}% (${selectedProviderCommission!.type})');
     } else if (selectedUserTypeValue == USER_TYPE_HANDYMAN) {
       print('Selected Provider: ${selectedProvider?.name}');
       if (selectedHandymanCommission != null) {
-        print('Handyman Commission: ${selectedHandymanCommission!.commission}% (${selectedHandymanCommission!.type})');
+        print(
+            'Handyman Commission: ${selectedHandymanCommission!.commission}% (${selectedHandymanCommission!.type})');
       }
     }
     print('===============================================================');
@@ -197,7 +205,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           scrolledUnderElevation: 0,
           systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: appStore.isDarkMode ? Brightness.light : Brightness.dark,
+            statusBarIconBrightness:
+                appStore.isDarkMode ? Brightness.light : Brightness.dark,
             statusBarColor: context.scaffoldBackgroundColor,
           ),
         ),
@@ -215,7 +224,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       if (registrationError != null)
                         Container(
                           margin: EdgeInsets.only(bottom: 16),
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
                             color: Colors.red.shade50,
                             borderRadius: BorderRadius.circular(8),
@@ -223,12 +233,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              Icon(Icons.error_outline,
+                                  color: Colors.red, size: 20),
                               SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   registrationError!,
-                                  style: TextStyle(color: Colors.red.shade700, fontSize: 14),
+                                  style: TextStyle(
+                                      color: Colors.red.shade700, fontSize: 14),
                                 ),
                               ),
                             ],
@@ -278,9 +290,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           focus: fNameFocus,
           nextFocus: lNameFocus,
           errorThisFieldRequired: languages.hintRequired,
-          decoration: inputDecoration(context, hint: languages.hintFirstNameTxt),
+          decoration:
+              inputDecoration(context, hint: languages.hintFirstNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -293,7 +307,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintLastNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -306,7 +321,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintUserNameTxt),
           suffix: profile.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -317,9 +333,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           focus: emailFocus,
           nextFocus: mobileFocus,
           errorThisFieldRequired: languages.hintRequired,
-          decoration: inputDecoration(context, hint: languages.hintEmailAddressTxt),
+          decoration:
+              inputDecoration(context, hint: languages.hintEmailAddressTxt),
           suffix: ic_message.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -330,10 +348,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           focus: mobileFocus,
           errorThisFieldRequired: languages.hintRequired,
           nextFocus: designationFocus,
-          decoration: inputDecoration(context, hint: languages.hintContactNumberTxt),
+          decoration:
+              inputDecoration(context, hint: languages.hintContactNumberTxt),
           maxLength: 15,
           suffix: calling.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -346,7 +366,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           nextFocus: userTypeFocus,
           decoration: inputDecoration(context, hint: languages.lblDesignation),
           suffix: profile.iconImage(size: 10).paddingAll(14),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
         ),
         16.height,
 
@@ -383,7 +404,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
 
         // For Provider: Single Commission Dropdown (with duplicates removed)
-        if (selectedUserTypeValue == USER_TYPE_PROVIDER && registrationData != null)
+        if (selectedUserTypeValue == USER_TYPE_PROVIDER &&
+            registrationData != null)
           Column(
             children: [
               16.height,
@@ -415,7 +437,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
 
         // For Handyman: Two Dropdowns (Provider Name + Handyman Commission with duplicates removed)
-        if (selectedUserTypeValue == USER_TYPE_HANDYMAN && registrationData != null)
+        if (selectedUserTypeValue == USER_TYPE_HANDYMAN &&
+            registrationData != null)
           Column(
             children: [
               16.height,
@@ -446,9 +469,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   });
                 },
               ),
-              
+
               16.height,
-              
+
               // Second Dropdown: Handyman Commission (with duplicates removed)
               DropdownButtonFormField<HandymanType>(
                 items: uniqueHandymanCommissions.map((handymanType) {
@@ -485,11 +508,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           controller: passwordCont,
           focus: passwordFocus,
           obscureText: true,
-          suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-          suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
+          suffixPasswordVisibleWidget:
+              ic_show.iconImage(size: 10).paddingAll(14),
+          suffixPasswordInvisibleWidget:
+              ic_hide.iconImage(size: 10).paddingAll(14),
           errorThisFieldRequired: languages.hintRequired,
           decoration: inputDecoration(context, hint: languages.hintPassword),
-          onChanged: (value) => _clearRegistrationError(), // Clear error on typing
+          onChanged: (value) =>
+              _clearRegistrationError(), // Clear error on typing
           validator: (val) {
             if (val == null || val.isEmpty) {
               return languages.hintRequired;
@@ -512,7 +538,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           onTap: () async {
             // Clear previous errors
             _clearRegistrationError();
-            
+
             if (formKey.currentState!.validate()) {
               if (selectedUserTypeValue == null) {
                 toast(languages.userRole);
@@ -557,7 +583,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               // Clear password field for security after validation (but before navigation)
               // Note: We'll keep password for the next screen, but we can clear sensitive data if needed
-              
+
               // Log all user entered values
               _logUserEnteredValues();
 
@@ -613,7 +639,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: secondaryTextStyle(),
             ),
             TextSpan(
-              text: languages.signIn ,
+              text: languages.signIn,
               style: boldTextStyle(color: primaryColor),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {

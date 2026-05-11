@@ -246,7 +246,7 @@ if (imageFile.validate().isNotEmpty) {
       imageFile.length.toString();
 }
 
-  log("${multiPartRequest.fields}");
+
 
   multiPartRequest.headers.addAll(buildHeaderTokens());
 
