@@ -130,8 +130,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.addBank,
+    return Scaffold(
+       appBar: appBarWidget(languages.addBank),
       body: Stack(
         children: [
           RefreshIndicator(

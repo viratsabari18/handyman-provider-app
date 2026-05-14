@@ -2056,7 +2056,7 @@ class LanguageAr  extends Languages {
   String get credit => 'ائتمان';
 
   @override
-  String get fullNameOnBankAccount => 'الاسم الكامل على الحساب البنكي';
+  String get fullNameOnBankAccount => 'اسم المزود';
 
   @override
   String get updateYourLocation => 'قم بتحديث موقعك';

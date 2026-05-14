@@ -181,10 +181,10 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
     });
     
     if (formKey.currentState!.validate()) {
-      if (selectedHandymanCommission == null) {
-        toast(languages.pleaseSelectCommission);
-        return;
-      }
+      // if (selectedHandymanCommission == null) {
+      //   toast(languages.pleaseSelectCommission);
+      //   return;
+      // }
       
       if (selectedServiceZone == null && providerZoneList.isNotEmpty) {
         toast(languages.selectServiceZone);
@@ -204,9 +204,9 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
         'user_type': widget.userType ?? USER_TYPE_HANDYMAN,
         'designation': designationCont.text.validate(),
         'handyman_zone_id': serviceZoneId.validate(),
-        'handyman_type_id': selectedHandymanCommission?.id,
-        'commission': selectedHandymanCommission?.commission,
-        'commission_type': selectedHandymanCommission?.type,
+        // 'handyman_type_id': selectedHandymanCommission?.id,
+        // 'commission': selectedHandymanCommission?.commission,
+        // 'commission_type': selectedHandymanCommission?.type,
         'provider_id': appStore.userId, // Current provider's ID
       };
       
@@ -239,10 +239,10 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
     });
     
     if (formKey.currentState!.validate()) {
-      if (selectedHandymanCommission == null) {
-        toast(languages.pleaseSelectCommission);
-        return;
-      }
+      // if (selectedHandymanCommission == null) {
+      //   toast(languages.pleaseSelectCommission);
+      //   return;
+      // }
       
       formKey.currentState!.save();
       hideKeyboard(context);
@@ -259,7 +259,7 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
         UserKeys.designation: designationCont.text.validate(),
         if (serviceZoneId != null && serviceZoneId != -1) UserKeys.handyman_zone_id: serviceZoneId.validate(),
         UserKeys.email: emailCont.text,
-        UserKeys.handymanTypeId: selectedHandymanCommission?.id,
+        // UserKeys.handymanTypeId: selectedHandymanCommission?.id,
       };
       
       appStore.setLoading(true);
@@ -564,36 +564,36 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                     ),
                     16.height,
                     // Commission Dropdown
-                    IgnorePointer(
-                      ignoring: isUpdate ? !rolesAndPermissionStore.handymanEdit : false,
-                      child: DropdownButtonFormField<HandymanType>(
-                        decoration: inputDecoration(
-                          context,
-                          hint: languages.lblSelectCommission,
-                          fillColor: context.scaffoldBackgroundColor,
-                        ),
-                        isExpanded: true,
-                        dropdownColor: context.cardColor,
-                        value: selectedHandymanCommission,
-                        items: uniqueHandymanCommissions.map((handymanType) {
-                          return DropdownMenuItem<HandymanType>(
-                            value: handymanType,
-                            child: Row(
-                              children: [
-                                Text(
-                                  '${handymanType.commission}% ${handymanType.type}',
-                                  style: primaryTextStyle(),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (HandymanType? value) async {
-                          selectedHandymanCommission = value;
-                          setState(() {});
-                        },
-                      ),
-                    ).visible(uniqueHandymanCommissions.isNotEmpty),
+                    // IgnorePointer(
+                    //   ignoring: isUpdate ? !rolesAndPermissionStore.handymanEdit : false,
+                    //   child: DropdownButtonFormField<HandymanType>(
+                    //     decoration: inputDecoration(
+                    //       context,
+                    //       hint: languages.lblSelectCommission,
+                    //       fillColor: context.scaffoldBackgroundColor,
+                    //     ),
+                    //     isExpanded: true,
+                    //     dropdownColor: context.cardColor,
+                    //     value: selectedHandymanCommission,
+                    //     items: uniqueHandymanCommissions.map((handymanType) {
+                    //       return DropdownMenuItem<HandymanType>(
+                    //         value: handymanType,
+                    //         child: Row(
+                    //           children: [
+                    //             Text(
+                    //               '${handymanType.commission}% ${handymanType.type}',
+                    //               style: primaryTextStyle(),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       );
+                    //     }).toList(),
+                    //     onChanged: (HandymanType? value) async {
+                    //       selectedHandymanCommission = value;
+                    //       setState(() {});
+                    //     },
+                    //   ),
+                    // ).visible(uniqueHandymanCommissions.isNotEmpty),
                     16.height,
                     IgnorePointer(
                       ignoring: isUpdate ? !rolesAndPermissionStore.handymanEdit : false,

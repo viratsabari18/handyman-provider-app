@@ -254,21 +254,21 @@ class _HandymanProfileFragmentState extends State<HandymanProfileFragment> {
                 divider: Offstage(),
                 items: [
                   16.height,
-                  SettingItemWidget(
-                    decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(0))),
-                    leading: ic_un_fill_wallet.iconImage(size: 16),
-                    title: languages.walletBalance,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    onTap: () {
-                      if (appConfigurationStore.onlinePaymentStatus) {
-                        WalletHistoryScreen().launch(context);
-                      }
-                    },
-                    trailing: Text(
-                      appStore.userWalletAmount.toPriceFormat(),
-                      style: boldTextStyle(color: Colors.green),
-                    ),
-                  ),
+                  // SettingItemWidget(
+                  //   decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(0))),
+                  //   leading: ic_un_fill_wallet.iconImage(size: 16),
+                  //   title: languages.walletBalance,
+                  //   titleTextStyle: boldTextStyle(size: 12),
+                  //   onTap: () {
+                  //     if (appConfigurationStore.onlinePaymentStatus) {
+                  //       WalletHistoryScreen().launch(context);
+                  //     }
+                  //   },
+                  //   trailing: Text(
+                  //     appStore.userWalletAmount.toPriceFormat(),
+                  //     style: boldTextStyle(color: Colors.green),
+                  //   ),
+                  // ),
                   if (appStore.isLoggedIn && rolesAndPermissionStore.helpDeskList)
                     SettingItemWidget(
                       decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(16))),
@@ -294,20 +294,20 @@ class _HandymanProfileFragmentState extends State<HandymanProfileFragment> {
                 divider: Offstage(),
                 items: [
                   16.height,
-                  SettingItemWidget(
-                    decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(0))),
-                    leading: Image.asset(ic_theme, width: 16, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8)),
-                    title: languages.appTheme,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 24),
-                    onTap: () async {
-                      await showInDialog(
-                        context,
-                        builder: (context) => ThemeSelectionDaiLog(context),
-                        contentPadding: EdgeInsets.zero,
-                      );
-                    },
-                  ),
+                  // SettingItemWidget(
+                  //   decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(0))),
+                  //   leading: Image.asset(ic_theme, width: 16, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8)),
+                  //   title: languages.appTheme,
+                  //   titleTextStyle: boldTextStyle(size: 12),
+                  //   trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 24),
+                  //   onTap: () async {
+                  //     await showInDialog(
+                  //       context,
+                  //       builder: (context) => ThemeSelectionDaiLog(context),
+                  //       contentPadding: EdgeInsets.zero,
+                  //     );
+                  //   },
+                  // ),
                   SettingItemWidget(
                     decoration: boxDecorationDefault(color: context.cardColor, borderRadius: BorderRadiusDirectional.vertical(bottom: Radius.circular(0))),
                     leading: Image.asset(language, width: 16, color: context.iconColor),

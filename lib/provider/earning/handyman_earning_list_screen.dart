@@ -49,8 +49,8 @@ class _HandymanEarningListScreenState extends State<HandymanEarningListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.handymanEarnings,
+    return Scaffold(
+     appBar: appBarWidget( languages.handymanEarnings),
       body: SnapHelperWidget<List<EarningListModel>>(
         future: future,
         loadingWidget: HandymanEarningListShimmer(),

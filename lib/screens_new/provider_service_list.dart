@@ -95,7 +95,7 @@ class _ProviderServiceListState extends State<ProviderServiceList> {
         ),
         color: !isDark ? Colors.white : Colors.black,
         textColor: isDark ? Colors.white : Colors.black,
-        backWidget: BackWidget(),
+        backWidget: BackWidget(color: Colors.black,),
         textSize: APP_BAR_TEXT_SIZE,
         actions: [
           IconButton(
@@ -104,7 +104,7 @@ class _ProviderServiceListState extends State<ProviderServiceList> {
               setState(() {});
             },
             icon: Image.asset(changeListType ? list : grid,
-                height: 20, width: 20),
+                height: 20, width: 20,color: Colors.black,),
           ),
         ],
       ),

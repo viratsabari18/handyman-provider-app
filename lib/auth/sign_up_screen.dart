@@ -49,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // For Handyman
   Provider? selectedProvider;
-  HandymanType? selectedHandymanCommission;
+  // HandymanType? selectedHandymanCommission;
 
   bool isLoading = false;
 
@@ -157,10 +157,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'Provider Commission: ${selectedProviderCommission!.commission}% (${selectedProviderCommission!.type})');
     } else if (selectedUserTypeValue == USER_TYPE_HANDYMAN) {
       print('Selected Provider: ${selectedProvider?.name}');
-      if (selectedHandymanCommission != null) {
-        print(
-            'Handyman Commission: ${selectedHandymanCommission!.commission}% (${selectedHandymanCommission!.type})');
-      }
+      // if (selectedHandymanCommission != null) {
+      //   print(
+      //       'Handyman Commission: ${selectedHandymanCommission!.commission}% (${selectedHandymanCommission!.type})');
+      // }
     }
     print('===============================================================');
   }
@@ -397,7 +397,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               selectedUserTypeValue = c.validate();
               selectedProviderCommission = null;
               selectedProvider = null;
-              selectedHandymanCommission = null;
+              // selectedHandymanCommission = null;
               _clearRegistrationError(); // Clear error on change
             });
           },
@@ -464,7 +464,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   setState(() {
                     selectedProvider = value;
                     // Reset handyman commission when provider changes
-                    selectedHandymanCommission = null;
+                    // selectedHandymanCommission = null;
                     _clearRegistrationError(); // Clear error on change
                   });
                 },
@@ -473,30 +473,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
               16.height,
 
               // Second Dropdown: Handyman Commission (with duplicates removed)
-              DropdownButtonFormField<HandymanType>(
-                items: uniqueHandymanCommissions.map((handymanType) {
-                  return DropdownMenuItem<HandymanType>(
-                    child: Text(
-                      '${handymanType.commission}% ${handymanType.type}',
-                      style: primaryTextStyle(),
-                    ),
-                    value: handymanType,
-                  );
-                }).toList(),
-                dropdownColor: context.cardColor,
-                decoration: inputDecoration(context, hint: 'Select Commission'),
-                value: selectedHandymanCommission,
-                validator: (value) {
-                  if (value == null) return 'Please select commission';
-                  return null;
-                },
-                onChanged: (value) {
-                  setState(() {
-                    selectedHandymanCommission = value;
-                    _clearRegistrationError(); // Clear error on change
-                  });
-                },
-              ),
+              // DropdownButtonFormField<HandymanType>(
+              //   items: uniqueHandymanCommissions.map((handymanType) {
+              //     return DropdownMenuItem<HandymanType>(
+              //       child: Text(
+              //         '${handymanType.commission}% ${handymanType.type}',
+              //         style: primaryTextStyle(),
+              //       ),
+              //       value: handymanType,
+              //     );
+              //   }).toList(),
+              //   dropdownColor: context.cardColor,
+              //   decoration: inputDecoration(context, hint: 'Select Commission'),
+              //   value: selectedHandymanCommission,
+              //   validator: (value) {
+              //     if (value == null) return 'Please select commission';
+              //     return null;
+              //   },
+              //   onChanged: (value) {
+              //     setState(() {
+              //       // selectedHandymanCommission = value;
+              //       _clearRegistrationError(); // Clear error on change
+              //     });
+              //   },
+              // ),
             ],
           ),
 
@@ -571,14 +571,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   });
                   return;
                 }
-                if (selectedHandymanCommission == null) {
-                  toast('Please select commission');
-                  setState(() {
-                    registrationError = "Please select commission percentage";
-                    hasRegistrationError = true;
-                  });
-                  return;
-                }
+                // if (selectedHandymanCommission == null) {
+                //   toast('Please select commission');
+                //   setState(() {
+                //     registrationError = "Please select commission percentage";
+                //     hasRegistrationError = true;
+                //   });
+                //   return;
+                // }
               }
 
               // Clear password field for security after validation (but before navigation)
@@ -603,14 +603,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 request['commission'] = selectedProviderCommission?.commission;
                 request['commission_type'] = selectedProviderCommission?.type;
                 request['provider_type_id'] = selectedProviderCommission?.id;
-              } else {
-                // Handyman data
-                request['provider_id'] = selectedProvider?.id;
-                request['provider_name'] = selectedProvider?.name;
-                request['commission'] = selectedHandymanCommission?.commission;
-                request['commission_type'] = selectedHandymanCommission?.type;
-                request['handyman_type_id'] = selectedHandymanCommission?.id;
               }
+              //  else {
+              //   // Handyman data
+              //   request['provider_id'] = selectedProvider?.id;
+              //   request['provider_name'] = selectedProvider?.name;
+              //   request['commission'] = selectedHandymanCommission?.commission;
+              //   request['commission_type'] = selectedHandymanCommission?.type;
+              //   request['handyman_type_id'] = selectedHandymanCommission?.id;
+              // }
 
               // Both Provider and Handyman go to UploadDocumentsScreen
               UploadDocumentsScreen(formRequest: request).launch(context,

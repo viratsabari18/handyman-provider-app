@@ -2170,7 +2170,7 @@ class LanguageFr extends Languages {
   String get credit => 'Crédit';
 
   @override
-  String get fullNameOnBankAccount => 'Nom complet sur le compte bancaire';
+  String get fullNameOnBankAccount => 'Nom du fournisseur';
 
   @override
   String get updateYourLocation => 'Mettez à jour votre emplacement';

@@ -2160,7 +2160,7 @@ class LanguageDe extends Languages {
   String get credit => 'Kredit';
 
   @override
-  String get fullNameOnBankAccount => 'Vollständiger Name auf dem Bankkonto';
+  String get fullNameOnBankAccount => 'Anbietername';
 
   @override
   String get updateYourLocation => 'Aktualisieren Sie Ihren Standort';

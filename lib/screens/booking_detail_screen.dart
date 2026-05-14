@@ -1962,12 +1962,14 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
             return await 2.seconds.delay;
           },
           child: SafeArea(
-            child: AppScaffold(
-              appBarTitle: snap.hasData
-                  ? snap.data!.bookingDetail!.status
+            top: false,
+            child: Scaffold(
+             appBar: appBarWidget(
+              snap.hasData? snap.data!.bookingDetail!.status
                       .validate()
                       .toBookingStatus()
                   : "",
+             ),
               body: buildBodyWidget(snap),
             ),
           ),

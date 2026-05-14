@@ -499,21 +499,21 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
               divider: Offstage(),
               items: [
                 8.height,
-                SettingItemWidget(
-                  decoration: BoxDecoration(color: context.cardColor),
-                  leading: Image.asset(ic_theme, height: 16, width: 14, color: appStore.isDarkMode ? white : appTextSecondaryColor),
-                  title: languages.appTheme,
-                  titleTextStyle: boldTextStyle(size: 12),
-                  trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                  padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                  onTap: () async {
-                    await showInDialog(
-                      context,
-                      builder: (context) => ThemeSelectionDaiLog(context),
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  },
-                ),
+                // SettingItemWidget(
+                //   decoration: BoxDecoration(color: context.cardColor),
+                //   leading: Image.asset(ic_theme, height: 16, width: 14, color: appStore.isDarkMode ? white : appTextSecondaryColor),
+                //   title: languages.appTheme,
+                //   titleTextStyle: boldTextStyle(size: 12),
+                //   trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //   padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //   onTap: () async {
+                //     await showInDialog(
+                //       context,
+                //       builder: (context) => ThemeSelectionDaiLog(context),
+                //       contentPadding: EdgeInsets.zero,
+                //     );
+                //   },
+                // ),
                 SettingItemWidget(
                   decoration: BoxDecoration(color: context.cardColor),
                   leading: Image.asset(language, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),

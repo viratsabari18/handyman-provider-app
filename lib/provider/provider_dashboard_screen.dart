@@ -167,7 +167,7 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
                       return Stack(
                         children: [
                           IconButton(
-                            icon: ic_filter.iconImage(color: white, size: 20),
+                            icon: ic_filter.iconImage(color: black, size: 20),
                             onPressed: () async {
                               BookingFilterScreen()
                                   .launch(context)

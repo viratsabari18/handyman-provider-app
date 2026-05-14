@@ -2058,7 +2058,7 @@ class LanguageHi extends Languages {
   String get credit => 'श्रेय';
 
   @override
-  String get fullNameOnBankAccount => 'बैंक खाते पर पूरा नाम';
+  String get fullNameOnBankAccount => 'प्रदाता का नाम';
 
   @override
   String get updateYourLocation => 'अपना स्थान अपडेट करें';

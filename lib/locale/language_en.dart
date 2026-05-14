@@ -2068,7 +2068,7 @@ class LanguageEn extends Languages {
   String get credit => 'Credit';
 
   @override
-  String get fullNameOnBankAccount => 'Branch name';
+  String get fullNameOnBankAccount => 'Provider name';
 
   @override
   String get updateYourLocation => 'Update your location';

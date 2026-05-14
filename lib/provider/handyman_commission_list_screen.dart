@@ -130,11 +130,11 @@ class _HandymanCommissionTypeListScreenState
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.handymanCommission,
+    return Scaffold(
+      appBar: appBarWidget( languages.handymanCommission,
       actions: [
         IconButton(
-          icon: Icon(Icons.add, color: white),
+          icon: Icon(Icons.add, color: black),
           onPressed: () async {
             bool? res =
                 await AddHandymanCommissionTypeListScreen().launch(context);
@@ -146,6 +146,7 @@ class _HandymanCommissionTypeListScreenState
           },
         ).visible(appStore.isLoggedIn && rolesAndPermissionStore.handymanTypeList && rolesAndPermissionStore.handymanTypeAdd),
       ],
+      ),
       body: SnapHelperWidget<UserTypeResponse>(
         future: future,
         loadingWidget: HandymanCommissionListShimmer(),

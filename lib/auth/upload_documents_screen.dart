@@ -288,8 +288,8 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
         if (!isProvider && widget.formRequest['handyman_type_id'] != null)
           'handymantype_id': widget.formRequest['handyman_type_id'].toString(),
 
-        if (!isProvider && widget.formRequest['is_commission'] != null)
-          'is_commission': widget.formRequest['is_commission'].toString(),
+        // if (!isProvider && widget.formRequest['is_commission'] != null)
+        //   'is_commission': widget.formRequest['is_commission'].toString(),
 
         'attachment_count': uploadDocs.length.toString(),
       };

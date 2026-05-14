@@ -127,10 +127,9 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.filterBy,
-      scaffoldBackgroundColor: context.scaffoldBackgroundColor,
-      showLoader: false,
+    return Scaffold(
+     appBar: appBarWidget(
+      languages.filterBy,
       actions: [
         Observer(
           builder: (_) {
@@ -143,6 +142,7 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
           },
         ),
       ],
+     ),
       body: SafeArea(
         child: Stack(
           children: [

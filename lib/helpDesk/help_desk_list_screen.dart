@@ -80,8 +80,8 @@ class _HelpDeskListScreenState extends State<HelpDeskListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.helpDesk,
+    return Scaffold(
+     appBar: appBarWidget( languages.helpDesk,
       actions: [
         IconButton(
           onPressed: () async {
@@ -93,10 +93,11 @@ class _HelpDeskListScreenState extends State<HelpDeskListScreen> {
               setState(() {});
             }).launch(context);
           },
-          icon: Icon(Icons.add, size: 28, color: white),
+          icon: Icon(Icons.add, size: 28, color: black),
         ).visible(rolesAndPermissionStore.helpDeskList && rolesAndPermissionStore.helpDeskAdd),
       ],
-      showLoader: false,
+     ),
+   
       body: Stack(
         children: [
           Column(

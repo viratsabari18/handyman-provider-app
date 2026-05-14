@@ -128,8 +128,8 @@ class _BankDetailsState extends State<BankDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.bankList,
+    return Scaffold(
+      appBar: appBarWidget(languages.bankList,
       actions: [
         IconButton(
           onPressed: () {
@@ -144,10 +144,11 @@ class _BankDetailsState extends State<BankDetails> {
             url: ic_add,
             height: 14,
             width: 14,
-            color: white,
+            color: black,
           ),
         ).visible(rolesAndPermissionStore.bankAdd),
       ],
+      ),
       body: SnapHelperWidget<List<BankHistory>>(
         future: future,
         initialData: cachedBankList,

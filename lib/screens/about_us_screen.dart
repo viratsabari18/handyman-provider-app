@@ -17,8 +17,8 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<AboutModel> aboutList = getAboutDataModel(context: context);
 
-    return AppScaffold(
-      appBarTitle: languages.lblAbout,
+    return Scaffold(
+      appBar: appBarWidget(languages.lblAbout),
       body: AnimatedWrap(
         spacing: 16,
         runSpacing: 16,
