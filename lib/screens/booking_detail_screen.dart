@@ -1336,23 +1336,34 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
               },
             ).expand(),
             16.width,
-            AppButton(
-              text: languages.decline,
-              textColor: textPrimaryColorGlobal,
-              onTap: () {
-                showConfirmDialogCustom(
-                  context,
-                  title: languages.confirmationRequestTxt,
-                  positiveText: languages.lblYes,
-                  negativeText: languages.lblNo,
-                  onAccept: (val) {
-                    appStore.setLoading(true);
-                    updateBooking(res, '', BookingStatusKeys.pending);
-                  },
-                  primaryColor: context.primaryColor,
-                );
-              },
-            ).expand(),
+           AppButton(
+  text: languages.decline,
+  textColor: textPrimaryColorGlobal,
+  onTap: () {
+    showConfirmDialogCustom(
+      context,
+      title: languages.confirmationRequestTxt,
+      positiveText: languages.lblYes,
+      negativeText: languages.lblNo,
+      onAccept: (val) async {
+        appStore.setLoading(true);
+
+        await updateBooking(
+          res,
+          '',
+          BookingStatusKeys.rejected,
+        );
+
+        appStore.setLoading(false);
+
+        LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
+
+        finish(context);
+      },
+      primaryColor: Colors.redAccent,
+    );
+  },
+).expand(),
           ],
         ),
       );

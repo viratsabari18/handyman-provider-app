@@ -25,6 +25,7 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     afterBuildCreated(() {
       setStatusBarColor(
         Colors.transparent,
@@ -44,10 +45,13 @@ class SplashScreenState extends State<SplashScreen> {
 
     try {
       await getAppConfigurations();
+
       configSuccess = true;
 
-      // mark as synced
-      await setValue(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE, true);
+      await setValue(
+        IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE,
+        true,
+      );
     } catch (e) {
       log("Config API failed: $e");
 
@@ -55,49 +59,71 @@ class SplashScreenState extends State<SplashScreen> {
         toast(errorInternetNotAvailable);
       }
 
-      // 🔥 IMPORTANT: allow app to continue even if API fails
-      if (!getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
-        await setValue(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE, true);
+      if (!getBoolAsync(
+          IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
+        await setValue(
+          IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE,
+          true,
+        );
       }
     }
 
     appStore.setLoading(false);
 
-    // ✅ Always continue app flow
     proceedToNext();
   }
 
   Future<void> proceedToNext() async {
     appStore.setLanguage(
-      getStringAsync(SELECTED_LANGUAGE_CODE,
-          defaultValue: DEFAULT_LANGUAGE),
+      getStringAsync(
+        SELECTED_LANGUAGE_CODE,
+        defaultValue: DEFAULT_LANGUAGE,
+      ),
       context: context,
     );
 
-    int themeModeIndex =
-        getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+    /// ================= THEME FIX =================
 
-    if (themeModeIndex == THEME_MODE_SYSTEM) {
-      appStore.setDarkMode(
-        MediaQuery.of(context).platformBrightness == Brightness.dark,
-      );
+    int themeModeIndex = getIntAsync(
+      THEME_MODE_INDEX,
+      defaultValue: THEME_MODE_LIGHT,
+    );
+
+    print("=========== THEME MODE ===========");
+    print(themeModeIndex);
+
+    /// Force Light/Dark properly
+    if (themeModeIndex == THEME_MODE_DARK) {
+      appStore.setDarkMode(true);
+
+      defaultToastBackgroundColor = Colors.white;
+      defaultToastTextColor = Colors.black;
+    } else {
+      appStore.setDarkMode(false);
+
+      defaultToastBackgroundColor = Colors.black;
+      defaultToastTextColor = Colors.white;
     }
 
-    // Maintenance mode check
+    print("=========== IS DARK MODE ===========");
+    print(appStore.isDarkMode);
+
+    /// =============================================
+
     if (appConfigurationStore.maintenanceModeStatus) {
       MaintenanceModeScreen().launch(
         context,
         pageRouteAnimation: PageRouteAnimation.Fade,
       );
+
       return;
     }
 
-    // Unauthorized user check
-    if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
+    if (!appConfigurationStore.isUserAuthorized &&
+        appStore.isLoggedIn) {
       await clearPreferences();
     }
 
-    // Navigation
     if (!appStore.isLoggedIn) {
       SignInScreen().launch(
         context,
@@ -109,6 +135,7 @@ class SplashScreenState extends State<SplashScreen> {
 
       if (isUserTypeProvider) {
         setStatusBarColor(primaryColor);
+
         ProviderDashboardScreen(index: 0).launch(
           context,
           isNewTask: true,
@@ -116,13 +143,17 @@ class SplashScreenState extends State<SplashScreen> {
         );
       } else if (isUserTypeHandyman) {
         setStatusBarColor(primaryColor);
+
         HandymanDashboardScreen(index: 0).launch(
           context,
           isNewTask: true,
           pageRouteAnimation: PageRouteAnimation.Fade,
         );
       } else {
-        SignInScreen().launch(context, isNewTask: true);
+        SignInScreen().launch(
+          context,
+          isNewTask: true,
+        );
       }
     }
   }
@@ -130,7 +161,10 @@ class SplashScreenState extends State<SplashScreen> {
   Future<void> updateProfilePhoto() async {
     try {
       var value = await getUserDetail(appStore.userId);
-      await appStore.setUserProfile(value.data!.profileImage.validate());
+
+      await appStore.setUserProfile(
+        value.data!.profileImage.validate(),
+      );
     } catch (e) {
       log("Profile fetch failed: $e");
     }
@@ -158,8 +192,14 @@ class SplashScreenState extends State<SplashScreen> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(appLogo, height: 120, width: 120),
+              Image.asset(
+                appLogo,
+                height: 120,
+                width: 120,
+              ),
+
               32.height,
+
               Text(
                 APP_NAME,
                 style: boldTextStyle(
@@ -169,13 +209,15 @@ class SplashScreenState extends State<SplashScreen> {
                       : Colors.black,
                 ),
               ),
+
               16.height,
 
-              /// Optional loader
               Observer(
-                builder: (_) => appStore.isLoading
-                    ? LoaderWidget().center()
-                    : SizedBox(),
+                builder: (_) {
+                  return appStore.isLoading
+                      ? LoaderWidget().center()
+                      : SizedBox();
+                },
               ),
             ],
           ),
@@ -184,4 +226,3 @@ class SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

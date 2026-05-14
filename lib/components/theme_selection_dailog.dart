@@ -23,12 +23,26 @@ class ThemeSelectionDaiLogState extends State<ThemeSelectionDaiLog> {
     init();
   }
 
-  Future<void> init() async {
-    afterBuildCreated(() {
-      themeModeList = [languages.lightMode, languages.darkMode, languages.systemDefault];
-    });
-    currentIndex = getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
-  }
+Future<void> init() async {
+  afterBuildCreated(() {
+    themeModeList = [
+      languages.lightMode,
+      languages.darkMode,
+      languages.systemDefault
+    ];
+  });
+
+  currentIndex = THEME_MODE_LIGHT;
+
+  await setValue(THEME_MODE_INDEX, THEME_MODE_LIGHT);
+
+  appStore.setDarkMode(false);
+
+  defaultToastBackgroundColor = Colors.black;
+  defaultToastTextColor = Colors.white;
+
+  setState(() {});
+}
 
   @override
   void setState(fn) {

@@ -374,8 +374,7 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                         ).expand(flex: 5),
                       ],
                     ).paddingOnly(left: 8, bottom: 8, right: 8),
-                  if (widget.bookingData.paymentStatus != null &&
-                      widget.bookingData.status == BookingStatusKeys.complete)
+                  if (widget.bookingData.status == BookingStatusKeys.complete)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -386,12 +385,16 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                         8.width,
                         Marquee(
                           child: Text(
-                            buildPaymentStatusWithMethod(
-                              widget.bookingData.paymentStatus.validate(),
-                              widget.bookingData.paymentMethod
-                                  .validate()
-                                  .capitalizeFirstLetter(),
-                            ),
+                            widget.bookingData.paymentStatus
+                                    .validate()
+                                    .isNotEmpty
+                                ? buildPaymentStatusWithMethod(
+                                    widget.bookingData.paymentStatus.validate(),
+                                    widget.bookingData.paymentMethod
+                                        .validate()
+                                        .capitalizeFirstLetter(),
+                                  )
+                                : "Payment Pending",
                             style: boldTextStyle(
                               size: 12,
                               color: (widget.bookingData.paymentStatus
@@ -562,8 +565,14 @@ class BookingItemComponentState extends State<BookingItemComponent> {
       ),
     ).onTap(
       () async {
-        BookingDetailScreen(bookingId: widget.bookingData.id.validate())
-            .launch(context);
+        if (widget.bookingData.status == BookingStatusKeys.pending) {
+          toast("Please accept or decline the booking first");
+          return;
+        }
+
+        BookingDetailScreen(
+          bookingId: widget.bookingData.id.validate(),
+        ).launch(context);
       },
       hoverColor: Colors.transparent,
       highlightColor: Colors.transparent,

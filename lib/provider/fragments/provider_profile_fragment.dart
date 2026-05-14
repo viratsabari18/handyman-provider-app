@@ -215,22 +215,22 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
               divider: Offstage(),
               items: [
                 16.height,
-                SettingItemWidget(
-                  decoration: BoxDecoration(color: context.cardColor),
-                  leading: ic_un_fill_wallet.iconImage(size: 16),
-                  title: languages.walletBalance,
-                  titleTextStyle: boldTextStyle(size: 12),
-                  padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                  onTap: () {
-                    if (appConfigurationStore.onlinePaymentStatus) {
-                      WalletHistoryScreen().launch(context);
-                    }
-                  },
-                  trailing: Text(
-                    appStore.userWalletAmount.toPriceFormat(),
-                    style: boldTextStyle(color: Colors.green),
-                  ),
-                ),
+                // SettingItemWidget(
+                //   decoration: BoxDecoration(color: context.cardColor),
+                //   leading: ic_un_fill_wallet.iconImage(size: 16),
+                //   title: languages.walletBalance,
+                //   titleTextStyle: boldTextStyle(size: 12),
+                //   padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                //   onTap: () {
+                //     if (appConfigurationStore.onlinePaymentStatus) {
+                //       WalletHistoryScreen().launch(context);
+                //     }
+                //   },
+                //   trailing: Text(
+                //     appStore.userWalletAmount.toPriceFormat(),
+                //     style: boldTextStyle(color: Colors.green),
+                //   ),
+                // ),
                 if (appStore.earningTypeSubscription)
                   SettingItemWidget(
                     decoration: BoxDecoration(color: context.cardColor),
@@ -402,18 +402,18 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                       TaxesScreen().launch(context);
                     },
                   ),
-                if (appStore.earningTypeCommission)
-                  SettingItemWidget(
-                    decoration: BoxDecoration(color: context.cardColor),
-                    leading: Image.asset(ic_wallet_history, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
-                    title: languages.lblWalletHistory,
-                    titleTextStyle: boldTextStyle(size: 12),
-                    trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    onTap: () {
-                      WalletHistoryScreen().launch(context);
-                    },
-                  ),
+                // if (appStore.earningTypeCommission)
+                //   SettingItemWidget(
+                //     decoration: BoxDecoration(color: context.cardColor),
+                //     leading: Image.asset(ic_wallet_history, height: 16, width: 16, color: appStore.isDarkMode ? white : appTextSecondaryColor),
+                //     title: languages.lblWalletHistory,
+                //     titleTextStyle: boldTextStyle(size: 12),
+                //     trailing: Icon(Icons.chevron_right, color: appStore.isDarkMode ? white : gray.withValues(alpha: 0.8), size: 18),
+                //     padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                //     onTap: () {
+                //       WalletHistoryScreen().launch(context);
+                //     },
+                //   ),
                 if (rolesAndPermissionStore.bankList)
                   SettingItemWidget(
                     decoration: BoxDecoration(color: context.cardColor),
