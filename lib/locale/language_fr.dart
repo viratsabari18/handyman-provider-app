@@ -2789,4 +2789,13 @@ String get pleaseEnterOtpToStartService => "Veuillez entrer le code OTP à 4 chi
 @override
 String get pleaseEnterValidOtp => "Veuillez entrer un code OTP valide à 4 chiffres";
 
+@override
+String get noWorkAssignedYet => "AUCUN TRAVAIL ATTRIBUÉ";
+
+@override
+String get waitingForWork => "En attente de travail...";
+
+@override
+String get yourWorkWillBeVisibleHere => "Votre travail sera visible ici une fois que votre prestataire vous aura attribué une demande de service. Restez prêt pour votre prochaine tâche!";
+
 }

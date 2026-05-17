@@ -239,10 +239,10 @@ class _HandymanProfileFragmentState extends State<HandymanProfileFragment> {
                 ),
               ).paddingOnly(bottom: 16),
 
-              if (getStringAsync(DASHBOARD_COMMISSION).validate().isNotEmpty) ...[
-                HandymanCommissionComponent(commission: Commission.fromJson(jsonDecode(getStringAsync(DASHBOARD_COMMISSION)))),
-                8.height,
-              ],
+              // if (getStringAsync(DASHBOARD_COMMISSION).validate().isNotEmpty) ...[
+              //   HandymanCommissionComponent(commission: Commission.fromJson(jsonDecode(getStringAsync(DASHBOARD_COMMISSION)))),
+              //   8.height,
+              // ],
 
               16.height,
               SettingSection(

@@ -235,8 +235,9 @@ class _AssignHandymanScreenState extends State<AssignHandymanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: languages.lblAssignHandyman,
+    return Scaffold(
+      // appBarTitle: languages.lblAssignHandyman,
+      appBar: appBarWidget(languages.lblAssignHandyman),
       body: SafeArea(
         child: Stack(
           fit: StackFit.expand,

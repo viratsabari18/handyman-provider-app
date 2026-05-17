@@ -2643,5 +2643,14 @@ String get pleaseEnterOtpToStartService => "Please enter the 4-digit OTP to star
 
 @override
 String get pleaseEnterValidOtp => "Please enter a valid 4-digit OTP";
+
+@override
+String get waitingForWork => 'Waiting for Work...';
+
+@override
+String get noWorkAssignedYet => 'NO WORK ASSIGNED YET';
+
+@override
+String get yourWorkWillBeVisibleHere => 'Your work will be visible here once your provider assigns you a service request. Stay ready for your next task!';
   
 }

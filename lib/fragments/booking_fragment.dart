@@ -159,38 +159,38 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 8),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          decoration: boxDecorationWithRoundedCorners(
-                            borderRadius: radius(),
-                            backgroundColor: appStore.isDarkMode ? context.cardColor : cardLightColor,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(languages.totalAmount, style: boldTextStyle()).expand(),
-                                  TextButton(
-                                    style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 2, horizontal: 0))),
-                                    onPressed: () {
-                                      TotalAmountsComponent(
-                                        totalEarning: totalEarnings,
-                                        paymentBreakdown: paymentBreakdownData,
-                                      ).launch(context);
-                                    },
-                                    child: Text(languages.viewBreakdown, style: boldTextStyle(color: defaultStatus, size: 13)),
-                                  ).withHeight(25),
-                                ],
-                              ),
-                              PriceWidget(price: totalEarnings.toDouble(), color: primaryColor),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    // child: Column(
+                    //   children: [
+                    //     Container(
+                    //       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    //       decoration: boxDecorationWithRoundedCorners(
+                    //         borderRadius: radius(),
+                    //         backgroundColor: appStore.isDarkMode ? context.cardColor : cardLightColor,
+                    //       ),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Row(
+                    //             children: [
+                    //               Text(languages.totalAmount, style: boldTextStyle()).expand(),
+                    //               TextButton(
+                    //                 style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 2, horizontal: 0))),
+                    //                 onPressed: () {
+                    //                   TotalAmountsComponent(
+                    //                     totalEarning: totalEarnings,
+                    //                     paymentBreakdown: paymentBreakdownData,
+                    //                   ).launch(context);
+                    //                 },
+                    //                 child: Text(languages.viewBreakdown, style: boldTextStyle(color: defaultStatus, size: 13)),
+                    //               ).withHeight(25),
+                    //             ],
+                    //           ),
+                    //           PriceWidget(price: totalEarnings.toDouble(), color: primaryColor),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ),
                   AnimatedListView(
                     key: keyForList,

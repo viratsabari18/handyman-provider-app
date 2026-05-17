@@ -379,10 +379,10 @@ Future<void> registerNewHandyman() async {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: widget.isUpdate
-          ? "Update Handyman Documents"
-          : languages.uploadDocuments,
+    return Scaffold(
+       appBar: appBarWidget(
+        languages.uploadDocuments
+       ),
       body: SafeArea(
         child: Column(
           children: [

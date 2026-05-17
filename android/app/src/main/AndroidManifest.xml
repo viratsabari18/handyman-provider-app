@@ -13,21 +13,39 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
+
         <intent>
             <action android:name="android.intent.action.SEND" />
             <data android:mimeType="*/*" />
         </intent>
     </queries>
+
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="Fixomes Provider"
+        android:label="Unfazzed Provider"
         android:allowBackup="false"
         android:fullBackupContent="false"
         tools:replace="android:label">
 
+        <!-- Firebase Notification Icon -->
         <meta-data
-                android:name="com.google.firebase.messaging.default_notification_icon"
-                android:resource="@drawable/ic_stat_ic_notification" />
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <!-- Firebase Notification Channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="notification" />
+
+        <!-- Google Maps API -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="GOOGLE MAP KEY" />
+
+        <!-- Flutter Embedding -->
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
 
         <activity
             android:name=".MainActivity"
@@ -37,65 +55,38 @@
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
+
+            <!-- Normal Theme -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
-            
-            <!-- Displays an Android View that continues showing the launch screen
-                 Drawable until Flutter paints its first frame, then this splash
-                 screen fades out. A splash screen is useful to avoid any visual
-                 gap between the end of Android's launch screen and the painting of
-                 Flutter's first frame. -->
+
+            <!-- Splash Screen -->
             <meta-data
                 android:name="io.flutter.embedding.android.SplashScreenDrawable"
                 android:resource="@drawable/launch_background" />
 
+            <!-- Launcher -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
-             <intent-filter>
+
+            <!-- Notification Click -->
+            <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <meta-data
-                android:name="com.google.firebase.messaging.default_notification_icon"
-                android:resource="@drawable/ic_stat_ic_notification" />
-            <meta-data
-                android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="notification" />
         </activity>
+
+        <!-- UCrop -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <!--<activity
-            android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            tools:ignore="AppLinkUrlError">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="${applicationId}.braintree" />
-            </intent-filter>
-        </activity>-->
-
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
-         <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="GOOGLE MAP KEY" />
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
     </application>
+
 </manifest>

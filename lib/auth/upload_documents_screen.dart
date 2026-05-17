@@ -269,6 +269,11 @@ class _UploadDocumentsScreenState extends State<UploadDocumentsScreen> {
       }
     }
 
+    print("USER TYPE: ${widget.formRequest['user_type']}");
+print("IS PROVIDER: $isProvider");
+print("PROVIDER ID: ${widget.formRequest['provider_id']}");
+print("FULL FORM REQUEST: ${widget.formRequest}");
+
     try {
       final Map<String, dynamic> request = {
         'first_name': widget.formRequest['first_name'],

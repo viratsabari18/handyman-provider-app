@@ -1,5 +1,7 @@
 const appLogo = 'assets/ic_app_logo.png';
 
+
+
 const chat_default_wallpaper = "assets/images/default_wallpaper.png";
 const imgForceUpdate = 'assets/images/force_update.png';
 const logout_logo = 'assets/images/logout_logo.png';

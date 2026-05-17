@@ -43,74 +43,66 @@ class _AddonComponentState extends State<AddonComponent> {
           list: [],
           onTap: () {},
         ),
-        AnimatedListView(
-          listAnimationType: ListAnimationType.FadeIn,
-          fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+        ListView.separated(
           shrinkWrap: true,
-          itemCount: widget.serviceAddon.length,
-          padding: EdgeInsets.zero,
           physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (_, i) {
-            ServiceAddon data = widget.serviceAddon[i];
-
-            return Stack(
-              children: [
-                Container(
-                  width: context.width(),
-                  padding: EdgeInsets.all(16),
-                  margin: EdgeInsets.only(bottom: 16),
-                  decoration: boxDecorationWithRoundedCorners(
-                    borderRadius: radius(),
-                    backgroundColor: context.cardColor,
-                    border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+          itemCount: widget.serviceAddon.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 0,
+            thickness: 1,
+            color: Colors.grey.withOpacity(0.3),
+          ),
+          itemBuilder: (context, index) {
+            ServiceAddon data = widget.serviceAddon[index];
+            
+            return Container(
+              width: context.width(),
+              padding: EdgeInsets.all(16),
+              margin: EdgeInsets.only(bottom: 16),
+              decoration: boxDecorationWithRoundedCorners(
+                borderRadius: radius(),
+                backgroundColor: context.cardColor,
+                border: appStore.isDarkMode 
+                    ? Border.all(color: context.dividerColor) 
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  CachedImageWidget(
+                    url: data.serviceAddonImage,
+                    height: imageHeight,
+                    fit: BoxFit.cover,
+                    radius: defaultRadius,
                   ),
-                  child: Row(
-                    children: [
-                      CachedImageWidget(
-                        url: data.serviceAddonImage,
-                        height: imageHeight,
-                        fit: BoxFit.cover,
-                        radius: defaultRadius,
-                      ),
-                      16.width,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Marquee(
-                                directionMarguee: DirectionMarguee.oneDirection,
-                                child: Text(data.name.validate(), style: boldTextStyle()),
-                              ),
-                              2.height,
-                              PriceWidget(
-                                price: data.price.validate(),
-                                hourlyTextColor: Colors.white,
-                                size: 12,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ).expand(),
-                    ],
+                  16.width,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Marquee(
+                          directionMarguee: DirectionMarguee.oneDirection,
+                          child: Text(data.name.validate(), style: boldTextStyle()),
+                        ),
+                        2.height,
+                        PriceWidget(
+                          price: data.price.validate(),
+                          hourlyTextColor: Colors.white,
+                          size: 12,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Positioned(
-                  height: imageHeight + 32,
-                  right: 32,
-                  child: Center(
-                    child: Icon(
+                  if (data.status.getBoolInt())
+                    Icon(
                       Icons.check_circle_outline_outlined,
                       size: 24,
                       color: Colors.green,
                     ),
-                  ),
-                ).visible(data.status.getBoolInt())
-              ],
+                ],
+              ),
             );
           },
-        )
+        ),
       ],
     );
   }

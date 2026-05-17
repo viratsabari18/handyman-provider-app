@@ -49,7 +49,22 @@ class _HandymanWidgetState extends State<HandymanWidget> {
       children: [
         Container(
           width: widget.width,
-          decoration: boxDecorationWithRoundedCorners(borderRadius: radius(), backgroundColor: appStore.isDarkMode ? context.scaffoldBackgroundColor : white),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(defaultRadius),
+            color: appStore.isDarkMode ? context.scaffoldBackgroundColor : white,
+            border: Border.all(
+              color: Colors.grey.withValues(alpha: 0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(100),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+                spreadRadius: 0,
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

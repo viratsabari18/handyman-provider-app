@@ -28,7 +28,22 @@ class ReviewWidget extends StatelessWidget {
         padding: EdgeInsets.all(16),
         margin: EdgeInsets.only(bottom: 8),
         width: context.width(),
-        decoration: boxDecorationDefault(color: context.cardColor),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(defaultRadius),
+          border: Border.all(
+            color: Colors.grey.withValues(alpha: 0.3),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -130,6 +130,13 @@ class BookingItemComponentState extends State<BookingItemComponent> {
       margin: EdgeInsets.only(bottom: 16),
       width: context.width(),
       decoration: boxDecorationWithRoundedCorners(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(400),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
         borderRadius: radius(),
         backgroundColor:
             appStore.isDarkMode ? context.cardColor : cardLightColor,
@@ -280,7 +287,7 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                         PriceWidget(
                           isFreeService:
                               widget.bookingData.type == SERVICE_TYPE_FREE,
-                          price: widget.bookingData.totalAmount.validate(),
+                          price: widget.bookingData.amount.validate(),
                           color: primaryColor,
                         ),
                         if (widget.bookingData.isHourlyService)
@@ -515,6 +522,13 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                   ).expand(),
                 12.width,
                 AppButton(
+                  shapeBorder: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: Colors.grey,
+                      width: 1.2,
+                    ),
+                  ),
                   child: Text(languages.decline, style: boldTextStyle()),
                   width: context.width(),
                   elevation: 0,

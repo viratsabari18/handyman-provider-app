@@ -353,12 +353,12 @@ class HandymanAddUpdateScreenState extends State<HandymanAddUpdateScreen> {
                   HandymanPayoutListScreen(user: widget.data!).launch(context);
                 }
               },
-              icon: Icon(Icons.payments_outlined, size: 24, color: white),
+              icon: Icon(Icons.payments_outlined, size: 24, color: black),
               tooltip: languages.handymanPayoutList,
             ).visible(isUpdate),
             if (isUpdate && rolesAndPermissionStore.handymanDelete)
               PopupMenuButton(
-                icon: Icon(Icons.more_vert, size: 24, color: white),
+                icon: Icon(Icons.more_vert, size: 24, color: black),
                 onSelected: (selection) async {
                   if (selection == 1) {
                     showConfirmDialogCustom(

@@ -80,7 +80,7 @@ class HandymanListScreenState extends State<HandymanListScreen> {
                 },
               ).launch(context);
             },
-            icon: Icon(Icons.add, size: 28, color: white),
+            icon: Icon(Icons.add, size: 28, color:black),
             tooltip: languages.lblAddHandyman,
           ).visible(rolesAndPermissionStore.handymanAdd),
         ],

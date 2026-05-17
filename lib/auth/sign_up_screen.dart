@@ -604,14 +604,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 request['commission_type'] = selectedProviderCommission?.type;
                 request['provider_type_id'] = selectedProviderCommission?.id;
               }
-              //  else {
-              //   // Handyman data
-              //   request['provider_id'] = selectedProvider?.id;
-              //   request['provider_name'] = selectedProvider?.name;
-              //   request['commission'] = selectedHandymanCommission?.commission;
-              //   request['commission_type'] = selectedHandymanCommission?.type;
-              //   request['handyman_type_id'] = selectedHandymanCommission?.id;
-              // }
+               else {
+                // Handyman data
+                request['provider_id'] = selectedProvider?.id;
+                request['provider_name'] = selectedProvider?.name;
+                // request['commission'] = selectedHandymanCommission?.commission;
+                // request['commission_type'] = selectedHandymanCommission?.type;
+                // request['handyman_type_id'] = selectedHandymanCommission?.id;
+              }
 
               // Both Provider and Handyman go to UploadDocumentsScreen
               UploadDocumentsScreen(formRequest: request).launch(context,

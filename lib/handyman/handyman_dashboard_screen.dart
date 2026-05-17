@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:carousel_slider/carousel_slider.dart' as carousel;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -25,45 +26,66 @@ import '../utils/app_configuration.dart';
 class HandymanDashboardScreen extends StatefulWidget {
   final int? index;
 
-  HandymanDashboardScreen({this.index});
+  const HandymanDashboardScreen({super.key, this.index});
 
   @override
-  _HandymanDashboardScreenState createState() =>
+  State<HandymanDashboardScreen> createState() =>
       _HandymanDashboardScreenState();
 }
 
-class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
+class _HandymanDashboardScreenState
+    extends State<HandymanDashboardScreen> {
   int currentIndex = 0;
+  int currentCarouselIndex = 0;
+
+  final List<String> carouselImages = [
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200',
+    'https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200',
+    'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200',
+  ];
+
+  late List<Widget> fragmentList;
 
   bool get isCurrentFragmentIsBooking =>
-      fragmentList[currentIndex].runtimeType == BookingFragment().runtimeType;
-
-  List<Widget> fragmentList = [
-    HandymanHomeFragment(),
-    BookingFragment(),
-    if (appConfigurationStore.isEnableChat) ChatListScreen(),
-    HandymanProfileFragment(),
-  ];
+      fragmentList[currentIndex].runtimeType ==
+      BookingFragment().runtimeType;
 
   @override
   void initState() {
     super.initState();
+
+    currentIndex = widget.index ?? 0;
+
+    fragmentList = [
+      HandymanHomeFragment(),
+      BookingFragment(),
+      if (appConfigurationStore.isEnableChat) ChatListScreen(),
+      HandymanProfileFragment(),
+    ];
+
     init();
-    print("TOKEN: ${appStore.token}");
   }
 
-  void init() async {
-    setStatusBarColor(primaryColor);
+  Future<void> init() async {
+    setStatusBarColor(
+      Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    );
 
     afterBuildCreated(() async {
       if (getIntAsync(THEME_MODE_INDEX) == THEME_MODE_SYSTEM) {
-        appStore.setDarkMode(context.platformBrightness() == Brightness.dark);
+        appStore.setDarkMode(
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.dark,
+        );
       }
 
-      window.onPlatformBrightnessChanged = () async {
+      PlatformDispatcher.instance.onPlatformBrightnessChanged = () {
         if (getIntAsync(THEME_MODE_INDEX) == THEME_MODE_SYSTEM) {
-          appStore
-              .setDarkMode(context.platformBrightness() == Brightness.light);
+          appStore.setDarkMode(
+            WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                Brightness.dark,
+          );
         }
       };
     });
@@ -76,184 +98,469 @@ class _HandymanDashboardScreenState extends State<HandymanDashboardScreen> {
       100.milliseconds.delay.then((value) {
         if (data.containsKey('booking_type')) {
           LiveStream().emit(
-              LIVESTREAM_UPDATE_BOOKING_STATUS_WISE, data['booking_type']);
+            LIVESTREAM_UPDATE_BOOKING_STATUS_WISE,
+            data['booking_type'],
+          );
         } else if (currentIndex == 1) {
-          LiveStream().emit(LIVESTREAM_UPDATE_BOOKING_STATUS_WISE, '');
+          LiveStream().emit(
+            LIVESTREAM_UPDATE_BOOKING_STATUS_WISE,
+            '',
+          );
         }
       });
     });
 
-    /*LiveStream().on(LIVESTREAM_HANDY_BOARD, (data) {
-      currentIndex = (data as Map)["index"];
-      LiveStream().emit(LIVESTREAM_UPDATE_BOOKING_STATUS_WISE, data['type']);
-      setState(() {});
-    });*/
-
-    /*LiveStream().on(LIVESTREAM_HANDYMAN_ALL_BOOKING, (index) {
-      currentIndex = index as int;
-      setState(() {});
-    });*/
-
     await 3.seconds.delay;
+
     if (getBoolAsync(FORCE_UPDATE_PROVIDER_APP)) {
       showForceUpdateDialog(context);
     }
   }
 
   @override
-  void setState(fn) {
+  void dispose() {
+    LiveStream().dispose(LIVESTREAM_CHANGE_HANDYMAN_TAB);
+    super.dispose();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
     if (mounted) super.setState(fn);
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    LiveStream().dispose(LIVESTREAM_CHANGE_HANDYMAN_TAB);
-    // LiveStream().dispose(LIVESTREAM_HANDY_BOARD);
-    // LiveStream().dispose(LIVESTREAM_HANDYMAN_ALL_BOOKING);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    bool isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isHomeTab = currentIndex == 0;
+
     return DoublePressBackWidget(
       message: languages.lblCloseAppMsg,
       child: Scaffold(
-        body: fragmentList[currentIndex],
-        appBar: appBarWidget(
-          [
-            languages.handymanHome,
-            languages.lblBooking,
-            if (appConfigurationStore.isEnableChat) languages.lblChat,
-            languages.lblProfile,
-          ][currentIndex],
-          elevation: 0,
-          systemUiOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.white,
-            statusBarIconBrightness: Brightness.light,
-          ),
-          color: !isDark ? Colors.white : Colors.black,
-          textColor: isDark ? Colors.white : Colors.black,
-          showBack: false,
-          actions: [
-            IconButton(
-              icon: ic_info.iconImage(color: Colors.white),
-              onPressed: () async {
-                showModalBottomSheet(
-                  context: context,
-                  shape: RoundedRectangleBorder(borderRadius: radius()),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  builder: (context) {
-                    return MyProviderWidget();
-                  },
-                );
-              },
-            ),
-            IconButton(
-              icon: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  ic_notification.iconImage(size: 20, color: black),
-                  Positioned(
-                    top: -10,
-                    right: -4,
-                    child: Observer(
-                      builder: (context) {
-                        if (appStore.notificationCount.validate() > 0)
-                          return Container(
-                            padding: EdgeInsets.all(4),
-                            child: FittedBox(
-                              child: Text(appStore.notificationCount.toString(),
-                                  style: primaryTextStyle(
-                                      size: 12, color: Colors.white)),
-                            ),
-                            decoration: boxDecorationDefault(
-                                color: Colors.red, shape: BoxShape.circle),
-                          );
+        extendBodyBehindAppBar: true,
 
-                        return Offstage();
-                      },
+        body: Column(
+          children: [
+            /// HOME HEADER
+            if (isHomeTab)
+              Stack(
+                children: [
+                  /// IMAGE SLIDER
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(35),
+                      bottomRight: Radius.circular(35),
                     ),
-                  )
+                    child: SizedBox(
+                      height: 300,
+                      width: context.width(),
+                      child: carousel.CarouselSlider(
+                        options: carousel.CarouselOptions(
+                          height: 300,
+                          viewportFraction: 1,
+                          autoPlay: true,
+                          enlargeCenterPage: false,
+                          autoPlayInterval:
+                              const Duration(seconds: 4),
+
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              currentCarouselIndex = index;
+                            });
+                          },
+                        ),
+
+                        items: carouselImages.map((imageUrl) {
+                          return Image.network(
+                            imageUrl,
+                            width: context.width(),
+                            fit: BoxFit.cover,
+
+                            errorBuilder: (_, __, ___) {
+                              return Container(
+                                color: Colors.grey.shade300,
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 40,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                  /// DARK OVERLAY
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(35),
+                          bottomRight: Radius.circular(35),
+                        ),
+
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+
+                          colors: [
+                            Colors.black.withOpacity(0.2),
+                            Colors.black.withOpacity(0.55),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// TOP CONTENT
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+
+                      child: Row(
+                        children: [
+                          /// HELLO TEXT
+                          Expanded(
+                            child: Text(
+                              "${languages.lblHello}, ${appStore.userFullName}",
+
+                              style: boldTextStyle(
+                                size: 22,
+                                color: Colors.white,
+                              ),
+
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+
+                          /// INFO BUTTON
+                          IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                          
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: radius(),
+                                ),
+                          
+                                clipBehavior:
+                                    Clip.antiAliasWithSaveLayer,
+                          
+                                builder: (_) {
+                                  return MyProviderWidget();
+                                },
+                              );
+                            },
+                          
+                            icon: ic_info.iconImage(
+                              color: Colors.white,
+                            ),
+                          ),
+
+                          10.width,
+
+                          /// NOTIFICATION
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  NotificationFragment()
+                                      .launch(context);
+                                },
+                              
+                                icon:
+                                    ic_notification.iconImage(
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+
+                              Positioned(
+                                top: -2,
+                                right: -2,
+
+                                child: Observer(
+                                  builder: (_) {
+                                    if (appStore
+                                            .notificationCount >
+                                        0) {
+                                      return Container(
+                                        padding:
+                                            const EdgeInsets.all(
+                                                5),
+
+                                        decoration:
+                                            boxDecorationDefault(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+
+                                        child: Text(
+                                          appStore
+                                              .notificationCount
+                                              .toString(),
+
+                                          style:
+                                              primaryTextStyle(
+                                            size: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return const SizedBox();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  /// DOT INDICATORS
+                  Positioned(
+                    bottom: 18,
+                    left: 0,
+                    right: 0,
+
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+
+                      children:
+                          carouselImages.asMap().entries.map(
+                        (entry) {
+                          return AnimatedContainer(
+                            duration:
+                                const Duration(milliseconds: 300),
+
+                            width:
+                                currentCarouselIndex ==
+                                        entry.key
+                                    ? 20
+                                    : 8,
+
+                            height: 8,
+
+                            margin:
+                                const EdgeInsets.symmetric(
+                              horizontal: 4,
+                            ),
+
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(20),
+
+                              color:
+                                  currentCarouselIndex ==
+                                          entry.key
+                                      ? Colors.white
+                                      : Colors.white54,
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
+                  ),
                 ],
+              )
+
+            /// OTHER PAGE HEADER
+            else
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          [
+                            languages.lblBooking,
+                            if (appConfigurationStore
+                                .isEnableChat)
+                              languages.lblChat,
+                            languages.lblProfile,
+                          ][currentIndex - 1],
+
+                          style: boldTextStyle(size: 22),
+                        ),
+                      ),
+
+                      if (isCurrentFragmentIsBooking)
+                        IconButton(
+                          onPressed: () async {
+                            BookingFilterScreen()
+                                .launch(context)
+                                .then((value) {
+                              if (value != null) {
+                                LiveStream().emit(
+                                  LIVESTREAM_UPDATE_BOOKINGS,
+                                );
+                              }
+                            });
+                          },
+
+                          icon: ic_filter.iconImage(
+                            size: 22,
+                            color: context.iconColor,
+                          ),
+                        ),
+
+                      IconButton(
+                        onPressed: () {
+                          NotificationFragment()
+                              .launch(context);
+                        },
+
+                        icon: ic_notification.iconImage(
+                          size: 22,
+                          color: context.iconColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              onPressed: () async {
-                NotificationFragment().launch(context);
-              },
+
+            /// PAGE CONTENT
+            Expanded(
+              child: fragmentList[currentIndex],
             ),
-            if (isCurrentFragmentIsBooking)
-              IconButton(
-                icon: ic_filter.iconImage(color: black, size: 22),
-                onPressed: () async {
-                  BookingFilterScreen().launch(context).then((value) {
-                    if (value != null) {
-                      LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
-                    }
-                  });
-                },
-              ),
           ],
         ),
+
+        /// BOTTOM NAVIGATION
         bottomNavigationBar: Blur(
           blur: 30,
           borderRadius: radius(0),
+
           child: NavigationBarTheme(
             data: NavigationBarThemeData(
-              backgroundColor: context.primaryColor.withValues(alpha: 0.02),
-              indicatorColor: context.primaryColor.withValues(alpha: 0.1),
+              backgroundColor:
+                  context.cardColor.withOpacity(0.95),
+
+              indicatorColor:
+                  context.primaryColor.withOpacity(0.12),
+
               labelTextStyle:
-                  WidgetStateProperty.all(primaryTextStyle(size: 12)),
+                  WidgetStateProperty.all(
+                primaryTextStyle(size: 12),
+              ),
+
               surfaceTintColor: Colors.transparent,
               shadowColor: Colors.transparent,
             ),
+
             child: NavigationBar(
               selectedIndex: currentIndex,
-              destinations: [
-                NavigationDestination(
-                  icon: ic_home.iconImage(color: appTextSecondaryColor),
-                  selectedIcon:
-                      ic_fill_home.iconImage(color: context.primaryColor),
-                  label: languages.home,
-                ),
-                NavigationDestination(
-                  icon: total_booking.iconImage(color: appTextSecondaryColor),
-                  selectedIcon:
-                      fill_ticket.iconImage(color: context.primaryColor),
-                  label: languages.lblBooking,
-                ),
-                if (appConfigurationStore.isEnableChat)
-                  NavigationDestination(
-                    icon: Image.asset(chat,
-                        height: 20, width: 20, color: appTextSecondaryColor),
-                    selectedIcon:
-                        Image.asset(ic_fill_textMsg, height: 26, width: 26),
-                    label: languages.lblChat,
-                  ),
-                Observer(builder: (context) {
-                  return NavigationDestination(
-                    icon: (appStore.isLoggedIn &&
-                            appStore.userProfileImage.isNotEmpty)
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: ImageBorder(
-                                src: appStore.userProfileImage, height: 26))
-                        : profile.iconImage(color: appTextSecondaryColor),
-                    selectedIcon: (appStore.isLoggedIn &&
-                            appStore.userProfileImage.isNotEmpty)
-                        ? IgnorePointer(
-                            ignoring: true,
-                            child: ImageBorder(
-                                src: appStore.userProfileImage, height: 26))
-                        : ic_fill_profile.iconImage(
-                            color: context.primaryColor),
-                    label: languages.lblProfile,
-                  );
-                }),
-              ],
+
               onDestinationSelected: (index) {
                 currentIndex = index;
                 setState(() {});
               },
+
+              destinations: [
+                NavigationDestination(
+                  icon: ic_home.iconImage(
+                    color: appTextSecondaryColor,
+                  ),
+
+                  selectedIcon:
+                      ic_fill_home.iconImage(
+                    color: context.primaryColor,
+                  ),
+
+                  label: languages.home,
+                ),
+
+                NavigationDestination(
+                  icon: total_booking.iconImage(
+                    color: appTextSecondaryColor,
+                  ),
+
+                  selectedIcon:
+                      fill_ticket.iconImage(
+                    color: context.primaryColor,
+                  ),
+
+                  label: languages.lblBooking,
+                ),
+
+                if (appConfigurationStore.isEnableChat)
+                  NavigationDestination(
+                    icon: Image.asset(
+                      chat,
+                      height: 20,
+                      width: 20,
+                      color: appTextSecondaryColor,
+                    ),
+
+                    selectedIcon: Image.asset(
+                      ic_fill_textMsg,
+                      height: 26,
+                      width: 26,
+                    ),
+
+                    label: languages.lblChat,
+                  ),
+
+                Observer(
+                  builder: (_) {
+                    return NavigationDestination(
+                      icon:
+                          (appStore.isLoggedIn &&
+                                  appStore
+                                      .userProfileImage
+                                      .isNotEmpty)
+                              ? IgnorePointer(
+                                  ignoring: true,
+                                  child: ImageBorder(
+                                    src:
+                                        appStore.userProfileImage,
+                                    height: 26,
+                                  ),
+                                )
+                              : profile.iconImage(
+                                  color:
+                                      appTextSecondaryColor,
+                                ),
+
+                      selectedIcon:
+                          (appStore.isLoggedIn &&
+                                  appStore
+                                      .userProfileImage
+                                      .isNotEmpty)
+                              ? IgnorePointer(
+                                  ignoring: true,
+                                  child: ImageBorder(
+                                    src:
+                                        appStore.userProfileImage,
+                                    height: 26,
+                                  ),
+                                )
+                              : ic_fill_profile.iconImage(
+                                  color:
+                                      context.primaryColor,
+                                ),
+
+                      label: languages.lblProfile,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

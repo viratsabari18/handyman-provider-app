@@ -126,7 +126,7 @@ class _ProviderHomeFragmentState extends State<ProviderHomeFragment> {
                   children: [
                     if (appStore.earningTypeSubscription) planBanner(snap.data!),
                     _buildHeaderWidget(snap.data!),
-                    TodayCashComponent(totalCashInHand: snap.data!.totalCashInHand.validate()),
+                    // TodayCashComponent(totalCashInHand: snap.data!.totalCashInHand.validate()),
                     TotalComponent(snap: snap.data!),
                     ChartComponent(),
                     HandymanRecentlyOnlineComponent(images: snap.data!.onlineHandyman.validate()),

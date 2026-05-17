@@ -181,7 +181,8 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
 
       appStore.setLoading(true);
       var response = await bookingUpdate(request);
-           appStore.setLoading(false);
+      appStore.setLoading(false);
+
       /// 🔴 HANDLE WRONG OTP
       if (response != null && response is Map && response.status == false) {
         appStore.setLoading(false);
@@ -609,7 +610,18 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
     return Container(
       margin: EdgeInsets.all(16),
       decoration: boxDecorationDefault(
-          color: context.cardColor, borderRadius: radius()),
+          color: context.cardColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+          border: Border.all(
+            color: Colors.grey,
+          ),
+          borderRadius: radius()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -913,266 +925,318 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
   }
 
   Widget locationTrackWidget({BookingDetailResponse? data}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        8.height,
-        Text(
-          languages.handymanLocation,
-          style: boldTextStyle(),
-        ),
-        4.height,
-        Row(
-          children: [
-            Text("${languages.lastUpdatedAt} ",
-                style: secondaryTextStyle(size: 10)),
-            Text(
-              "${DateTime.parse(handymanLocation?.data.datetime.toString() ?? DateTime.now().toString()).timeAgo}",
-              style: primaryTextStyle(size: 10),
-            ),
-          ],
-        ).visible(handymanLocation?.data.datetime.isNotEmpty ?? false),
-        12.height,
-        Container(
-          height: 250,
-          decoration: boxDecorationDefault(),
-          child: Stack(
+    return Container(
+      margin: EdgeInsets.all(16),
+      decoration: boxDecorationDefault(
+        color: context.cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+        border: Border.all(color: Colors.grey),
+        borderRadius: radius(),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          8.height,
+          Text(
+            languages.handymanLocation,
+            style: boldTextStyle(),
+          ).paddingSymmetric(horizontal: 16),
+          4.height,
+          Row(
             children: [
-              GoogleMap(
-                initialCameraPosition: _initialLocation,
-                mapType: MapType.normal,
-                minMaxZoomPreference: MinMaxZoomPreference(1, 40),
-                gestureRecognizers: Set()
-                  ..add(Factory<OneSequenceGestureRecognizer>(
-                      () => new EagerGestureRecognizer()))
-                  ..add(Factory<PanGestureRecognizer>(
-                      () => PanGestureRecognizer()))
-                  ..add(Factory<ScaleGestureRecognizer>(
-                      () => ScaleGestureRecognizer()))
-                  ..add(Factory<TapGestureRecognizer>(
-                      () => TapGestureRecognizer()))
-                  ..add(Factory<VerticalDragGestureRecognizer>(
-                      () => VerticalDragGestureRecognizer())),
-                onMapCreated: (GoogleMapController controller) {
-                  print("Map created");
-                  mapController = controller;
-                  if (_currentPosition != null) {
-                    controller.animateCamera(CameraUpdate.newCameraPosition(
-                      CameraPosition(target: _currentPosition!, zoom: 15),
-                    ));
-                  }
-                },
-                markers: _currentPosition != null && customIcon != null
-                    ? {
-                        Marker(
-                          markerId: MarkerId('handyman_location'),
-                          position: _currentPosition!,
-                          icon: customIcon!,
-                        ),
-                      }
-                    : {},
-              ),
-              Positioned(
-                left: 10,
-                top: 10,
-                child: CupertinoActivityIndicator(color: black)
-                    .visible(isLocationLoader),
+              Text("${languages.lastUpdatedAt} ",
+                  style: secondaryTextStyle(size: 10)),
+              Text(
+                "${DateTime.parse(handymanLocation?.data.datetime.toString() ?? DateTime.now().toString()).timeAgo}",
+                style: primaryTextStyle(size: 10),
               ),
             ],
-          ),
-        ),
-        10.height,
-        Row(
-          children: [
-            (data!.bookingDetail!.status == BookingStatusKeys.onGoing)
-                ? AppButton(
-                    onTap: () {
-                      TrackLocation(
-                        bookingId: widget.bookingId,
-                      ).launch(context);
-                    },
-                    text: languages.track,
-                  )
-                : Offstage(),
-            16.width,
-            Container(
-              width: 42,
-              height: 42,
-              padding: EdgeInsets.all(12),
-              decoration: boxDecorationDefault(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(6)),
-              ),
-              child: CachedImageWidget(
-                url: ic_refresh,
-                color: textSecondaryColor,
-                height: 42,
-              ),
-            ).onTap(() {
-              startLocationUpdates(
-                  status: data?.bookingDetail?.status.validate() ?? "",
-                  handymanID: data?.handymanData?.first.id.validate() ?? -1);
-            }),
-            16.width,
-            Container(
-              width: 42,
-              height: 42,
-              padding: EdgeInsets.all(12),
-              decoration: boxDecorationDefault(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(6),
-                ),
-              ),
-              child: CachedImageWidget(
-                url: ic_share,
-                color: textSecondaryColor,
-                height: 42,
-              ),
-            ).onTap(
-              () {
-                shareComponent();
-              },
+          )
+              .paddingSymmetric(horizontal: 16)
+              .visible(handymanLocation?.data.datetime.isNotEmpty ?? false),
+          12.height,
+          Container(
+            height: 250,
+            decoration: boxDecorationDefault(
+              borderRadius: radius(),
             ),
-          ],
-        ),
-      ],
-    ).paddingSymmetric(horizontal: 16, vertical: 16);
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: _initialLocation,
+                  mapType: MapType.normal,
+                  minMaxZoomPreference: MinMaxZoomPreference(1, 40),
+                  gestureRecognizers: Set()
+                    ..add(Factory<OneSequenceGestureRecognizer>(
+                        () => new EagerGestureRecognizer()))
+                    ..add(Factory<PanGestureRecognizer>(
+                        () => PanGestureRecognizer()))
+                    ..add(Factory<ScaleGestureRecognizer>(
+                        () => ScaleGestureRecognizer()))
+                    ..add(Factory<TapGestureRecognizer>(
+                        () => TapGestureRecognizer()))
+                    ..add(Factory<VerticalDragGestureRecognizer>(
+                        () => VerticalDragGestureRecognizer())),
+                  onMapCreated: (GoogleMapController controller) {
+                    print("Map created");
+                    mapController = controller;
+                    if (_currentPosition != null) {
+                      controller.animateCamera(CameraUpdate.newCameraPosition(
+                        CameraPosition(target: _currentPosition!, zoom: 15),
+                      ));
+                    }
+                  },
+                  markers: _currentPosition != null && customIcon != null
+                      ? {
+                          Marker(
+                            markerId: MarkerId('handyman_location'),
+                            position: _currentPosition!,
+                            icon: customIcon!,
+                          ),
+                        }
+                      : {},
+                ),
+                Positioned(
+                  left: 10,
+                  top: 10,
+                  child: CupertinoActivityIndicator(color: black)
+                      .visible(isLocationLoader),
+                ),
+              ],
+            ),
+          ).paddingSymmetric(horizontal: 16),
+          10.height,
+          Row(
+            children: [
+              (data!.bookingDetail!.status == BookingStatusKeys.onGoing)
+                  ? AppButton(
+                      onTap: () {
+                        TrackLocation(
+                          bookingId: widget.bookingId,
+                        ).launch(context);
+                      },
+                      text: languages.track,
+                    )
+                  : Offstage(),
+              16.width,
+              Container(
+                width: 42,
+                height: 42,
+                padding: EdgeInsets.all(12),
+                decoration: boxDecorationDefault(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
+                ),
+                child: CachedImageWidget(
+                  url: ic_refresh,
+                  color: textSecondaryColor,
+                  height: 42,
+                ),
+              ).onTap(() {
+                startLocationUpdates(
+                    status: data?.bookingDetail?.status.validate() ?? "",
+                    handymanID: data?.handymanData?.first.id.validate() ?? -1);
+              }),
+              16.width,
+              Container(
+                width: 42,
+                height: 42,
+                padding: EdgeInsets.all(12),
+                decoration: boxDecorationDefault(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(6),
+                  ),
+                ),
+                child: CachedImageWidget(
+                  url: ic_share,
+                  color: textSecondaryColor,
+                  height: 42,
+                ),
+              ).onTap(
+                () {
+                  shareComponent();
+                },
+              ),
+            ],
+          ).paddingSymmetric(horizontal: 16, vertical: 16),
+        ],
+      ),
+    );
   }
 
   Widget myServiceList({required List<ServiceData> serviceList}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        24.height,
-        Text(languages.lblMyService,
-            style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-        8.height,
-        AnimatedListView(
-          itemCount: serviceList.length,
-          shrinkWrap: true,
-          listAnimationType: ListAnimationType.FadeIn,
-          itemBuilder: (_, i) {
-            ServiceData data = serviceList[i];
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: boxDecorationDefault(
+        color: context.cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+        border: Border.all(color: Colors.grey),
+        borderRadius: radius(),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          24.height,
+          Text(languages.lblMyService,
+                  style: boldTextStyle(size: LABEL_TEXT_SIZE))
+              .paddingSymmetric(horizontal: 16),
+          8.height,
+          AnimatedListView(
+            itemCount: serviceList.length,
+            shrinkWrap: true,
+            listAnimationType: ListAnimationType.FadeIn,
+            itemBuilder: (_, i) {
+              ServiceData data = serviceList[i];
 
-            return Container(
-              width: context.width(),
-              margin: EdgeInsets.symmetric(vertical: 8),
-              padding: EdgeInsets.all(8),
-              decoration: boxDecorationWithRoundedCorners(
-                  backgroundColor: context.cardColor,
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(defaultRadius))),
-              child: Row(
-                children: [
-                  CachedImageWidget(
-                    url: data.imageAttachments.validate().isNotEmpty
-                        ? data.imageAttachments!.first.validate()
-                        : "",
-                    fit: BoxFit.cover,
-                    height: 50,
-                    width: 50,
-                    radius: defaultRadius,
-                  ),
-                  16.width,
-                  Text(data.name.validate(),
-                          style: primaryTextStyle(),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis)
-                      .expand(),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    ).paddingSymmetric(horizontal: 16);
+              return Container(
+                width: context.width(),
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: EdgeInsets.all(8),
+                decoration: boxDecorationWithRoundedCorners(
+                    backgroundColor: context.cardColor,
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(defaultRadius))),
+                child: Row(
+                  children: [
+                    CachedImageWidget(
+                      url: data.imageAttachments.validate().isNotEmpty
+                          ? data.imageAttachments!.first.validate()
+                          : "",
+                      fit: BoxFit.cover,
+                      height: 50,
+                      width: 50,
+                      radius: defaultRadius,
+                    ),
+                    16.width,
+                    Text(data.name.validate(),
+                            style: primaryTextStyle(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis)
+                        .expand(),
+                  ],
+                ),
+              );
+            },
+          ),
+          16.height,
+        ],
+      ),
+    );
   }
 
   Widget packageWidget({required PackageData package}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(languages.includedInThisPackage, style: boldTextStyle())
-            .paddingSymmetric(horizontal: 16, vertical: 8),
-        AnimatedListView(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          listAnimationType: ListAnimationType.FadeIn,
-          fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemCount: package.serviceList!.length,
-          padding: EdgeInsets.all(8),
-          itemBuilder: (_, i) {
-            ServiceData data = package.serviceList![i];
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: boxDecorationDefault(
+        color: context.cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+        border: Border.all(color: Colors.grey),
+        borderRadius: radius(),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(languages.includedInThisPackage, style: boldTextStyle())
+              .paddingSymmetric(horizontal: 16, vertical: 8),
+          AnimatedListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            listAnimationType: ListAnimationType.FadeIn,
+            fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+            itemCount: package.serviceList!.length,
+            padding: EdgeInsets.all(8),
+            itemBuilder: (_, i) {
+              ServiceData data = package.serviceList![i];
 
-            return Container(
-              padding: EdgeInsets.all(8),
-              margin: EdgeInsets.all(8),
-              decoration: boxDecorationWithRoundedCorners(
-                borderRadius: radius(),
-                backgroundColor: context.cardColor,
-                border: appStore.isDarkMode
-                    ? Border.all(color: context.dividerColor)
-                    : null,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CachedImageWidget(
-                    url: data.imageAttachments!.isNotEmpty
-                        ? data.imageAttachments!.first.validate()
-                        : "",
-                    height: 70,
-                    width: 70,
-                    fit: BoxFit.cover,
-                    radius: 8,
-                  ),
-                  16.width,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(data.name.validate(),
-                          style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                      4.height,
-                      if (data.subCategoryName.validate().isNotEmpty)
-                        Marquee(
-                          child: Row(
-                            children: [
-                              Text('${data.categoryName}',
-                                  style: boldTextStyle(
-                                      size: 12,
-                                      color: textSecondaryColorGlobal)),
-                              Text('  >  ',
-                                  style: boldTextStyle(
-                                      size: 14,
-                                      color: textSecondaryColorGlobal)),
-                              Text('${data.subCategoryName}',
-                                  style: boldTextStyle(
-                                      size: 12, color: context.primaryColor)),
-                            ],
-                          ),
-                        )
-                      else
-                        Text('${data.categoryName}',
-                            style: boldTextStyle(
-                                size: 12, color: context.primaryColor)),
-                      4.height,
-                      PriceWidget(
-                        price: data.price.validate(),
-                        hourlyTextColor: Colors.white,
-                        size: 16,
-                      ),
-                    ],
-                  ).flexible()
-                ],
-              ),
-            ).onTap(() {
-              ServiceDetailScreen(serviceId: data.id!).launch(context);
-            });
-          },
-        )
-      ],
+              return Container(
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.all(8),
+                decoration: boxDecorationWithRoundedCorners(
+                  borderRadius: radius(),
+                  backgroundColor: context.cardColor,
+                  border: appStore.isDarkMode
+                      ? Border.all(color: context.dividerColor)
+                      : null,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CachedImageWidget(
+                      url: data.imageAttachments!.isNotEmpty
+                          ? data.imageAttachments!.first.validate()
+                          : "",
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.cover,
+                      radius: 8,
+                    ),
+                    16.width,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(data.name.validate(),
+                            style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                        4.height,
+                        if (data.subCategoryName.validate().isNotEmpty)
+                          Marquee(
+                            child: Row(
+                              children: [
+                                Text('${data.categoryName}',
+                                    style: boldTextStyle(
+                                        size: 12,
+                                        color: textSecondaryColorGlobal)),
+                                Text('  >  ',
+                                    style: boldTextStyle(
+                                        size: 14,
+                                        color: textSecondaryColorGlobal)),
+                                Text('${data.subCategoryName}',
+                                    style: boldTextStyle(
+                                        size: 12, color: context.primaryColor)),
+                              ],
+                            ),
+                          )
+                        else
+                          Text('${data.categoryName}',
+                              style: boldTextStyle(
+                                  size: 12, color: context.primaryColor)),
+                        4.height,
+                        PriceWidget(
+                          price: data.price.validate(),
+                          hourlyTextColor: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ).flexible()
+                  ],
+                ),
+              ).onTap(() {
+                ServiceDetailScreen(serviceId: data.id!).launch(context);
+              });
+            },
+          ),
+          16.height,
+        ],
+      ),
     );
   }
 
@@ -1254,6 +1318,13 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           ).expand(),
           16.width,
           AppButton(
+            shapeBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: Colors.grey,
+                width: 1.2,
+              ),
+            ),
             text: languages.decline,
             textColor: textPrimaryColorGlobal,
             onTap: () {
@@ -1336,34 +1407,41 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
               },
             ).expand(),
             16.width,
-           AppButton(
-  text: languages.decline,
-  textColor: textPrimaryColorGlobal,
-  onTap: () {
-    showConfirmDialogCustom(
-      context,
-      title: languages.confirmationRequestTxt,
-      positiveText: languages.lblYes,
-      negativeText: languages.lblNo,
-      onAccept: (val) async {
-        appStore.setLoading(true);
+            AppButton(
+              shapeBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: Colors.grey,
+                  width: 1.2,
+                ),
+              ),
+              text: languages.decline,
+              textColor: textPrimaryColorGlobal,
+              onTap: () {
+                showConfirmDialogCustom(
+                  context,
+                  title: languages.confirmationRequestTxt,
+                  positiveText: languages.lblYes,
+                  negativeText: languages.lblNo,
+                  onAccept: (val) async {
+                    appStore.setLoading(true);
 
-        await updateBooking(
-          res,
-          '',
-          BookingStatusKeys.rejected,
-        );
+                    await updateBooking(
+                      res,
+                      '',
+                      BookingStatusKeys.rejected,
+                    );
 
-        appStore.setLoading(false);
+                    appStore.setLoading(false);
 
-        LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
+                    LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
 
-        finish(context);
-      },
-      primaryColor: Colors.redAccent,
-    );
-  },
-).expand(),
+                    finish(context);
+                  },
+                  primaryColor: Colors.redAccent,
+                );
+              },
+            ).expand(),
           ],
         ),
       );
@@ -1471,78 +1549,95 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
   Widget extraChargesWidget(
       {required List<ExtraChargesModel> extraChargesList,
       required BookingDetailResponse res}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        16.height,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(languages.lblExtraCharges,
-                style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-            IconButton(
-              style:
-                  ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
-              icon: ic_edit_square.iconImage(size: 18),
-              visualDensity: VisualDensity.compact,
-              onPressed: () async {
-                chargesList.clear();
-                chargesList.addAll(extraChargesList);
-                bool? a =
-                    await AddExtraChargesScreen(isFromEditExtraCharge: true)
-                        .launch(context);
-
-                if (a ?? false) {
-                  showOtpCompleteDialog(
-                    res,
-                    isEditExtraCharges: true,
-                  );
-                }
-              },
-            ).visible(res.bookingDetail!.paymentStatus != PAID &&
-                res.bookingDetail!.paymentStatus != PENDING_BY_ADMINS),
-          ],
-        ),
-        16.height,
-        Container(
-          decoration: boxDecorationWithRoundedCorners(
-              backgroundColor: context.cardColor, borderRadius: radius()),
-          padding: EdgeInsets.all(16),
-          child: AnimatedWrap(
-            itemCount: extraChargesList.length,
-            listAnimationType: ListAnimationType.FadeIn,
-            fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-            runSpacing: 8,
-            spacing: 8,
-            itemBuilder: (_, i) {
-              ExtraChargesModel data = extraChargesList[i];
-
-              return Row(
-                children: [
-                  Text(data.title.validate(),
-                          style: secondaryTextStyle(size: 14))
-                      .expand(),
-                  16.width,
-                  Row(
-                    children: [
-                      Text('${data.qty} * ${data.price.validate()} = ',
-                          style: secondaryTextStyle()),
-                      4.width,
-                      PriceWidget(
-                          price:
-                              '${data.price.validate() * data.qty.validate()}'
-                                  .toDouble(),
-                          size: 16,
-                          color: textPrimaryColorGlobal,
-                          isBoldText: true),
-                    ],
-                  ),
-                ],
-              );
-            },
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: boxDecorationDefault(
+        color: context.cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: Offset(0, 3),
           ),
-        ),
-      ],
+        ],
+        border: Border.all(color: Colors.grey),
+        borderRadius: radius(),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          16.height,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(languages.lblExtraCharges,
+                      style: boldTextStyle(size: LABEL_TEXT_SIZE))
+                  .paddingSymmetric(horizontal: 16),
+              IconButton(
+                style: ButtonStyle(
+                    padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+                icon: ic_edit_square.iconImage(size: 18),
+                visualDensity: VisualDensity.compact,
+                onPressed: () async {
+                  chargesList.clear();
+                  chargesList.addAll(extraChargesList);
+                  bool? a =
+                      await AddExtraChargesScreen(isFromEditExtraCharge: true)
+                          .launch(context);
+
+                  if (a ?? false) {
+                    showOtpCompleteDialog(
+                      res,
+                      isEditExtraCharges: true,
+                    );
+                  }
+                },
+              ).visible(res.bookingDetail!.paymentStatus != PAID &&
+                  res.bookingDetail!.paymentStatus != PENDING_BY_ADMINS),
+            ],
+          ),
+          16.height,
+          Container(
+            decoration: boxDecorationWithRoundedCorners(
+                backgroundColor: context.cardColor, borderRadius: radius()),
+            padding: EdgeInsets.all(16),
+            child: AnimatedWrap(
+              itemCount: extraChargesList.length,
+              listAnimationType: ListAnimationType.FadeIn,
+              fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+              runSpacing: 8,
+              spacing: 8,
+              itemBuilder: (_, i) {
+                ExtraChargesModel data = extraChargesList[i];
+
+                return Row(
+                  children: [
+                    Text(data.title.validate(),
+                            style: secondaryTextStyle(size: 14))
+                        .expand(),
+                    16.width,
+                    Row(
+                      children: [
+                        Text('${data.qty} * ${data.price.validate()} = ',
+                            style: secondaryTextStyle()),
+                        4.width,
+                        PriceWidget(
+                            price:
+                                '${data.price.validate() * data.qty.validate()}'
+                                    .toDouble(),
+                            size: 16,
+                            color: textPrimaryColorGlobal,
+                            isBoldText: true),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ).paddingSymmetric(horizontal: 16),
+          16.height,
+        ],
+      ),
     );
   }
 
@@ -1586,7 +1681,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                   _buildCounterWidget(value: res.data!),
 
                   /// Location Tracking
-                  locationTrackWidget(data: res.data).visible(
+                  locationTrackWidget(data: res.data!).visible(
                       BookingStatusKeys.onGoing ==
                               res.data!.bookingDetail!.status &&
                           !isUserTypeHandyman &&
@@ -1607,77 +1702,82 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                   ServiceProofListWidget(
                       serviceProofList: res.data!.serviceProof!),
 
-                  /// Last Updated
-                  // if (BookingStatusKeys.onGoing == res.data!.bookingDetail!.status && res.data!.handymanData![0].id == appStore.userId) 16.height,
-                  // if (BookingStatusKeys.onGoing == res.data!.bookingDetail!.status && res.data!.handymanData![0].id == appStore.userId)
-                  //   Container(
-                  //     width: context.width(),
-                  //     decoration: boxDecorationWithRoundedCorners(
-                  //       backgroundColor: context.cardColor,
-                  //       borderRadius: BorderRadius.all(Radius.circular(12)),
-                  //     ),
-                  //     padding: EdgeInsets.only(top: 4, left: 4, right: 4, bottom: 4),
-                  //     child: Row(
-                  //       children: [
-                  //         Column(
-                  //           crossAxisAlignment: CrossAxisAlignment.start,
-                  //           children: [
-                  //             12.height,
-                  //             Text.rich(
-                  //               TextSpan(
-                  //                 children: [
-                  //                   TextSpan(text: languages.lastUpdatedAt, style: secondaryTextStyle(size: 12)),
-                  //                   TextSpan(text: " ${DateTime.parse(handymanLocation?.data.datetime.toString() ?? DateTime.now().toString()).timeAgo}", style: secondaryTextStyle(size: 12)),
-                  //                 ],
-                  //               ),
-                  //             ).paddingOnly(left: 16),
-                  //             TextButton(
-                  //               // iconAlignment: IconAlignment.start,
-                  //               child: Text(languages.updateYourLocation, style: boldTextStyle(size: 12, color: primaryColor)),
-                  //               onPressed: () {
-                  //                 startLocationUpdates(status: res.data?.bookingDetail?.status.validate() ?? "", handymanID: res.data?.handymanData?.first.id.validate() ?? -1);
-                  //               },
-                  //               isSemanticButton: false,
-                  //             ).paddingLeft(3),
-                  //           ],
-                  //         ).expand(),
-                  //         CachedImageWidget(url: img_location, height: 80)
-                  //       ],
-                  //     ),
-                  //   ).paddingOnly(left: 16, right: 16),
-
                   /// About Handyman Card
                   if (res.data!.handymanData!.isNotEmpty &&
                       appStore.userType != USER_TYPE_HANDYMAN)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (res.data!.bookingDetail!.status !=
-                            BookingStatusKeys.pending)
-                          24.height,
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween, // Space between items
-                          children: [
-                            Text(languages.lblAboutHandyman,
-                                style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                            Column(
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: boxDecorationDefault(
+                        color: context.cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: radius(),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (res.data!.bookingDetail!.status !=
+                              BookingStatusKeys.pending)
+                            24.height,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(languages.lblAboutHandyman,
+                                    style:
+                                        boldTextStyle(size: LABEL_TEXT_SIZE)),
+                                Column(
+                                  children: res.data!.handymanData!.map(
+                                    (e) {
+                                      return Text(
+                                        languages.viewAll,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: primaryColor,
+                                        ),
+                                      )
+                                          .visible(res.data!.bookingDetail!
+                                                  .canCustomerContact &&
+                                              e.id != appStore.userId)
+                                          .onTap(() {
+                                        {
+                                          HandymanInfoScreen(
+                                                  handymanId: e.id,
+                                                  service: res.data!.service)
+                                              .launch(context)
+                                              .then((value) => null);
+                                        }
+                                      });
+                                    },
+                                  ).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          16.height,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
                               children: res.data!.handymanData!.map(
                                 (e) {
-                                  return Text(
-                                    languages.viewAll,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          primaryColor, // Adjust color as needed
-                                    ),
-                                  )
-                                      .visible(res.data!.bookingDetail!
-                                              .canCustomerContact &&
-                                          e.id != appStore.userId)
-                                      .onTap(() {
-                                    {
+                                  return BasicInfoComponent(
+                                    1,
+                                    handymanData: e,
+                                    service: res.data!.service,
+                                    bookingDetail: res.data!.bookingDetail!,
+                                    bookingInfo: res.data!,
+                                  ).onTap(() {
+                                    if (res.data!.bookingDetail!
+                                            .canCustomerContact &&
+                                        e.id != appStore.userId) {
                                       HandymanInfoScreen(
                                               handymanId: e.id,
                                               service: res.data!.service)
@@ -1688,39 +1788,11 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                                 },
                               ).toList(),
                             ),
-                          ],
-                        ),
-                        16.height,
-                        Container(
-                          decoration:
-                              boxDecorationDefault(color: context.cardColor),
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            children: res.data!.handymanData!.map(
-                              (e) {
-                                return BasicInfoComponent(
-                                  1,
-                                  handymanData: e,
-                                  service: res.data!.service,
-                                  bookingDetail: res.data!.bookingDetail!,
-                                  bookingInfo: res.data!,
-                                ).onTap(() {
-                                  if (res.data!.bookingDetail!
-                                          .canCustomerContact &&
-                                      e.id != appStore.userId) {
-                                    HandymanInfoScreen(
-                                            handymanId: e.id,
-                                            service: res.data!.service)
-                                        .launch(context)
-                                        .then((value) => null);
-                                  }
-                                });
-                              },
-                            ).toList(),
                           ),
-                        ),
-                      ],
-                    ).paddingOnly(left: 16, right: 16),
+                          16.height,
+                        ],
+                      ),
+                    ),
 
                   /// About Customer Card
                   Column(
@@ -1729,13 +1801,27 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                       if (res.data!.bookingDetail!.status !=
                           BookingStatusKeys.pending)
                         24.height,
-                      aboutCustomerWidget(
-                          context: context,
-                          bookingDetail: res.data!.bookingDetail),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: aboutCustomerWidget(
+                            context: context,
+                            bookingDetail: res.data!.bookingDetail),
+                      ),
                       16.height,
                       Container(
-                        decoration:
-                            boxDecorationDefault(color: context.cardColor),
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: boxDecorationDefault(
+                          color: context.cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: radius(),
+                        ),
                         padding: EdgeInsets.all(16),
                         child: BasicInfoComponent(
                           0,
@@ -1745,35 +1831,67 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                         ),
                       ),
 
-                      8.height,
+                      16.height,
 
                       ///Add-ons
                       if (res.data!.bookingDetail!.serviceaddon
                           .validate()
                           .isNotEmpty)
-                        AddonComponent(
-                          serviceAddon:
-                              res.data!.bookingDetail!.serviceaddon.validate(),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 16),
+                          decoration: boxDecorationDefault(
+                            color: context.cardColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: radius(),
+                          ),
+                          padding: EdgeInsets.all(16),
+                          child: AddonComponent(
+                            serviceAddon: res.data!.bookingDetail!.serviceaddon
+                                .validate(),
+                          ),
                         ),
                     ],
-                  ).paddingOnly(left: 16, right: 16, bottom: 16),
+                  ),
+                  16.height,
 
                   /// Price Detail Card
                   if (res.data!.bookingDetail != null &&
                       !res.data!.bookingDetail!.isFreeService)
-                    PriceCommonWidget(
-                      bookingDetail: res.data!.bookingDetail!,
-                      serviceDetail: res.data!.service!,
-                      taxes: res.data!.bookingDetail!.taxes.validate(),
-                      couponData: res.data!.couponData != null
-                          ? res.data!.couponData!
-                          : null,
-                      bookingPackage:
-                          res.data!.bookingDetail!.bookingPackage != null
-                              ? res.data!.bookingDetail!.bookingPackage
-                              : null,
-                    ).paddingOnly(bottom: 16, left: 16, right: 16),
-
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: boxDecorationDefault(
+                        color: context.cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: radius(),
+                      ),
+                      child: PriceCommonWidget(
+                        bookingDetail: res.data!.bookingDetail!,
+                        serviceDetail: res.data!.service!,
+                        taxes: res.data!.bookingDetail!.taxes.validate(),
+                        couponData: res.data!.couponData != null
+                            ? res.data!.couponData!
+                            : null,
+                        bookingPackage:
+                            res.data!.bookingDetail!.bookingPackage != null
+                                ? res.data!.bookingDetail!.bookingPackage
+                                : null,
+                      ),
+                    ),
+                  16.height,
                   /// Extra Charges
                   if (res.data!.bookingDetail!.extraCharges
                       .validate()
@@ -1783,127 +1901,150 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                                 .data!.bookingDetail!.extraCharges
                                 .validate(),
                             res: res.data!)
-                        .paddingOnly(left: 16, right: 16, bottom: 16),
+                        .paddingOnly(bottom: 16),
 
                   /// Payment Detail Card
                   if (res.data!.bookingDetail!.paymentId != null &&
                       res.data!.bookingDetail!.paymentStatus != null &&
                       !res.data!.bookingDetail!.isFreeService)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ViewAllLabel(
-                          label: languages.lblPaymentDetail,
-                          list: [],
-                        ),
-                        8.height,
-                        Container(
-                          decoration: boxDecorationWithRoundedCorners(
-                            backgroundColor: context.cardColor,
-                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: boxDecorationDefault(
+                        color: context.cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
                           ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(languages.lblId,
-                                      style: secondaryTextStyle(size: 14)),
-                                  Text(
-                                      "#" +
-                                          res.data!.bookingDetail!.paymentId
-                                              .toString(),
-                                      style: boldTextStyle()),
-                                ],
-                              ),
-                              16.height,
-                              if (res.data!.bookingDetail!.paymentMethod
-                                  .validate()
-                                  .isNotEmpty)
+                        ],
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: radius(),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.only(top: 16, left: 16, right: 16),
+                            child: ViewAllLabel(
+                              label: languages.lblPaymentDetail,
+                              list: [],
+                            ),
+                          ),
+                          8.height,
+                          Container(
+                            decoration: boxDecorationWithRoundedCorners(
+                              backgroundColor: context.cardColor,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16)),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(languages.lblMethod,
+                                    Text(languages.lblId,
                                         style: secondaryTextStyle(size: 14)),
                                     Text(
-                                      (res.data!.bookingDetail!.paymentMethod !=
-                                                  null
-                                              ? res.data!.bookingDetail!
-                                                  .paymentMethod
-                                                  .toString()
-                                              : languages.notAvailable)
-                                          .capitalizeFirstLetter(),
-                                      style: boldTextStyle(),
+                                        "#" +
+                                            res.data!.bookingDetail!.paymentId
+                                                .toString(),
+                                        style: boldTextStyle()),
+                                  ],
+                                ),
+                                16.height,
+                                if (res.data!.bookingDetail!.paymentMethod
+                                    .validate()
+                                    .isNotEmpty)
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(languages.lblMethod,
+                                          style: secondaryTextStyle(size: 14)),
+                                      Text(
+                                        (res.data!.bookingDetail!
+                                                        .paymentMethod !=
+                                                    null
+                                                ? res.data!.bookingDetail!
+                                                    .paymentMethod
+                                                    .toString()
+                                                : languages.notAvailable)
+                                            .capitalizeFirstLetter(),
+                                        style: boldTextStyle(),
+                                      ),
+                                    ],
+                                  ),
+                                16.height,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(languages.lblStatus,
+                                        style: secondaryTextStyle(size: 14)),
+                                    Text(
+                                      buildPaymentStatusWithMethod(
+                                        res.data!.bookingDetail!.paymentStatus
+                                            .validate(),
+                                        res.data!.bookingDetail!.paymentMethod
+                                            .validate()
+                                            .capitalizeFirstLetter(),
+                                      ),
+                                      style: boldTextStyle(
+                                          color: res.data!.bookingDetail!
+                                              .paymentStatus
+                                              .validate()
+                                              .getPaymentStatusColor),
                                     ),
                                   ],
                                 ),
-                              16.height,
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(languages.lblStatus,
-                                      style: secondaryTextStyle(size: 14)),
-                                  Text(
-                                    buildPaymentStatusWithMethod(
-                                      res.data!.bookingDetail!.paymentStatus
-                                          .validate(),
-                                      res.data!.bookingDetail!.paymentMethod
-                                          .validate()
-                                          .capitalizeFirstLetter(),
-                                    ),
-                                    style: boldTextStyle(
-                                        color: res
-                                            .data!.bookingDetail!.paymentStatus
-                                            .validate()
-                                            .getPaymentStatusColor),
-                                  ),
-                                ],
-                              ),
-                              16.height,
-                              Row(
-                                children: [
-                                  Text(languages.transactionId,
-                                      style: secondaryTextStyle(size: 14)),
-                                  8.width,
-                                  Row(
-                                    children: [
-                                      Text(
-                                              res.data!.bookingDetail!.txnId
-                                                  .validate(),
-                                              textAlign: TextAlign.right,
-                                              style:
-                                                  boldTextStyle(color: pending),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis)
-                                          .expand(),
-                                      4.width,
-                                      InkWell(
-                                        onTap: () async {
-                                          await res.data!.bookingDetail!.txnId
-                                              .validate()
-                                              .copyToClipboard();
-                                          toast(languages.copied);
-                                        },
-                                        child: SizedBox(
-                                            width: 23,
-                                            height: 23,
-                                            child: Icon(Icons.copy, size: 18)),
-                                      ),
-                                    ],
-                                  ).expand(),
-                                ],
-                              ),
-                            ],
+                                16.height,
+                                Row(
+                                  children: [
+                                    Text(languages.transactionId,
+                                        style: secondaryTextStyle(size: 14)),
+                                    8.width,
+                                    Row(
+                                      children: [
+                                        Text(
+                                                res.data!.bookingDetail!.txnId
+                                                    .validate(),
+                                                textAlign: TextAlign.right,
+                                                style: boldTextStyle(
+                                                    color: pending),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis)
+                                            .expand(),
+                                        4.width,
+                                        InkWell(
+                                          onTap: () async {
+                                            await res.data!.bookingDetail!.txnId
+                                                .validate()
+                                                .copyToClipboard();
+                                            toast(languages.copied);
+                                          },
+                                          child: SizedBox(
+                                              width: 23,
+                                              height: 23,
+                                              child:
+                                                  Icon(Icons.copy, size: 18)),
+                                        ),
+                                      ],
+                                    ).expand(),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ).paddingOnly(left: 16, right: 16, bottom: 16),
+                          16.height,
+                        ],
+                      ),
+                    ),
 
                   CashPaymentHistoryScreen(
                     bookingId:
@@ -1964,12 +2105,13 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
           child: SafeArea(
             top: false,
             child: Scaffold(
-             appBar: appBarWidget(
-              snap.hasData? snap.data!.bookingDetail!.status
-                      .validate()
-                      .toBookingStatus()
-                  : "",
-             ),
+              appBar: appBarWidget(
+                snap.hasData
+                    ? snap.data!.bookingDetail!.status
+                        .validate()
+                        .toBookingStatus()
+                    : "",
+              ),
               body: buildBodyWidget(snap),
             ),
           ),

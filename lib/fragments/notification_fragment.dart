@@ -48,7 +48,8 @@ class NotificationScreenState extends State<NotificationFragment> {
     );
   }
 
-  Future<void> readNotificationGeneric({required String type, String? id}) async {
+  Future<void> readNotificationGeneric(
+      {required String type, String? id}) async {
     //TODO: check for booking_id
     // Map request = {CommonKeys.bookingId: id};
     Map request = {CommonKeys.serviceId: id};
@@ -78,28 +79,30 @@ class NotificationScreenState extends State<NotificationFragment> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      appBarTitle: Navigator.canPop(context) ? languages.notification : null,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.clear_all_rounded, color: Colors.white),
-          onPressed: () async {
-            showConfirmDialogCustom(
-              context,
-              onAccept: (_) async {
-                appStore.setLoading(true);
+    return Scaffold(
+      appBar: appBarWidget(
+        languages.notification,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.clear_all_rounded, color: Colors.black),
+            onPressed: () async {
+              showConfirmDialogCustom(
+                context,
+                onAccept: (_) async {
+                  appStore.setLoading(true);
 
-                init(type: MARK_AS_READ);
-                setState(() {});
-              },
-              primaryColor: context.primaryColor,
-              negativeText: languages.lblNo,
-              positiveText: languages.lblYes,
-              title: languages.confirmationRequestTxt,
-            );
-          },
-        ),
-      ],
+                  init(type: MARK_AS_READ);
+                  setState(() {});
+                },
+                primaryColor: context.primaryColor,
+                negativeText: languages.lblNo,
+                positiveText: languages.lblYes,
+                title: languages.confirmationRequestTxt,
+              );
+            },
+          ),
+        ],
+      ),
       body: SnapHelperWidget<List<NotificationData>>(
         initialData: cachedNotifications,
         future: future,
@@ -120,18 +123,34 @@ class NotificationScreenState extends State<NotificationFragment> {
               return GestureDetector(
                 onTap: () async {
                   if (isUserTypeHandyman) {
-                    if (data.data!.notificationType.validate().contains(BOOKING)) {
-                      readNotificationGeneric(type: 'booking', id: data.data!.id.toString());
-                      BookingDetailScreen(bookingId: data.data!.id).launch(context);
+                    if (data.data!.notificationType
+                        .validate()
+                        .contains(BOOKING)) {
+                      readNotificationGeneric(
+                          type: 'booking', id: data.data!.id.toString());
+                      BookingDetailScreen(bookingId: data.data!.id)
+                          .launch(context);
                     } else {
                       //
                     }
                   } else if (isUserTypeProvider) {
-                    if (data.data!.notificationType.validate().contains(WALLET) || data.data!.notificationType.validate().contains(PAYOUT)) {
+                    if (data.data!.notificationType
+                            .validate()
+                            .contains(WALLET) ||
+                        data.data!.notificationType
+                            .validate()
+                            .contains(PAYOUT)) {
                       WalletHistoryScreen().launch(context);
-                    } else if (data.data!.notificationType.validate().contains(BOOKING) || data.data!.notificationType.validate().contains(PAYMENT_MESSAGE_STATUS)) {
-                      readNotificationGeneric(type: 'booking', id: data.data!.id.toString());
-                      BookingDetailScreen(bookingId: data.data!.id).launch(context);
+                    } else if (data.data!.notificationType
+                            .validate()
+                            .contains(BOOKING) ||
+                        data.data!.notificationType
+                            .validate()
+                            .contains(PAYMENT_MESSAGE_STATUS)) {
+                      readNotificationGeneric(
+                          type: 'booking', id: data.data!.id.toString());
+                      BookingDetailScreen(bookingId: data.data!.id)
+                          .launch(context);
                     }
 
                     ///handle post job detail on notification click
@@ -147,9 +166,16 @@ class NotificationScreenState extends State<NotificationFragment> {
                         toast(e.toString());
                       });
                     }*/
-                    else if (data.data!.notificationType.validate().contains(SERVICE_REQUEST_APPROVE) || data.data!.notificationType.validate().contains(SERVICE_REQUEST_REJECT)) {
-                      readNotificationGeneric(type: 'service', id: data.data!.id.toString());
-                      ServiceDetailScreen(serviceId: data.data!.id).launch(context);
+                    else if (data.data!.notificationType
+                            .validate()
+                            .contains(SERVICE_REQUEST_APPROVE) ||
+                        data.data!.notificationType
+                            .validate()
+                            .contains(SERVICE_REQUEST_REJECT)) {
+                      readNotificationGeneric(
+                          type: 'service', id: data.data!.id.toString());
+                      ServiceDetailScreen(serviceId: data.data!.id)
+                          .launch(context);
                     } else {
                       //
                     }

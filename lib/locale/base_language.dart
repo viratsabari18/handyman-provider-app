@@ -1728,4 +1728,10 @@ abstract class Languages {
   String get pleaseEnterValidOtp;
   String get arrived;
   String get lblVerify;
+
+  String get waitingForWork;
+String get noWorkAssignedYet;
+String get yourWorkWillBeVisibleHere;
+
+
 }

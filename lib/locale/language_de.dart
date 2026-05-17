@@ -2773,4 +2773,12 @@ String get pleaseEnterOtpToStartService => "Bitte geben Sie den 4-stelligen OTP-
 @override
 String get pleaseEnterValidOtp => "Bitte geben Sie einen gültigen 4-stelligen OTP-Code ein";
 
+String get noWorkAssignedYet => "KEINE ARBEIT ZUGEWIESEN";
+
+@override
+String get waitingForWork => "Warten auf Arbeit...";
+
+@override
+String get yourWorkWillBeVisibleHere => "Ihre Arbeit wird hier angezeigt, sobald Ihr Anbieter Ihnen eine Serviceanfrage zuweist. Bleiben Sie bereit für Ihre nächste Aufgabe!";
+
 }

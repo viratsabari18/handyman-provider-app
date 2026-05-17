@@ -59,8 +59,7 @@ class SplashScreenState extends State<SplashScreen> {
         toast(errorInternetNotAvailable);
       }
 
-      if (!getBoolAsync(
-          IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
+      if (!getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
         await setValue(
           IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE,
           true,
@@ -119,8 +118,7 @@ class SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    if (!appConfigurationStore.isUserAuthorized &&
-        appStore.isLoggedIn) {
+    if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
       await clearPreferences();
     }
 
@@ -178,40 +176,24 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: primaryColor,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            appStore.isDarkMode
-                ? splash_background
-                : splash_light_background,
-            height: context.height(),
-            width: context.width(),
-            fit: BoxFit.cover,
-          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
                 appLogo,
-                height: 120,
-                width: 120,
+                height: 190,
+                width: 190,
               ),
-
-              32.height,
-
-              Text(
-                APP_NAME,
-                style: boldTextStyle(
-                  size: 26,
-                  color: appStore.isDarkMode
-                      ? Colors.white
-                      : Colors.black,
-                ),
-              ),
-
+              5.height,
+              // Text(
+              //   APP_NAME,
+              //   style: boldTextStyle(size: 26, color: Colors.white),
+              // ),
               16.height,
-
               Observer(
                 builder: (_) {
                   return appStore.isLoading

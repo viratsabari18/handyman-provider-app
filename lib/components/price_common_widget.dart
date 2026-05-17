@@ -43,10 +43,14 @@ class PriceCommonWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         //price details
-        ViewAllLabel(
-          label: languages.lblPriceDetail,
-          list: [],
+        Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: ViewAllLabel(
+            label: languages.lblPriceDetail,
+            list: [],
+          ),
         ),
 
         if (bookingPackage != null)
