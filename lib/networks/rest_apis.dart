@@ -9,6 +9,7 @@ import 'package:handyman_provider_flutter/Models_new/add_provider_category_requs
 import 'package:handyman_provider_flutter/Models_new/add_provider_zones_requst_and_response.dart';
 import 'package:handyman_provider_flutter/Models_new/delete_provider_category_request_response.dart';
 import 'package:handyman_provider_flutter/Models_new/delete_provider_zones_request_and_responses.dart';
+import 'package:handyman_provider_flutter/Models_new/handyman_carousel.dart';
 import 'package:handyman_provider_flutter/Models_new/provider_categories.dart';
 import 'package:handyman_provider_flutter/Models_new/provider_zones.dart';
 import 'package:handyman_provider_flutter/Models_new/providers_services.dart';
@@ -351,6 +352,17 @@ Future<UserInfoResponse> getUserDetail(int id) async {
 
 Future<HandymanInfoResponse> getProviderDetail(int id) async {
   return HandymanInfoResponse.fromJson(await handleResponse(await buildHttpResponse('user-detail?id=$id', method: HttpMethodType.GET)));
+}
+
+Future<CarouselResponse> getCarouselImages() async {
+  return CarouselResponse.fromJson(
+    await handleResponse(
+      await buildHttpResponse(
+        'carousel-images',
+        method: HttpMethodType.GET,
+      ),
+    ),
+  );
 }
 
 Future<BaseResponseModel> forgotPassword(Map request) async {

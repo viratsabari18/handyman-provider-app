@@ -4,12 +4,15 @@ import 'package:carousel_slider/carousel_slider.dart' as carousel;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:handyman_provider_flutter/Models_new/handyman_carousel.dart';
 import 'package:handyman_provider_flutter/components/my_provider_widget.dart';
 import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 import 'package:handyman_provider_flutter/fragments/notification_fragment.dart';
 import 'package:handyman_provider_flutter/handyman/screen/fragments/handyman_fragment.dart';
 import 'package:handyman_provider_flutter/handyman/screen/fragments/handyman_profile_fragment.dart';
 import 'package:handyman_provider_flutter/main.dart';
+
+import 'package:handyman_provider_flutter/networks/rest_apis.dart';
 import 'package:handyman_provider_flutter/screens/chat/user_chat_list_screen.dart';
 import 'package:handyman_provider_flutter/utils/colors.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
@@ -38,11 +41,7 @@ class _HandymanDashboardScreenState
   int currentIndex = 0;
   int currentCarouselIndex = 0;
 
-  final List<String> carouselImages = [
-    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200',
-    'https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200',
-    'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1200',
-  ];
+  List<String> carouselImages = [];
 
   late List<Widget> fragmentList;
 
@@ -66,11 +65,26 @@ class _HandymanDashboardScreenState
     init();
   }
 
+  Future<void> getCarouselData() async {
+    try {
+      CarouselResponse res = await getCarouselImages();
+
+      if (res.status) {
+        carouselImages = res.carouselImages;
+        setState(() {});
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
   Future<void> init() async {
     setStatusBarColor(
       Colors.transparent,
       statusBarIconBrightness: Brightness.light,
     );
+
+    await getCarouselData();
 
     afterBuildCreated(() async {
       if (getIntAsync(THEME_MODE_INDEX) == THEME_MODE_SYSTEM) {
@@ -136,10 +150,8 @@ class _HandymanDashboardScreenState
       message: languages.lblCloseAppMsg,
       child: Scaffold(
         extendBodyBehindAppBar: true,
-
         body: Column(
           children: [
-            /// HOME HEADER
             if (isHomeTab)
               Stack(
                 children: [
@@ -160,33 +172,40 @@ class _HandymanDashboardScreenState
                           enlargeCenterPage: false,
                           autoPlayInterval:
                               const Duration(seconds: 4),
-
                           onPageChanged: (index, reason) {
                             setState(() {
                               currentCarouselIndex = index;
                             });
                           },
                         ),
-
-                        items: carouselImages.map((imageUrl) {
-                          return Image.network(
-                            imageUrl,
-                            width: context.width(),
-                            fit: BoxFit.cover,
-
-                            errorBuilder: (_, __, ___) {
-                              return Container(
-                                color: Colors.grey.shade300,
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.image_not_supported,
-                                    size: 40,
+                        items: carouselImages.isNotEmpty
+                            ? carouselImages.map((imageUrl) {
+                                return Image.network(
+                                  imageUrl,
+                                  width: context.width(),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) {
+                                    return Container(
+                                      color: Colors.grey.shade300,
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }).toList()
+                            : [
+                                Container(
+                                  color: Colors.grey.shade300,
+                                  child: const Center(
+                                    child:
+                                        CircularProgressIndicator(),
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        }).toList(),
+                              ],
                       ),
                     ),
                   ),
@@ -199,11 +218,9 @@ class _HandymanDashboardScreenState
                           bottomLeft: Radius.circular(35),
                           bottomRight: Radius.circular(35),
                         ),
-
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-
                           colors: [
                             Colors.black.withOpacity(0.2),
                             Colors.black.withOpacity(0.55),
@@ -220,19 +237,15 @@ class _HandymanDashboardScreenState
                         horizontal: 16,
                         vertical: 10,
                       ),
-
                       child: Row(
                         children: [
-                          /// HELLO TEXT
                           Expanded(
                             child: Text(
                               "${languages.lblHello}, ${appStore.userFullName}",
-
                               style: boldTextStyle(
                                 size: 22,
                                 color: Colors.white,
                               ),
-
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -243,20 +256,16 @@ class _HandymanDashboardScreenState
                             onPressed: () {
                               showModalBottomSheet(
                                 context: context,
-                          
                                 shape: RoundedRectangleBorder(
                                   borderRadius: radius(),
                                 ),
-                          
                                 clipBehavior:
                                     Clip.antiAliasWithSaveLayer,
-                          
                                 builder: (_) {
                                   return MyProviderWidget();
                                 },
                               );
                             },
-                          
                             icon: ic_info.iconImage(
                               color: Colors.white,
                             ),
@@ -273,7 +282,6 @@ class _HandymanDashboardScreenState
                                   NotificationFragment()
                                       .launch(context);
                                 },
-                              
                                 icon:
                                     ic_notification.iconImage(
                                   color: Colors.white,
@@ -284,7 +292,6 @@ class _HandymanDashboardScreenState
                               Positioned(
                                 top: -2,
                                 right: -2,
-
                                 child: Observer(
                                   builder: (_) {
                                     if (appStore
@@ -294,18 +301,15 @@ class _HandymanDashboardScreenState
                                         padding:
                                             const EdgeInsets.all(
                                                 5),
-
                                         decoration:
                                             boxDecorationDefault(
                                           color: Colors.red,
                                           shape: BoxShape.circle,
                                         ),
-
                                         child: Text(
                                           appStore
                                               .notificationCount
                                               .toString(),
-
                                           style:
                                               primaryTextStyle(
                                             size: 10,
@@ -327,50 +331,44 @@ class _HandymanDashboardScreenState
                   ),
 
                   /// DOT INDICATORS
-                  Positioned(
-                    bottom: 18,
-                    left: 0,
-                    right: 0,
-
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-
-                      children:
-                          carouselImages.asMap().entries.map(
-                        (entry) {
-                          return AnimatedContainer(
-                            duration:
-                                const Duration(milliseconds: 300),
-
-                            width:
-                                currentCarouselIndex ==
-                                        entry.key
-                                    ? 20
-                                    : 8,
-
-                            height: 8,
-
-                            margin:
-                                const EdgeInsets.symmetric(
-                              horizontal: 4,
-                            ),
-
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(20),
-
-                              color:
+                  if (carouselImages.isNotEmpty)
+                    Positioned(
+                      bottom: 18,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children:
+                            carouselImages.asMap().entries.map(
+                          (entry) {
+                            return AnimatedContainer(
+                              duration: const Duration(
+                                  milliseconds: 300),
+                              width:
                                   currentCarouselIndex ==
                                           entry.key
-                                      ? Colors.white
-                                      : Colors.white54,
-                            ),
-                          );
-                        },
-                      ).toList(),
+                                      ? 20
+                                      : 8,
+                              height: 8,
+                              margin:
+                                  const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(20),
+                                color:
+                                    currentCarouselIndex ==
+                                            entry.key
+                                        ? Colors.white
+                                        : Colors.white54,
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      ),
                     ),
-                  ),
                 ],
               )
 
@@ -382,7 +380,6 @@ class _HandymanDashboardScreenState
                     horizontal: 16,
                     vertical: 14,
                   ),
-
                   child: Row(
                     children: [
                       Expanded(
@@ -394,7 +391,6 @@ class _HandymanDashboardScreenState
                               languages.lblChat,
                             languages.lblProfile,
                           ][currentIndex - 1],
-
                           style: boldTextStyle(size: 22),
                         ),
                       ),
@@ -412,7 +408,6 @@ class _HandymanDashboardScreenState
                               }
                             });
                           },
-
                           icon: ic_filter.iconImage(
                             size: 22,
                             color: context.iconColor,
@@ -424,7 +419,6 @@ class _HandymanDashboardScreenState
                           NotificationFragment()
                               .launch(context);
                         },
-
                         icon: ic_notification.iconImage(
                           size: 22,
                           color: context.iconColor,
@@ -435,7 +429,6 @@ class _HandymanDashboardScreenState
                 ),
               ),
 
-            /// PAGE CONTENT
             Expanded(
               child: fragmentList[currentIndex],
             ),
@@ -446,43 +439,34 @@ class _HandymanDashboardScreenState
         bottomNavigationBar: Blur(
           blur: 30,
           borderRadius: radius(0),
-
           child: NavigationBarTheme(
             data: NavigationBarThemeData(
               backgroundColor:
                   context.cardColor.withOpacity(0.95),
-
               indicatorColor:
                   context.primaryColor.withOpacity(0.12),
-
               labelTextStyle:
                   WidgetStateProperty.all(
                 primaryTextStyle(size: 12),
               ),
-
               surfaceTintColor: Colors.transparent,
               shadowColor: Colors.transparent,
             ),
-
             child: NavigationBar(
               selectedIndex: currentIndex,
-
               onDestinationSelected: (index) {
                 currentIndex = index;
                 setState(() {});
               },
-
               destinations: [
                 NavigationDestination(
                   icon: ic_home.iconImage(
                     color: appTextSecondaryColor,
                   ),
-
                   selectedIcon:
                       ic_fill_home.iconImage(
                     color: context.primaryColor,
                   ),
-
                   label: languages.home,
                 ),
 
@@ -490,12 +474,10 @@ class _HandymanDashboardScreenState
                   icon: total_booking.iconImage(
                     color: appTextSecondaryColor,
                   ),
-
                   selectedIcon:
                       fill_ticket.iconImage(
                     color: context.primaryColor,
                   ),
-
                   label: languages.lblBooking,
                 ),
 
@@ -507,13 +489,11 @@ class _HandymanDashboardScreenState
                       width: 20,
                       color: appTextSecondaryColor,
                     ),
-
                     selectedIcon: Image.asset(
                       ic_fill_textMsg,
                       height: 26,
                       width: 26,
                     ),
-
                     label: languages.lblChat,
                   ),
 
@@ -537,7 +517,6 @@ class _HandymanDashboardScreenState
                                   color:
                                       appTextSecondaryColor,
                                 ),
-
                       selectedIcon:
                           (appStore.isLoggedIn &&
                                   appStore
@@ -555,7 +534,6 @@ class _HandymanDashboardScreenState
                                   color:
                                       context.primaryColor,
                                 ),
-
                       label: languages.lblProfile,
                     );
                   },
