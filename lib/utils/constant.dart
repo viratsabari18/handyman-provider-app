@@ -378,6 +378,9 @@ const VISIT_OPTION_ONLINE = 'online';
 
 const GOOGLE_MAP_PREFIX = 'https://www.google.com/maps/search/?api=1&query=';
 
+const GOOGLE_MAP_DIRECTION_PREFIX =
+    'https://www.google.com/maps/dir/?api=1&destination=';
+
 List<String> daysList = [
   languages.mon,
   languages.tue,

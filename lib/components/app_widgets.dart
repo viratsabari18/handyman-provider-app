@@ -11,7 +11,12 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utils/common.dart';
 import '../utils/model_keys.dart';
 
-Widget placeHolderWidget({String? placeHolderImage, double? height, double? width, BoxFit? fit, AlignmentGeometry? alignment}) {
+Widget placeHolderWidget(
+    {String? placeHolderImage,
+    double? height,
+    double? width,
+    BoxFit? fit,
+    AlignmentGeometry? alignment}) {
   return PlaceHolderWidget(
     height: height,
     width: width,
@@ -35,21 +40,40 @@ class LoaderWidget extends StatelessWidget {
   }
 }
 
-Widget aboutCustomerWidget({BuildContext? context, BookingData? bookingDetail}) {
+Widget aboutCustomerWidget({
+  BuildContext? context,
+  BookingData? bookingDetail,
+}) {
   return Row(
     children: [
-      Text(languages.lblAboutCustomer, style: boldTextStyle(size: LABEL_TEXT_SIZE)).expand(),
-      if (bookingDetail!.canCustomerContact && bookingDetail.status != BookingStatusKeys.complete && bookingDetail.status != BookingStatusKeys.cancelled)
+      Text(
+        languages.lblAboutCustomer,
+        style: boldTextStyle(size: LABEL_TEXT_SIZE),
+      ).expand(),
+
+      if (bookingDetail!.canCustomerContact &&
+          bookingDetail.status != BookingStatusKeys.complete &&
+          bookingDetail.status != BookingStatusKeys.cancelled)
         Align(
           alignment: Alignment.topRight,
           child: TextButton(
-            child: Text(languages.lblGetDirection, style: boldTextStyle(color: primaryColor, size: 12)),
+            child: Text(
+              languages.lblGetDirection,
+              style: boldTextStyle(
+                color: primaryColor,
+                size: 12,
+              ),
+            ),
             onPressed: () async {
-              if (isAndroid) {
-                launchMap(bookingDetail.address.validate());
-              } else {
-                commonLaunchUrl('$GOOGLE_MAP_PREFIX${Uri.encodeFull(bookingDetail.address.validate())}', launchMode: LaunchMode.externalApplication);
-              }
+              log('Latitude => ${bookingDetail.latitude}');
+              log('Longitude => ${bookingDetail.longitude}');
+
+              launchMap(
+                latitude:
+                    bookingDetail.latitude.validate().toDouble(),
+                longitude:
+                    bookingDetail.longitude.validate().toDouble(),
+              );
             },
           ),
         ),

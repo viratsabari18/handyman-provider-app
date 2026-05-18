@@ -77,6 +77,8 @@ class PaymentBreakdown {
 class BookingData {
   int? id;
   String? address;
+  String? latitude;
+String? longitude;
   int? customerId;
   int? serviceId;
   int? providerId;
@@ -155,6 +157,8 @@ class BookingData {
 
   BookingData({
     this.address,
+this.latitude,
+this.longitude,
     this.imageAttachments,
     this.customerId,
     this.bookingSlot,
@@ -210,6 +214,8 @@ class BookingData {
   factory BookingData.fromJson(Map<String, dynamic> json) {
     return BookingData(
       address: json['address'],
+      latitude: json['latitude'],
+longitude: json['longitude'],
       customerId: json['customer_id'],
       customerName: json['customer_name'],
       date: json['date'],
@@ -290,6 +296,8 @@ class BookingData {
     data['status_label'] = this.statusLabel;
     data['type'] = this.type;
     data['address'] = this.address;
+    data['latitude'] = this.latitude;
+data['longitude'] = this.longitude;
     data['description'] = this.description;
     data['duration_diff_hour'] = this.durationDiffHour;
     data['handyman'] = this.handyman;

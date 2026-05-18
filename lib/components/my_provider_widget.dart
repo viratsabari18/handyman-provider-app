@@ -70,7 +70,7 @@ class MyProviderWidget extends StatelessWidget {
                           TextIcon(
                             spacing: 10,
                             onTap: () {
-                              launchMap("${data.address.validate()}");
+                              // launchMap("${data.address.validate()}");
                             },
                             expandedText: true,
                             prefix: Image.asset(ic_location, width: 20, height: 20, color: appStore.isDarkMode ? Colors.white : Colors.black),

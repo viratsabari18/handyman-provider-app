@@ -403,10 +403,17 @@ void launchMail(String? url) {
   }
 }
 
-void launchMap(String? url) {
-  if (url.validate().isNotEmpty) {
-    commonLaunchUrl(GOOGLE_MAP_PREFIX + Uri.encodeFull((url!)), launchMode: LaunchMode.externalApplication);
-  }
+void launchMap({
+  required double latitude,
+  required double longitude,
+}) {
+  final url =
+      '$GOOGLE_MAP_DIRECTION_PREFIX$latitude,$longitude';
+
+  commonLaunchUrl(
+    url,
+    launchMode: LaunchMode.externalApplication,
+  );
 }
 
 void launchUrlCustomTab(String? url) {
