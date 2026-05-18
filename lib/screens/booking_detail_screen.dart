@@ -1892,6 +1892,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                       ),
                     ),
                   16.height,
+
                   /// Extra Charges
                   if (res.data!.bookingDetail!.extraCharges
                       .validate()
@@ -2214,7 +2215,19 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                           color: Colors.redAccent.withValues(alpha: 0.1),
                           textColor: Colors.redAccent,
                           height: 45,
-                          onTap: () => finish(context),
+                          onTap: () async {
+                            finish(context);
+
+                            appStore.setLoading(true);
+
+                            await updateBooking(
+                              res,
+                              '',
+                              BookingStatusKeys.onGoing,
+                            );
+
+                            appStore.setLoading(false);
+                          },
                         ),
                       ),
                       16.width,
