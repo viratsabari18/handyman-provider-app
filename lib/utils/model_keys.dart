@@ -221,6 +221,7 @@ class BankServiceKey {
   static String panNo = 'pan_no';
   static String bankAttachment = 'bank_attachment';
   static String bankProfile = 'bank_profile';
+  static String providerUpiId='upi_id';
 }
 
 class HelpDeskKey {

@@ -36,6 +36,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
   TextEditingController contactNumberCont = TextEditingController();
   TextEditingController aadharCardNumberCont = TextEditingController();
   TextEditingController panNumberCont = TextEditingController();
+  TextEditingController upiIdNumberCont = TextEditingController();
 
   FocusNode bankNameFocus = FocusNode();
   FocusNode branchNameFocus = FocusNode();
@@ -44,39 +45,43 @@ class _AddBankScreenState extends State<AddBankScreen> {
   FocusNode contactNumberFocus = FocusNode();
   FocusNode aadharCardNumberFocus = FocusNode();
   FocusNode panNumberFocus = FocusNode();
+  FocusNode UpiIdFocus = FocusNode();
 
   Future<void> update() async {
-    
     appStore.setLoading(true);
     MultipartRequest multiPartRequest = await getMultiPartRequest('save-bank');
-    multiPartRequest.fields[UserKeys.id] = isUpdate ? widget.data!.id.toString() : "";
+    multiPartRequest.fields[UserKeys.id] =
+        isUpdate ? widget.data!.id.toString() : "";
     multiPartRequest.fields[UserKeys.providerId] = appStore.userId.toString();
     multiPartRequest.fields[BankServiceKey.bankName] = bankNameCont.text;
     multiPartRequest.fields[BankServiceKey.branchName] = branchNameCont.text;
     multiPartRequest.fields[BankServiceKey.accountNo] = accNumberCont.text;
     multiPartRequest.fields[BankServiceKey.ifscNo] = ifscCodeCont.text;
     multiPartRequest.fields[BankServiceKey.mobileNo] = contactNumberCont.text;
-    multiPartRequest.fields[BankServiceKey.aadharNo] = aadharCardNumberCont.text;
+    multiPartRequest.fields[BankServiceKey.aadharNo] =
+        aadharCardNumberCont.text;
     multiPartRequest.fields[BankServiceKey.panNo] = panNumberCont.text;
+    multiPartRequest.fields[BankServiceKey.providerUpiId] =
+        upiIdNumberCont.text;
     multiPartRequest.fields[BankServiceKey.bankAttachment] = '';
     multiPartRequest.fields[UserKeys.status] = getStatusValue().toString();
-    multiPartRequest.fields[UserKeys.isDefault] = widget.data?.isDefault.toString() ?? "0";
+    multiPartRequest.fields[UserKeys.isDefault] =
+        widget.data?.isDefault.toString() ?? "0";
 
     multiPartRequest.headers.addAll(buildHeaderTokens());
-
 
     sendMultiPartRequest(
       multiPartRequest,
       onSuccess: (data) async {
-   
         if (data != null) {
           print(data);
           if ((data as String).isJson()) {
-            BaseResponseModel res = BaseResponseModel.fromJson(jsonDecode(data));
+            BaseResponseModel res =
+                BaseResponseModel.fromJson(jsonDecode(data));
             finish(context, [true, bankNameCont.text]);
-                 appStore.setLoading(false);
+            appStore.setLoading(false);
             if (res.status ?? false) {}
-            toast( res.message!);
+            toast(res.message!);
           }
         }
       },
@@ -131,7 +136,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: appBarWidget(languages.addBank),
+      appBar: appBarWidget(languages.addBank),
       body: Stack(
         children: [
           RefreshIndicator(
@@ -149,7 +154,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     controller: bankNameCont,
                     focus: bankNameFocus,
                     nextFocus: branchNameFocus,
-                    decoration: inputDecoration(context, hint: languages.bankName),
+                    decoration:
+                        inputDecoration(context, hint: languages.bankName),
                     suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
                   ),
                   16.height,
@@ -158,7 +164,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     controller: branchNameCont,
                     focus: branchNameFocus,
                     nextFocus: accNumberFocus,
-                    decoration: inputDecoration(context, hint: languages.fullNameOnBankAccount),
+                    decoration: inputDecoration(context,
+                        hint: languages.fullNameOnBankAccount),
                     suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
                   ),
                   16.height,
@@ -167,8 +174,11 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     controller: accNumberCont,
                     focus: accNumberFocus,
                     nextFocus: ifscCodeFocus,
-                    decoration: inputDecoration(context, hint: languages.accountNumber, counter: false),
-                    suffix: ic_password.iconImage(size: 10, fit: BoxFit.contain).paddingAll(14),
+                    decoration: inputDecoration(context,
+                        hint: languages.accountNumber, counter: false),
+                    suffix: ic_password
+                        .iconImage(size: 10, fit: BoxFit.contain)
+                        .paddingAll(14),
                   ),
                   16.height,
                   AppTextField(
@@ -176,7 +186,19 @@ class _AddBankScreenState extends State<AddBankScreen> {
                     controller: ifscCodeCont,
                     focus: ifscCodeFocus,
                     nextFocus: contactNumberFocus,
-                    decoration: inputDecoration(context, hint: languages.iFSCCode, counter: false),
+                    decoration: inputDecoration(context,
+                        hint: languages.iFSCCode, counter: false),
+                    suffix: profile.iconImage(size: 10).paddingAll(14),
+                    isValidationRequired: false,
+                  ),
+                  16.height,
+                  AppTextField(
+                    textFieldType: TextFieldType.NAME,
+                    controller: upiIdNumberCont,
+                    focus: UpiIdFocus,
+                    nextFocus: contactNumberFocus,
+                    decoration: inputDecoration(context,
+                        hint: "UPI ID", counter: false),
                     suffix: profile.iconImage(size: 10).paddingAll(14),
                     isValidationRequired: false,
                   ),
@@ -184,14 +206,18 @@ class _AddBankScreenState extends State<AddBankScreen> {
                   DropdownButtonFormField<StaticDataModel>(
                     isExpanded: true,
                     dropdownColor: context.cardColor,
-                    value: blogStatusModel != null ? blogStatusModel : statusListStaticData.first,
+                    value: blogStatusModel != null
+                        ? blogStatusModel
+                        : statusListStaticData.first,
                     items: statusListStaticData.map((StaticDataModel data) {
                       return DropdownMenuItem<StaticDataModel>(
                         value: data,
-                        child: Text(data.value.validate(), style: primaryTextStyle()),
+                        child: Text(data.value.validate(),
+                            style: primaryTextStyle()),
                       );
                     }).toList(),
-                    decoration: inputDecoration(context, hint: languages.lblStatus),
+                    decoration:
+                        inputDecoration(context, hint: languages.lblStatus),
                     onChanged: (StaticDataModel? value) async {
                       bankStatus = value!.key.validate();
                       setState(() {});

@@ -82,6 +82,7 @@ class BankHistory {
   String mobileNo;
   String aadharNo;
   String panNo;
+  String upiId;
   List<dynamic> bankAttchments;
   int isDefault;
 
@@ -95,6 +96,7 @@ class BankHistory {
     this.mobileNo = "",
     this.aadharNo = "",
     this.panNo = "",
+    this.upiId = "",
     this.bankAttchments = const [],
     this.isDefault = -1,
   });
@@ -110,6 +112,7 @@ class BankHistory {
       mobileNo: json['mobile_no'] is String ? json['mobile_no'] : "",
       aadharNo: json['aadhar_no'] is String ? json['aadhar_no'] : "",
       panNo: json['pan_no'] is String ? json['pan_no'] : "",
+      upiId: json['upi_id'] is String ? json['upi_id'] : "",
       bankAttchments: json['bank_attchments'] is List ? json['bank_attchments'] : [],
       isDefault: json['is_default'] is int ? json['is_default'] : -1,
     );
@@ -126,6 +129,7 @@ class BankHistory {
       'mobile_no': mobileNo,
       'aadhar_no': aadharNo,
       'pan_no': panNo,
+      'upi_id': upiId,
       'bank_attchments': [],
       'is_default': isDefault,
     };
