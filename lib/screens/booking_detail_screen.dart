@@ -1317,21 +1317,21 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
             },
           ).expand(),
           16.width,
-          AppButton(
-            shapeBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: Colors.grey,
-                width: 1.2,
-              ),
-            ),
-            text: languages.decline,
-            textColor: textPrimaryColorGlobal,
-            onTap: () {
-              confirmationRequestDialog(
-                  context, BookingStatusKeys.rejected, res);
-            },
-          ).expand(),
+          // AppButton(
+          //   shapeBorder: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(12),
+          //     side: BorderSide(
+          //       color: Colors.grey,
+          //       width: 1.2,
+          //     ),
+          //   ),
+          //   text: languages.decline,
+          //   textColor: textPrimaryColorGlobal,
+          //   onTap: () {
+          //     confirmationRequestDialog(
+          //         context, BookingStatusKeys.rejected, res);
+          //   },
+          // ).expand(),
         ],
       );
     } else if (res.bookingDetail!.status == BookingStatusKeys.accept) {
@@ -1407,41 +1407,41 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
               },
             ).expand(),
             16.width,
-            AppButton(
-              shapeBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: Colors.grey,
-                  width: 1.2,
-                ),
-              ),
-              text: languages.decline,
-              textColor: textPrimaryColorGlobal,
-              onTap: () {
-                showConfirmDialogCustom(
-                  context,
-                  title: languages.confirmationRequestTxt,
-                  positiveText: languages.lblYes,
-                  negativeText: languages.lblNo,
-                  onAccept: (val) async {
-                    appStore.setLoading(true);
+            // AppButton(
+            //   shapeBorder: RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.circular(12),
+            //     side: BorderSide(
+            //       color: Colors.grey,
+            //       width: 1.2,
+            //     ),
+            //   ),
+            //   text: languages.decline,
+            //   textColor: textPrimaryColorGlobal,
+            //   onTap: () {
+            //     showConfirmDialogCustom(
+            //       context,
+            //       title: languages.confirmationRequestTxt,
+            //       positiveText: languages.lblYes,
+            //       negativeText: languages.lblNo,
+            //       onAccept: (val) async {
+            //         appStore.setLoading(true);
 
-                    await updateBooking(
-                      res,
-                      '',
-                      BookingStatusKeys.rejected,
-                    );
+            //         await updateBooking(
+            //           res,
+            //           '',
+            //           BookingStatusKeys.rejected,
+            //         );
 
-                    appStore.setLoading(false);
+            //         appStore.setLoading(false);
 
-                    LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
+            //         LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
 
-                    finish(context);
-                  },
-                  primaryColor: Colors.redAccent,
-                );
-              },
-            ).expand(),
+            //         finish(context);
+            //       },
+            //       primaryColor: Colors.redAccent,
+            //     );
+            //   },
+            // ).expand(),
           ],
         ),
       );
@@ -1795,6 +1795,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                     ),
 
                   /// About Customer Card
+                  /// 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

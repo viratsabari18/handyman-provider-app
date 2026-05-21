@@ -160,7 +160,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        8.height,
+     
         ViewAllLabel(
           label: languages.upcomingBookings,
           list: widget.bookingData,
@@ -169,13 +169,13 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
             LiveStream().emit(LIVESTREAM_CHANGE_HANDYMAN_TAB, {"index": 1});
           },
         ),
-        8.height,
+   
         AnimatedListView(
           itemCount: widget.bookingData.length,
           shrinkWrap: true,
           listAnimationType: ListAnimationType.FadeIn,
           fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i], showDescription: false),
+          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i],index: 1 ,showDescription: false),
         ),
       ],
     ).paddingSymmetric(horizontal: 16);

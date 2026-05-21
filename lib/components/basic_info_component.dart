@@ -169,26 +169,26 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
               ],
             ).expand(),
             if (showContactWidgets) ...[
-              GestureDetector(
-                onTap: () {
-                  String phoneNumber = "";
-                  if (widget.handymanData != null &&
-                      widget.handymanData!.contactNumber
-                          .validate()
-                          .contains('+')) {
-                    phoneNumber =
-                        "${contactNumber.validate().replaceAll('-', '')}";
-                  } else {
-                    phoneNumber =
-                        "+${contactNumber.validate().replaceAll('-', '')}";
-                  }
-                  launchUrl(
-                      Uri.parse(
-                          '${getSocialMediaLink(LinkProvider.WHATSAPP)}$phoneNumber'),
-                      mode: LaunchMode.externalApplication);
-                },
-                child: Image.asset(ic_whatsapp, height: 22),
-              ).paddingRight(8).visible(contactNumber.validate().isNotEmpty),
+              // GestureDetector(
+              //   onTap: () {
+              //     String phoneNumber = "";
+              //     if (widget.handymanData != null &&
+              //         widget.handymanData!.contactNumber
+              //             .validate()
+              //             .contains('+')) {
+              //       phoneNumber =
+              //           "${contactNumber.validate().replaceAll('-', '')}";
+              //     } else {
+              //       phoneNumber =
+              //           "+${contactNumber.validate().replaceAll('-', '')}";
+              //     }
+              //     launchUrl(
+              //         Uri.parse(
+              //             '${getSocialMediaLink(LinkProvider.WHATSAPP)}$phoneNumber'),
+              //         mode: LaunchMode.externalApplication);
+              //   },
+              //   child: Image.asset(ic_whatsapp, height: 22),
+              // ).paddingRight(8).visible(contactNumber.validate().isNotEmpty),
             ]
           ],
         ),

@@ -51,32 +51,34 @@ Widget aboutCustomerWidget({
         style: boldTextStyle(size: LABEL_TEXT_SIZE),
       ).expand(),
 
-      if (bookingDetail!.canCustomerContact &&
-          bookingDetail.status != BookingStatusKeys.complete &&
-          bookingDetail.status != BookingStatusKeys.cancelled)
-        Align(
-          alignment: Alignment.topRight,
-          child: TextButton(
-            child: Text(
-              languages.lblGetDirection,
-              style: boldTextStyle(
-                color: primaryColor,
-                size: 12,
-              ),
-            ),
-            onPressed: () async {
-              log('Latitude => ${bookingDetail.latitude}');
-              log('Longitude => ${bookingDetail.longitude}');
+   if (bookingDetail!.canCustomerContact &&
+    bookingDetail.status != BookingStatusKeys.complete &&
+    bookingDetail.status != BookingStatusKeys.cancelled &&
+    bookingDetail.status != BookingStatusKeys.pending)
+  Align(
+    alignment: Alignment.topRight,
+    child: AppButton(
+      text: languages.lblGetDirection,
+      height: 36,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      color: primaryColor,
+      textColor: Colors.white,
+      elevation: 0,
+      shapeBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      onTap: () async {
+        log('Latitude => ${bookingDetail.latitude}');
+        log('Longitude => ${bookingDetail.longitude}');
 
-              launchMap(
-                latitude:
-                    bookingDetail.latitude.validate().toDouble(),
-                longitude:
-                    bookingDetail.longitude.validate().toDouble(),
-              );
-            },
-          ),
-        ),
+        launchMap(
+          latitude: bookingDetail.latitude.validate().toDouble(),
+          longitude: bookingDetail.longitude.validate().toDouble(),
+        );
+      },
+    ),
+  ),
     ],
   );
 }
+ 

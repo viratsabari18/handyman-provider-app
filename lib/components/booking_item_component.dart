@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handyman_provider_flutter/components/cached_image_widget.dart';
 import 'package:handyman_provider_flutter/components/price_widget.dart';
+import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/booking_list_response.dart';
 import 'package:handyman_provider_flutter/networks/rest_apis.dart';
@@ -529,21 +530,28 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                       width: 1.2,
                     ),
                   ),
-                  child: Text(languages.decline, style: boldTextStyle()),
+                  child: widget.index == 1
+                      ? Text("View Booking", style: boldTextStyle())
+                      : Text(languages.decline, style: boldTextStyle()),
                   width: context.width(),
                   elevation: 0,
                   color: appStore.isDarkMode
                       ? context.scaffoldBackgroundColor
                       : white,
-                  onTap: () {
-                    if (isUserTypeProvider) {
-                      confirmationRequestDialog(
-                          context, widget.index!, BookingStatusKeys.rejected);
-                    } else {
-                      confirmationRequestDialog(
-                          context, widget.index!, BookingStatusKeys.pending);
-                    }
-                  },
+                 onTap: () {
+  widget.index == 1
+      ? LiveStream().emit(
+          LIVESTREAM_CHANGE_HANDYMAN_TAB,
+          {"index": 1},
+        )
+      : confirmationRequestDialog(
+          context,
+          widget.index!,
+          isUserTypeProvider
+              ? BookingStatusKeys.rejected
+              : BookingStatusKeys.pending,
+        );
+},
                 ).expand(),
               ],
             ).paddingOnly(bottom: 8, left: 8, right: 8, top: 16),
