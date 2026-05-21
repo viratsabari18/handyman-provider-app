@@ -1,49 +1,41 @@
 {
   "project_info": {
-    "project_number": "40205616741",
-    "project_id": "fixomes-65375",
-    "storage_bucket": "fixomes-65375.firebasestorage.app"
+    "project_number": "888601961403",
+    "project_id": "aphomeservices-5ws1oh",
+    "storage_bucket": "aphomeservices-5ws1oh.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:40205616741:android:85cd5ef475d628a106e88c",
+        "mobilesdk_app_id": "1:888601961403:android:d2df81f9974770189d5a9e",
         "android_client_info": {
-          "package_name": "com.fixomes.lmt"
+          "package_name": "com.aphomeservices.zeerah"
         }
       },
       "oauth_client": [
         {
-          "client_id": "40205616741-7dpjs8cu5ke38sq7nqv66ihedkuhq868.apps.googleusercontent.com",
+          "client_id": "888601961403-anfr3q9he33ehj3ran6dk5bgi4423v1q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.fixomes.lmt",
-            "certificate_hash": "da861c43df20e38da12d30345ce25b2655742d14"
+            "package_name": "com.aphomeservices.zeerah",
+            "certificate_hash": "0c2c1d22c4a94dc3be90bcb732e724064d64cd6e"
           }
         },
         {
-          "client_id": "40205616741-vbduoc0cgc7p42k0moqpd31ka0alu2os.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.fixomes.lmt",
-            "certificate_hash": "3ff458e061c5ab8cb571674291ee8c2b27b6397a"
-          }
-        },
-        {
-          "client_id": "40205616741-l5n6csq3rligeeqp7cdseeaotcu9qsru.apps.googleusercontent.com",
+          "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDjt1VxOh25ptZH6zAizufywhVt1VHO3SY"
+          "current_key": "AIzaSyC8qDhsCwyCFTwwf9grfTm2i7pPtV-KFkw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "40205616741-l5n6csq3rligeeqp7cdseeaotcu9qsru.apps.googleusercontent.com",
+              "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -52,27 +44,64 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:40205616741:android:dc126810043146ed06e88c",
+        "mobilesdk_app_id": "1:888601961403:android:5a9aeafab3b113c29d5a9e",
         "android_client_info": {
-          "package_name": "com.fixomesprovider.lmt"
+          "package_name": "com.fixomes.lmt"
         }
       },
       "oauth_client": [
         {
-          "client_id": "40205616741-l5n6csq3rligeeqp7cdseeaotcu9qsru.apps.googleusercontent.com",
+          "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDjt1VxOh25ptZH6zAizufywhVt1VHO3SY"
+          "current_key": "AIzaSyC8qDhsCwyCFTwwf9grfTm2i7pPtV-KFkw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "40205616741-l5n6csq3rligeeqp7cdseeaotcu9qsru.apps.googleusercontent.com",
+              "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888601961403:android:bdc9af6bb18ae7ea9d5a9e",
+        "android_client_info": {
+          "package_name": "com.fixomesprovider.lmt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888601961403-nnafp4353hvn9rgqk4l264vomf9o9n2o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fixomesprovider.lmt",
+            "certificate_hash": "0c2c1d22c4a94dc3be90bcb732e724064d64cd6e"
+          }
+        },
+        {
+          "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8qDhsCwyCFTwwf9grfTm2i7pPtV-KFkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888601961403-2lnmfm28d1rirks7v1mi2no2l5nfmb1v.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
