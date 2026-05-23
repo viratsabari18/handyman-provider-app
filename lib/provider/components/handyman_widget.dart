@@ -127,7 +127,7 @@ class _HandymanWidgetState extends State<HandymanWidget> {
                             UserData? user = await userService.getUserNull(email: widget.data!.email.validate());
                             if (user != null) {
                               Fluttertoast.cancel();
-                              UserChatScreen(receiverUser: user).launch(context);
+                              // UserChatScreen(receiverUser: user).launch(context);
                             } else {
                               Fluttertoast.cancel();
                               toast("${widget.data!.firstName.validate()} ${languages.isNotAvailableForChat}");

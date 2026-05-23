@@ -41,7 +41,17 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
 
     if (res ?? false) {
       hideKeyboard(context);
-      chatServices.deleteSingleMessage(senderId: appStore.uid, receiverId: widget.chatItemData.receiverId!, documentId: widget.chatItemData.uid.validate()).then((value) {
+    chatServices.deleteSingleMessage(
+
+  roomId:
+
+      'booking_${widget.chatItemData.bookingId}_${widget.chatItemData.receiverId}',
+
+  documentId:
+
+      widget.chatItemData.messageId
+          .validate(),
+).then((value) {
         chatServices.deleteFiles(widget.chatItemData.attachmentfiles.validate());
       }).catchError((e) {
         log(e.toString());

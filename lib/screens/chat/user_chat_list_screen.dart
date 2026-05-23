@@ -42,8 +42,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return AppScaffold(
       body: Observer(builder: (context) {
         return SnapHelperWidget(
-          future: Future.value(FirebaseAuth.instance.currentUser != null &&
-              appStore.uid.isNotEmpty),
+         future: Future.value(
+  getStringAsync('my_chat_id').isNotEmpty,
+),
           onSuccess: (isLoggedIn) {
             if (!isLoggedIn) {
               return NoDataWidget(
@@ -67,15 +68,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ).paddingSymmetric(horizontal: 16);
             } else {
               return FirestorePagination(
-                query: chatServices.fetchChatListQuery(userId: appStore.uid),
+              query: chatServices.fetchChatListQuery(
+  myChatId: getStringAsync('my_chat_id'),
+),
                 physics: AlwaysScrollableScrollPhysics(),
                 isLive: true,
                 shrinkWrap: true,
-                itemBuilder: (context, snap, index) {
-                  UserData contact = UserData.fromJson(
-                      snap[index].data() as Map<String, dynamic>);
-                  return UserItemWidget(userUid: contact.uid.validate());
-                },
+               itemBuilder: (context, docs, index) {
+
+  final data =
+      docs[index].data()
+          as Map<String, dynamic>;
+
+  return UserItemWidget(
+    chatData: data,
+  );
+},
                 initialLoader: LoaderWidget(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 10),

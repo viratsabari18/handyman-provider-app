@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_pagination/firebase_pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,415 +7,720 @@ import 'package:handyman_provider_flutter/components/app_widgets.dart';
 import 'package:handyman_provider_flutter/components/empty_error_state_widget.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/chat_message_model.dart';
-import 'package:handyman_provider_flutter/models/user_data.dart';
-import 'package:handyman_provider_flutter/networks/firebase_services/notification_service.dart';
+import 'package:handyman_provider_flutter/networks/firebase_services/chat_messages_service.dart';
 import 'package:handyman_provider_flutter/screens/chat/components/chat_item_widget.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../components/cached_image_widget.dart';
-import '../../networks/firebase_services/chat_messages_service.dart';
-import '../../utils/getImage.dart';
-import 'components/send_file_screen.dart';
 
 class UserChatScreen extends StatefulWidget {
-  final UserData receiverUser;
+
+  final String bookingId;
+
+  final String myChatId;
+
+  final String targetChatId;
+
+  final String receiverName;
+
+  final String receiverImage;
+
+  final String receiverPhone;
+
+  final bool isHandymanChat;
+
   final bool isChattingAllow;
 
-  UserChatScreen({required this.receiverUser, this.isChattingAllow = false});
+  UserChatScreen({
+
+    required this.bookingId,
+
+    required this.myChatId,
+
+    required this.targetChatId,
+
+    required this.receiverName,
+
+    required this.receiverImage,
+
+    required this.receiverPhone,
+
+    required this.isHandymanChat,
+
+    this.isChattingAllow = false,
+  });
 
   @override
-  _UserChatScreenState createState() => _UserChatScreenState();
+  _UserChatScreenState createState() =>
+      _UserChatScreenState();
 }
 
-class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObserver {
-  TextEditingController messageCont = TextEditingController();
+class _UserChatScreenState
+    extends State<UserChatScreen>
+    with WidgetsBindingObserver {
 
-  FocusNode messageFocus = FocusNode();
+  TextEditingController messageCont =
+      TextEditingController();
 
-  UserData senderUser = UserData();
+  FocusNode messageFocus =
+      FocusNode();
 
-  StreamSubscription? _streamSubscription;
+  String get roomId {
 
-  int isReceiverOnline = 0;
-
-  bool get isReceiverUserOnline => isReceiverOnline == 1;
+    return
+        'booking_${widget.bookingId}_${widget.targetChatId}';
+  }
 
   @override
   void initState() {
+
     super.initState();
+
     init();
   }
 
   void init() async {
+
     WidgetsBinding.instance.addObserver(this);
 
-    if (widget.receiverUser.uid
-        .validate()
-        .isEmpty) {
-      await userService.getUser(email: widget.receiverUser.email.validate()).then((value) {
-        widget.receiverUser.uid = value.uid;
-      }).catchError((e) {
-        log(e.toString());
-      });
-    }
+    log("========== CHAT DEBUG ==========");
 
-    senderUser = await userService.getUser(email: appStore.userEmail.validate());
+    log("Booking ID => ${widget.bookingId}");
 
-    setState(() {});
+    log("Target UID => ${widget.targetChatId}");
 
-    if (await userService.isReceiverInContacts(senderUserId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate())) {
-      await chatServices.setUnReadStatusToTrue(senderId: appStore.uid.validate(), receiverId: widget.receiverUser.uid.validate()).catchError((e) {
-        toast(e.toString());
-      });
+    log("My UID => ${widget.myChatId}");
 
-      log("receiver ID ${widget.receiverUser.uid}");
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 1);
-      //
-      _streamSubscription = chatServices.isReceiverOnline(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()).listen((event) {
-        isReceiverOnline = event.isOnline.validate();
-        log("=======*=======*=======*=======*=======* Provider $isReceiverOnline =======*=======*=======*=======*=======");
-      });
-    }
+    log(
+      "Is Handyman Chat => ${widget.isHandymanChat}",
+    );
+
+    log(
+      "Chat Room ID => $roomId",
+    );
+
+    log("================================");
   }
 
-  //region Widget
+  // =========================================================
+  // CHAT FIELD
+  // =========================================================
+
   Widget _buildChatFieldWidget() {
+
     return Row(
+
       children: [
+
         AppTextField(
-          textFieldType: TextFieldType.OTHER,
-          controller: messageCont,
-          textStyle: primaryTextStyle(),
+
+          textFieldType:
+              TextFieldType.OTHER,
+
+          controller:
+              messageCont,
+
+          textStyle:
+              primaryTextStyle(),
+
           minLines: 1,
+
+          focus:
+              messageFocus,
+
+          cursorHeight: 20,
+
+          maxLines: 5,
+
+          cursorColor:
+              appStore.isDarkMode
+                  ? Colors.white
+                  : Colors.black,
+
+          textCapitalization:
+              TextCapitalization
+                  .sentences,
+
+          keyboardType:
+              TextInputType.multiline,
+
           onFieldSubmitted: (s) {
+
             sendMessages();
           },
-          focus: messageFocus,
-          cursorHeight: 20,
-          maxLines: 5,
-          cursorColor: appStore.isDarkMode ? Colors.white : Colors.black,
-          textCapitalization: TextCapitalization.sentences,
-          keyboardType: TextInputType.multiline,
-          suffix: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Transform.rotate(angle: -0.75, child: Icon(Icons.attach_file_outlined)),
-                onPressed: () {
-                  if (!appStore.isLoading) {
-                    _handleDocumentClick();
-                  }
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.camera_alt_outlined),
-                onPressed: () {
-                  if (!appStore.isLoading) {
-                    _handleCameraClick();
-                  }
-                },
-              ),
-            ],
+
+          decoration:
+              inputDecoration(context)
+                  .copyWith(
+
+            hintText:
+                'Type message...',
+
+            hintStyle:
+                secondaryTextStyle(),
           ),
-          decoration: inputDecoration(context).copyWith(hintText: languages.lblMessage, hintStyle: secondaryTextStyle()),
         ).expand(),
+
         8.width,
+
         Container(
-          decoration: boxDecorationDefault(borderRadius: radius(80), color: primaryColor),
+
+          decoration:
+              boxDecorationDefault(
+
+            borderRadius:
+                radius(80),
+
+            color:
+                primaryColor,
+          ),
+
           child: IconButton(
-            icon: Icon(Icons.send, color: Colors.white),
+
+            icon: Icon(
+              Icons.send,
+              color: Colors.white,
+            ),
+
             onPressed: () {
+
               sendMessages();
             },
           ),
-        )
+        ),
       ],
     );
   }
 
-  //endregion
+  // =========================================================
+  // SEND MESSAGE
+  // =========================================================
 
-  //region Methods
-  Future<void> sendMessages({
-    bool isFile = false,
-    List<String> attachmentfiles = const [],
-  }) async {
+  Future<void> sendMessages() async {
+
     if (appStore.isLoading) return;
 
-    // If Message TextField is Empty.
-    if (messageCont.text.trim().isEmpty && !isFile) {
+    String text =
+        messageCont.text.trim();
+
+    if (text.isEmpty) {
+
       messageFocus.requestFocus();
-      return;
-    } else if (isFile && attachmentfiles.isEmpty) {
+
       return;
     }
 
-    // Making Request for sending data to firebase
-    ChatMessageModel data = ChatMessageModel();
+    // =====================================================
+    // BLOCK PHONE NUMBERS
+    // =====================================================
 
-    data.receiverId = widget.receiverUser.uid;
-    data.senderId = appStore.uid;
-    data.message = messageCont.text;
-    data.isMessageRead = isReceiverOnline == 1;
-    data.createdAt = DateTime.now().millisecondsSinceEpoch;
-    data.createdAtTime = Timestamp.now();
-    data.updatedAtTime = Timestamp.now();
-    data.messageType = isFile ? MessageType.Files.name : MessageType.TEXT.name;
-    data.attachmentfiles = attachmentfiles;
-    // log('ChatMessageModel Data : ${data.toJson()}');
+    final String cleanedText =
+        text.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
+
+    if (cleanedText.length >= 10) {
+
+      toast(
+        'Phone numbers are not allowed',
+      );
+
+      return;
+    }
+
+    // =====================================================
+    // BLOCK BAD WORDS
+    // =====================================================
+
+    List<String> blockedWords = [
+
+      // nudity
+      'sex',
+      'nude',
+      'naked',
+      'porn',
+      'boobs',
+      'breast',
+      'xxx',
+      'adult',
+
+      // abuse
+      'fuck',
+      'bitch',
+      'motherfucker',
+      'asshole',
+      'dick',
+      'pussy',
+      'bastard',
+      'shit',
+    ];
+
+    String lowerText =
+        text.toLowerCase();
+
+    bool hasBadWord =
+        blockedWords.any(
+      (word) =>
+          lowerText.contains(word),
+    );
+
+    if (hasBadWord) {
+
+      toast(
+        'Inappropriate message blocked',
+      );
+
+      return;
+    }
+
+    final Map<String, dynamic> data = {
+
+      'senderId':
+          widget.myChatId,
+
+      'receiverId':
+          widget.targetChatId,
+
+      'message':
+          text,
+
+      'text':
+          text,
+
+      'bookingId':
+          widget.bookingId,
+
+      'participants': [
+
+        widget.myChatId,
+
+        widget.targetChatId,
+      ],
+
+      'chatType':
+
+          widget.isHandymanChat
+
+              ? 'handyman'
+
+              : 'provider',
+
+      'providerName':
+          widget.receiverName,
+
+      'providerImage':
+          widget.receiverImage,
+
+      // NO FILES
+      'attachmentfiles': [],
+    };
+
+    log(
+      "========== SEND MESSAGE ==========",
+    );
+
+    log(
+      "Room ID => $roomId",
+    );
+
+    log(
+      "Sender ID => ${widget.myChatId}",
+    );
+
+    log(
+      "Target Chat ID => ${widget.targetChatId}",
+    );
+
+    log(
+      "Booking ID => ${widget.bookingId}",
+    );
+
+    log(
+      "Is Handyman Chat => ${widget.isHandymanChat}",
+    );
+
+    log(
+      "Message => $text",
+    );
+
+    log(
+      "==================================",
+    );
+
+    await chatServices.addMessage(
+
+      roomId: roomId,
+
+      data: data,
+    );
 
     messageCont.clear();
-
-    if (!(await userService.isReceiverInContacts(senderUserId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()))) {
-      log("========Adding To Contacts=========");
-      await chatServices.addToContacts(
-        senderId: data.senderId,
-        receiverId: data.receiverId,
-        receiverName: widget.receiverUser.displayName.validate(),
-        senderName: senderUser.displayName.validate(),
-      );
-      _streamSubscription = chatServices.isReceiverOnline(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()).listen((event) {
-        isReceiverOnline = event.isOnline.validate();
-        log("=======*=======*=======*=======*=======* User $isReceiverOnline =======*=======*=======*=======*=======");
-      });
-    }
-
-    await chatServices.addMessage(data).then((value) async {
-      log("--Message Successfully Added--");
-
-      if (isReceiverOnline != 1) {
-        /// Send Notification
-        NotificationService()
-            .sendPushNotifications(
-            appStore.userFullName,
-            data.message.validate(),
-            image: data.attachmentfiles == null || data.attachmentfiles!.isEmpty ? null : data.attachmentfiles!.first,
-            receiverUser: widget.receiverUser,
-            senderUserData: senderUser,
-        ).catchError((e) {
-          log("Notification Error ${e.toString()}");
-        });
-      }
-
-      /// Save receiverId to Sender Doc.
-      userService.saveToContacts(senderId: appStore.uid, receiverId: widget.receiverUser.uid.validate()).then((value) => log("---ReceiverId to Sender Doc.---")).catchError((e) {
-        log(e.toString());
-      });
-
-      /// Save senderId to Receiver Doc.
-      userService.saveToContacts(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid).then((value) => log("---SenderId to Receiver Doc.---")).catchError((e) {
-        log(e.toString());
-      });
-
-      /// ENd
-    }).catchError((e) {
-      log(e.toString());
-    });
   }
 
-  //endregion
+  // =========================================================
+  // LIFECYCLE
+  // =========================================================
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
+  void didChangeAppLifecycleState(
+      AppLifecycleState state) {
+
     super.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.detached) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
-    }
-
-    if (state == AppLifecycleState.paused) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
-    }
-    if (state == AppLifecycleState.resumed) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 1);
-    }
-  }
-
-  @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
 
-    chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
+    WidgetsBinding.instance
+        .removeObserver(this);
 
-    _streamSubscription?.cancel();
+    setStatusBarColor(
 
-    setStatusBarColor(transparentColor, statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.dark);
+      transparentColor,
+
+      statusBarBrightness:
+          Brightness.dark,
+
+      statusBarIconBrightness:
+          Brightness.dark,
+    );
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       appBar: AppBar(
-        backgroundColor: context.primaryColor,
-        leadingWidth: context.width(),
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: context.primaryColor, statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
+
+        backgroundColor:
+            context.primaryColor,
+
+        leadingWidth:
+            context.width(),
+
+        systemOverlayStyle:
+            SystemUiOverlayStyle(
+
+          statusBarColor:
+              context.primaryColor,
+
+          statusBarBrightness:
+              Brightness.dark,
+
+          statusBarIconBrightness:
+              Brightness.light,
+        ),
+
         leading: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+
+          mainAxisAlignment:
+              MainAxisAlignment.start,
+
           children: [
+
             IconButton(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+
+              padding:
+                  EdgeInsets.symmetric(
+                horizontal: 8,
+              ),
+
               onPressed: () {
+
                 finish(context);
               },
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+
+              icon: Icon(
+
+                Icons.arrow_back_ios,
+
+                color: Colors.white,
+              ),
             ),
-            CachedImageWidget(url: widget.receiverUser.profileImage.validate(), height: 36, circle: true, fit: BoxFit.cover),
+
+            CachedImageWidget(
+
+              url:
+                  widget.receiverImage,
+
+              height: 36,
+
+              circle: true,
+
+              fit: BoxFit.cover,
+            ),
+
             12.width,
+
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
+
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
               children: [
+
                 Text(
-                  "${widget.receiverUser.firstName.validate() + " " + widget.receiverUser.lastName.validate()}",
-                  style: boldTextStyle(color: white, size: APP_BAR_TEXT_SIZE),
+
+                  widget.receiverName,
+
+                  style: boldTextStyle(
+
+                    color: white,
+
+                    size:
+                        APP_BAR_TEXT_SIZE,
+                  ),
+
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+
+                  overflow:
+                      TextOverflow
+                          .ellipsis,
                 ),
               ],
             ).expand(),
+
             40.width,
           ],
         ),
+
         actions: [
+
           PopupMenuButton(
+
             onSelected: (index) {
+
               if (index == 0) {
+
                 showConfirmDialogCustom(
+
                   context,
-                  positiveText: languages.lblYes,
-                  negativeText: languages.lblNo,
-                  primaryColor: context.primaryColor,
-                  title: languages.clearChatMessage,
+
+                  positiveText:
+                      languages.lblYes,
+
+                  negativeText:
+                      languages.lblNo,
+
+                  primaryColor:
+                      context.primaryColor,
+
+                  title:
+                      languages.clearChatMessage,
+
                   onAccept: (c) async {
+
                     appStore.setLoading(true);
-                    await chatServices.clearAllMessages(senderId: appStore.uid, receiverId: widget.receiverUser.uid.validate()).then((value) {
-                      toast(languages.chatCleared);
+
+                    await chatServices
+                        .clearAllMessages(
+
+                      roomId: roomId,
+                    )
+
+                        .then((value) {
+
+                      toast(
+                        languages.chatCleared,
+                      );
+
                       hideKeyboard(context);
+
                     }).catchError((e) {
+
                       toast(e);
                     });
+
                     appStore.setLoading(false);
                   },
                 );
               }
             },
-            icon: Icon(Icons.more_vert_sharp, color: Colors.white),
-            color: context.cardColor,
+
+            icon: Icon(
+
+              Icons.more_vert_sharp,
+
+              color: Colors.white,
+            ),
+
+            color:
+                context.cardColor,
+
             itemBuilder: (context) {
-              List<PopupMenuItem> list = [];
+
+              List<PopupMenuItem>
+                  list = [];
+
               list.add(
+
                 PopupMenuItem(
+
                   value: 0,
-                  child: Text(languages.clearChat, style: primaryTextStyle()),
+
+                  child: Text(
+
+                    languages.clearChat,
+
+                    style:
+                        primaryTextStyle(),
+                  ),
                 ),
               );
+
               return list;
             },
-          )
+          ),
         ],
       ),
-      body: SizedBox(
-        height: context.height(),
-        width: context.width(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              margin: EdgeInsets.only(bottom: widget.isChattingAllow ? 0 : 80),
-              child: FirestorePagination(
-                reverse: true,
-                isLive: true,
-                padding: EdgeInsets.only(left: 8, top: 8, right: 8, bottom: 0),
-                physics: BouncingScrollPhysics(),
-                query: chatServices.chatMessagesWithPagination(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()),
-                initialLoader: LoaderWidget(),
-                limit: PER_PAGE_CHAT_LIST_COUNT,
-                onEmpty: NoDataWidget(
-                  title: languages.noConversation,
-                  imageWidget: EmptyStateWidget(),
-                ),
-                shrinkWrap: true,
-                viewType: ViewType.list,
-                itemBuilder: (context, snap, index) {
-                  ChatMessageModel data = ChatMessageModel.fromJson(snap[index].data() as Map<String, dynamic>);
-                  data.isMe = data.senderId == appStore.uid;
-                  data.chatDocumentReference = snap[index].reference;
 
-                  return ChatItemWidget(chatItemData: data);
+      body: SafeArea(
+        child: SizedBox(
+
+          height: context.height(),
+
+          width: context.width(),
+
+          child: Stack(
+
+            fit: StackFit.expand,
+
+            children: [
+
+              Container(
+
+                margin: EdgeInsets.only(
+
+                  bottom:
+                      widget.isChattingAllow
+                          ? 0
+                          : 80,
+                ),
+
+                child:
+                    FirestorePagination(
+
+                  reverse: true,
+
+                  isLive: true,
+
+                  padding:
+                      EdgeInsets.only(
+
+                    left: 8,
+
+                    top: 8,
+
+                    right: 8,
+
+                    bottom: 0,
+                  ),
+
+                  physics:
+                      BouncingScrollPhysics(),
+
+                  query:
+                      chatServices
+                          .chatMessagesWithPagination(
+
+                    roomId: roomId,
+                  ),
+
+                  initialLoader:
+                      LoaderWidget(),
+
+                  limit:
+                      PER_PAGE_CHAT_LIST_COUNT,
+
+                  onEmpty: NoDataWidget(
+
+                    title:
+                        languages.noConversation,
+
+                    imageWidget:
+                        EmptyStateWidget(),
+                  ),
+
+                  shrinkWrap: true,
+
+                  viewType:
+                      ViewType.list,
+
+                  itemBuilder:
+                      (context, snap, index) {
+
+                    final rawData =
+
+                        snap[index].data()
+                            as Map<String,
+                                dynamic>;
+
+                    ChatMessageModel data =
+
+                        ChatMessageModel
+                            .fromJson(rawData);
+
+                    data.message =
+
+                        rawData['message'] ??
+
+                        rawData['text'] ??
+
+                        '';
+
+                    data.isMe =
+
+                        data.senderId ==
+                            widget.myChatId;
+
+                    data.chatDocumentReference =
+                        snap[index].reference;
+
+                    return ChatItemWidget(
+                      chatItemData: data,
+                    );
+                  },
+                ),
+              ),
+
+              if (!widget.isChattingAllow)
+
+                Positioned(
+
+                  bottom: 16,
+
+                  left: 16,
+
+                  right: 16,
+
+                  child:
+                      _buildChatFieldWidget(),
+                ),
+
+              Observer(
+
+                builder: (context) {
+
+                  return LoaderWidget()
+                      .visible(
+                    appStore.isLoading,
+                  );
                 },
               ),
-            ),
-            if (!widget.isChattingAllow)
-              Positioned(
-                bottom: 16,
-                left: 16,
-                right: 16,
-                child: _buildChatFieldWidget(),
-              ),
-            Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
-          ],
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  Future<void> _handleDocumentClick() async {
-    appStore.setLoading(true);
-    await pickFiles(
-      allowedExtensions: chatFilesAllowedExtensions,
-      maxFileSizeMB: max_acceptable_file_size,
-      type: FileType.custom,
-    ).then((pickedfiles) async {
-      await handleUploadAndSendFiles(pickedfiles);
-    }).catchError((e) {
-      toast(e);
-      log('ChatServices().uploadFiles Err: ${e}');
-      return;
-    }).whenComplete(() => appStore.setLoading(false));
-  }
-
-  Future<void> _handleCameraClick() async {
-    GetImage(ImageSource.camera, path: (path, name, xFile) async {
-      log('Path camera : ${path.toString()} name $name');
-      await handleUploadAndSendFiles([File(xFile.path)]);
-      setState(() {});
-    });
-  }
-
-  Future<void> handleUploadAndSendFiles(List<File> pickedfiles) async {
-    if (pickedfiles.isEmpty) return;
-    await SendFilePreviewScreen(pickedfiles: pickedfiles).launch(context).then((value) async {
-      if (value[MessageType.Files.name] is List<File>) {
-        pickedfiles = value[MessageType.Files.name];
-      }
-
-      if (value[MessageType.TEXT.name] is String) {
-        messageCont.text = value[MessageType.TEXT.name];
-      }
-
-      if (messageCont.text.trim().isNotEmpty || pickedfiles.isNotEmpty) {
-        appStore.setLoading(true);
-        await ChatServices().uploadFiles(pickedfiles).then((attachedfiles) async {
-          if (attachedfiles.isEmpty) return;
-          log('ATTACHEDFILES: ${attachedfiles}');
-          await sendMessages(isFile: true, attachmentfiles: attachedfiles).whenComplete(() => appStore.setLoading(false));
-        }).catchError((e) {
-          toast(e);
-          log('ChatServices().uploadFiles Err: ${e}');
-          return;
-        }).whenComplete(() => appStore.setLoading(false));
-      }
-    });
   }
 }

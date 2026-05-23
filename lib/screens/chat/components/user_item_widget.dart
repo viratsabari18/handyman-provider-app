@@ -8,92 +8,269 @@ import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class UserItemWidget extends StatefulWidget {
-  final String userUid;
-
-  UserItemWidget({required this.userUid});
+ final Map<String, dynamic> chatData;
+const UserItemWidget({
+  Key? key,
+  required this.chatData,
+}) : super(key: key);
 
   @override
   State<UserItemWidget> createState() => _UserItemWidgetState();
 }
 
 class _UserItemWidgetState extends State<UserItemWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<UserData>(
-        stream: userService.singleUser(widget.userUid),
-        builder: (context, snap) {
-          if (snap.connectionState == ConnectionState.waiting) {
-            // Show a loading indicator while waiting for data
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(languages.loadingChats, style: primaryTextStyle(), textAlign: TextAlign.center),
-            );
-          }
-          if (snap.hasError || !snap.hasData || snap.data == null) {
-            return SizedBox.shrink();
-          }
-          UserData data = snap.data!;
-          return InkWell(
-            onTap: () {
-              UserChatScreen(receiverUser: data).launch(context, pageRouteAnimation: PageRouteAnimation.Fade, duration: 300.milliseconds);
-            },
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Row(
+ @override
+Widget build(BuildContext context) {
+
+  final String roomId =
+
+      widget.chatData['chatRoomId'] ?? '';
+
+  final String bookingId =
+
+      widget.chatData['bookingId']
+          ?.toString() ?? '';
+
+  final String targetUid =
+
+      widget.chatData['targetUid'] ?? '';
+
+  final String lastMessage =
+
+      widget.chatData['lastMessage'] ?? '';
+
+  final String name =
+
+      widget.chatData['providerName'] ??
+
+      widget.chatData['name'] ??
+
+      'Customer';
+
+  final String image =
+
+      widget.chatData['providerImage'] ??
+
+      widget.chatData['image'] ??
+
+      '';
+
+  return InkWell(
+
+    onTap: () {
+
+      UserChatScreen(
+
+        bookingId:
+            bookingId,
+
+        myChatId:
+            getStringAsync(
+                'my_chat_id'),
+
+        targetChatId:
+            targetUid,
+
+        receiverName:
+            name,
+
+        receiverImage:
+            image,
+
+        receiverPhone:
+            '',
+
+        isHandymanChat:
+            targetUid.startsWith(
+                'handyman_'),
+
+      ).launch(
+
+        context,
+
+        pageRouteAnimation:
+            PageRouteAnimation.Fade,
+
+        duration:
+            300.milliseconds,
+      );
+    },
+
+    child: Container(
+
+      padding:
+          EdgeInsets.all(16),
+
+      child: Row(
+
+        children: [
+
+          if (image.isEmpty)
+
+            Container(
+
+              height: 40,
+
+              width: 40,
+
+              padding:
+                  EdgeInsets.all(10),
+
+              color:
+                  context.primaryColor
+                      .withValues(
+                alpha: 0.2,
+              ),
+
+              child: Text(
+
+                name.isNotEmpty
+                    ? name[0]
+                        .toUpperCase()
+                    : 'C',
+
+                style:
+                    boldTextStyle(
+                  color:
+                      context.primaryColor,
+                ),
+              ).center().fit(),
+            ).cornerRadiusWithClipRRect(50)
+
+          else
+
+            CachedImageWidget(
+
+              url: image,
+
+              height: 40,
+
+              circle: true,
+
+              fit: BoxFit.cover,
+            ),
+
+          16.width,
+
+          Column(
+
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+
+            children: [
+
+              Row(
+
                 children: [
-                  if (data.profileImage.validate().isEmpty)
-                    Container(
-                      height: 40,
-                      width: 40,
-                      padding: EdgeInsets.all(10),
-                      color: context.primaryColor.withValues(alpha:0.2),
-                      child: Text(
-                        data.displayName.validate()[0].validate().toUpperCase(),
-                        style: boldTextStyle(color: context.primaryColor),
-                      ).center().fit(),
-                    ).cornerRadiusWithClipRRect(50)
-                  else
-                    CachedImageWidget(url: data.profileImage.validate(), height: 40, circle: true, fit: BoxFit.cover),
-                  16.width,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            data.firstName.validate() + " " + data.lastName.validate(),
-                            style: boldTextStyle(),
-                            maxLines: 1,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                          ).expand(),
-                          StreamBuilder<int>(
-                            stream: chatServices.getUnReadCount(senderId: appStore.uid.validate(), receiverId: data.uid.validate()),
-                            builder: (context, snap) {
-                              if (snap.hasData && snap.data != 0) {
-                                return Container(
-                                  height: 18,
-                                  width: 18,
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: primaryColor),
-                                  child: Text(
-                                    snap.data.validate().toString(),
-                                    style: secondaryTextStyle(color: white),
-                                    textAlign: TextAlign.center,
-                                  ).center(),
-                                );
-                              }
-                              return Offstage();
-                            },
+
+                  Text(
+
+                    name,
+
+                    style:
+                        boldTextStyle(),
+
+                    maxLines: 1,
+
+                    overflow:
+                        TextOverflow
+                            .ellipsis,
+                  ).expand(),
+
+                  StreamBuilder<int>(
+
+                    stream:
+                        chatServices
+                            .getUnReadCount(
+
+                      roomId:
+                          roomId,
+
+                      myChatId:
+                          getStringAsync(
+                              'my_chat_id'),
+                    ),
+
+                    builder:
+                        (context, snap) {
+
+                      if (snap.hasData &&
+                          snap.data != 0) {
+
+                        return Container(
+
+                          height: 18,
+
+                          width: 18,
+
+                          decoration:
+                              BoxDecoration(
+
+                            borderRadius:
+                                BorderRadius.circular(
+                                    20),
+
+                            color:
+                                primaryColor,
                           ),
-                        ],
-                      ),
-                      LastMessageChat(stream: chatServices.fetchLastMessageBetween(senderId: appStore.uid.validate(), receiverId: widget.userUid)),
-                    ],
-                  ).expand()
+
+                          child: Text(
+
+                            snap.data
+                                .validate()
+                                .toString(),
+
+                            style:
+                                secondaryTextStyle(
+                              color: white,
+                            ),
+
+                            textAlign:
+                                TextAlign.center,
+                          ).center(),
+                        );
+                      }
+
+                      return Offstage();
+                    },
+                  ),
                 ],
               ),
-            ),
-          );
-        });
-  }
+
+              4.height,
+
+              Text(
+
+                lastMessage,
+
+                maxLines: 1,
+
+                overflow:
+                    TextOverflow
+                        .ellipsis,
+
+                style:
+                    secondaryTextStyle(
+                  size: 14,
+                ),
+              ),
+
+              4.height,
+
+              // Text(
+
+              //   roomId,
+
+              //   style:
+              //       secondaryTextStyle(
+              //     size: 10,
+              //   ),
+              // ),
+            ],
+          ).expand(),
+        ],
+      ),
+    ),
+  );
+}
 }

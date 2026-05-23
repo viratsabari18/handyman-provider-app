@@ -1645,6 +1645,10 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
 
   //region Body
   Widget buildBodyWidget(AsyncSnapshot<BookingDetailResponse> res) {
+final bool hasAssignedHandyman =
+    res.data!.handymanData != null &&
+    res.data!.handymanData!.isNotEmpty &&
+    res.data!.handymanData!.first.id != appStore.userId;
     if (res.hasError) {
       return NoDataWidget(
         title: res.error.toString(),
@@ -1681,11 +1685,20 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                   _buildCounterWidget(value: res.data!),
 
                   /// Location Tracking
-                  locationTrackWidget(data: res.data!).visible(
-                      BookingStatusKeys.onGoing ==
-                              res.data!.bookingDetail!.status &&
-                          !isUserTypeHandyman &&
-                          res.data!.handymanData![0].id != appStore.userId),
+               locationTrackWidget(data: res.data!).visible(
+
+  BookingStatusKeys.onGoing ==
+      res.data!.bookingDetail!.status &&
+
+  !isUserTypeHandyman &&
+
+  res.data!.handymanData != null &&
+
+  res.data!.handymanData!.isNotEmpty &&
+
+  res.data!.handymanData!.first.id !=
+      appStore.userId,
+),
 
                   /// My Service List
                   if (res.data!.postRequestDetail != null &&
@@ -1699,11 +1712,11 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                         package: res.data!.bookingDetail!.bookingPackage!),
 
                   /// Service Proof Images
-                  ServiceProofListWidget(
-                      serviceProofList: res.data!.serviceProof!),
+                  // ServiceProofListWidget(
+                  //     serviceProofList: res.data!.serviceProof!),
 
                   /// About Handyman Card
-                  if (res.data!.handymanData!.isNotEmpty &&
+                  if (res.data!.handymanData != null && res.data!.handymanData!.isNotEmpty &&   
                       appStore.userType != USER_TYPE_HANDYMAN)
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),
@@ -1734,7 +1747,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                                     style:
                                         boldTextStyle(size: LABEL_TEXT_SIZE)),
                                 Column(
-                                  children: res.data!.handymanData!.map(
+                                  children:     (res.data!.handymanData ?? []).map(
                                     (e) {
                                       return Text(
                                         languages.viewAll,
@@ -1766,7 +1779,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16),
                             child: Column(
-                              children: res.data!.handymanData!.map(
+                              children:     (res.data!.handymanData ?? []).map(
                                 (e) {
                                   return BasicInfoComponent(
                                     1,
@@ -1774,6 +1787,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                                     service: res.data!.service,
                                     bookingDetail: res.data!.bookingDetail!,
                                     bookingInfo: res.data!,
+                                    isshow: false,
                                   ).onTap(() {
                                     if (res.data!.bookingDetail!
                                             .canCustomerContact &&
@@ -1809,35 +1823,39 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                             bookingDetail: res.data!.bookingDetail),
                       ),
                       16.height,
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16),
-                        decoration: boxDecorationDefault(
-                          color: context.cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 10,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: radius(),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: BasicInfoComponent(
-                          0,
-                          customerData: res.data!.customer,
-                          service: res.data!.service,
-                          bookingDetail: res.data!.bookingDetail,
-                        ),
-                      ),
 
+
+Container(
+  margin: EdgeInsets.symmetric(horizontal: 16),
+  decoration: boxDecorationDefault(
+    color: context.cardColor,
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.3),
+        blurRadius: 10,
+        offset: Offset(0, 3),
+      ),
+    ],
+    border: Border.all(color: Colors.grey),
+    borderRadius: radius(),
+  ),
+  padding: EdgeInsets.all(16),
+  child: BasicInfoComponent(
+    0,
+    customerData: res.data!.customer,
+    service: res.data!.service,
+    bookingDetail: res.data!.bookingDetail,
+    bookingInfo: res.data!,
+    isshow: !hasAssignedHandyman,
+  ),
+),
                       16.height,
 
                       ///Add-ons
-                      if (res.data!.bookingDetail!.serviceaddon
-                          .validate()
-                          .isNotEmpty)
+                   if (res.data!.bookingDetail != null &&
+    res.data!.bookingDetail!.serviceaddon
+        .validate()
+        .isNotEmpty)
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 16),
                           decoration: boxDecorationDefault(
@@ -2055,8 +2073,11 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                   ),
 
                   /// Customer Review Widget
-                  if (res.data!.ratingData.validate().isNotEmpty)
-                    _customerReviewWidget(bookingDetailResponse: res.data!),
+          if (res.data!.service != null &&
+    res.data!.ratingData.validate().isNotEmpty)
+  _customerReviewWidget(
+    bookingDetailResponse: res.data!,
+  ),
                 ],
               ),
               Positioned(
@@ -2114,7 +2135,12 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                         .toBookingStatus()
                     : "",
               ),
-              body: buildBodyWidget(snap),
+             body: snap.connectionState ==
+        ConnectionState.waiting
+
+    ? BookingDetailShimmer()
+
+    : buildBodyWidget(snap),
             ),
           ),
         );

@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:handyman_provider_flutter/components/handyman_name_widget.dart';
 import 'package:handyman_provider_flutter/components/image_border_component.dart';
@@ -5,7 +7,7 @@ import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/booking_list_response.dart';
 import 'package:handyman_provider_flutter/models/service_model.dart';
 import 'package:handyman_provider_flutter/models/user_data.dart';
-import 'package:handyman_provider_flutter/screens/chat/user_chat_screen.dart';
+import 'package:handyman_provider_flutter/screens/chat/chat_room_screen.dart';
 import 'package:handyman_provider_flutter/utils/colors.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
@@ -23,37 +25,54 @@ class BasicInfoComponent extends StatefulWidget {
   final UserData? providerData;
   final ServiceData? service;
   final BookingDetailResponse? bookingInfo;
+  final bool isshow;
 
   /// flag == 0 = customer
   /// flag == 1 = handyman
   /// else provider
   final int flag;
+
   final BookingData? bookingDetail;
 
-  BasicInfoComponent(this.flag,
-      {this.customerData,
-      this.handymanData,
-      this.providerData,
-      this.service,
-      this.bookingDetail,
-      this.bookingInfo});
+  BasicInfoComponent(
+    this.flag, {
+    this.customerData,
+    this.handymanData,
+    this.providerData,
+    this.service,
+    this.bookingDetail,
+    this.bookingInfo,
+    this.isshow = true,
+  });
 
   @override
-  BasicInfoComponentState createState() => BasicInfoComponentState();
+  BasicInfoComponentState createState() =>
+      BasicInfoComponentState();
 }
 
-class BasicInfoComponentState extends State<BasicInfoComponent> {
+class BasicInfoComponentState
+    extends State<BasicInfoComponent> {
+
   UserData customer = UserData();
+
   UserData provider = UserData();
+
   UserData userData = UserData();
+
   ServiceData service = ServiceData();
 
   String? googleUrl;
+
   String? address;
+
   String? name;
+
   String? contactNumber;
+
   String? profileUrl;
+
   int? profileId;
+
   int? handymanRating;
 
   int? flag;
@@ -69,63 +88,163 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
   @override
   void initState() {
     super.initState();
+
     init();
+
+    log("=========== CHAT OPEN DEBUG ===========");
+
+    log("BOOKING ID => ${widget.bookingDetail?.id}");
+
+    log("CUSTOMER ID => ${widget.bookingDetail?.customerId}");
+
+    log("PROVIDER ID => ${widget.bookingDetail?.providerId}");
+
+    log("HANDYMAN DATA => ${widget.handymanData?.id}");
+
+    log("APP USER ID => ${appStore.userId}");
+
+    log("APP USER TYPE => ${appStore.userType}");
+
+    log("MY CHAT ID => ${getStringAsync('my_chat_id')}");
+
+    log("=======================================");
   }
 
   Future<void> init() async {
+
     if (widget.flag == 0) {
-      profileId = widget.customerData!.id.validate();
-      name = widget.customerData!.displayName.validate();
-      profileUrl = widget.customerData!.profileImage.validate();
-      contactNumber = widget.customerData!.contactNumber.validate();
-      address = widget.customerData!.address.validate();
+
+      profileId =
+          widget.customerData!.id.validate();
+
+      name = widget.customerData!
+          .displayName
+          .validate();
+
+      profileUrl = widget.customerData!
+          .profileImage
+          .validate();
+
+      contactNumber = widget.customerData!
+          .contactNumber
+          .validate();
+
+      address =
+          widget.customerData!.address.validate();
 
       userData = widget.customerData!;
-      await userService
-          .getUser(email: widget.customerData!.email.validate())
-          .then((value) {
-        widget.customerData!.uid = value.uid;
-      }).catchError((e) {
-        log(e.toString());
-      });
+
       showContactWidgets =
-          widget.bookingDetail!.status != BookingStatusKeys.complete &&
-              widget.bookingDetail!.status != BookingStatusKeys.cancelled;
+          widget.bookingDetail!.status !=
+                  BookingStatusKeys.complete &&
+              widget.bookingDetail!.status !=
+                  BookingStatusKeys.cancelled;
+
       showChat = true;
-      showVerifiedBadge =
-          widget.customerData!.isVerifiedAccount.validate().getBoolInt();
+
+      showVerifiedBadge = widget
+          .customerData!
+          .isVerifiedAccount
+          .validate()
+          .getBoolInt();
+
     } else if (widget.flag == 1) {
-      profileId = widget.handymanData!.id.validate();
-      name = widget.handymanData!.displayName.validate();
-      profileUrl = widget.handymanData!.profileImage.validate();
-      contactNumber = widget.handymanData!.contactNumber.validate();
-      address = widget.handymanData!.address.validate();
+
+      profileId =
+          widget.handymanData!.id.validate();
+
+      name = widget.handymanData!
+          .displayName
+          .validate();
+
+      profileUrl = widget.handymanData!
+          .profileImage
+          .validate();
+
+      contactNumber = widget.handymanData!
+          .contactNumber
+          .validate();
+
+      address =
+          widget.handymanData!.address.validate();
 
       userData = widget.handymanData!;
-      await userService
-          .getUser(email: widget.handymanData!.email.validate())
-          .then((value) {
-        widget.handymanData!.uid = value.uid;
-      }).catchError((e) {
-        log(e.toString());
-      });
-      showContactWidgets = widget.bookingInfo != null &&
-          widget.bookingInfo!.providerData!.id.validate() !=
-              widget.handymanData!.id.validate();
-      showVerifiedBadge =
-          widget.handymanData!.isVerifiedAccount.validate().getBoolInt();
-      showChat = widget.bookingDetail!.status != BookingStatusKeys.complete &&
-          widget.bookingDetail!.status != BookingStatusKeys.cancelled;
+
+      showContactWidgets =
+          widget.bookingInfo != null &&
+              widget.bookingInfo!.providerData!
+                      .id
+                      .validate() !=
+                  widget.handymanData!.id
+                      .validate();
+
+      showVerifiedBadge = widget
+          .handymanData!
+          .isVerifiedAccount
+          .validate()
+          .getBoolInt();
+
+      showChat =
+          widget.bookingDetail!.status !=
+                  BookingStatusKeys.complete &&
+              widget.bookingDetail!.status !=
+                  BookingStatusKeys.cancelled;
+
     } else {
-      profileId = widget.providerData!.id.validate();
-      name = widget.providerData!.displayName.validate();
-      profileUrl = widget.providerData!.profileImage.validate();
-      contactNumber = widget.providerData!.contactNumber.validate();
-      address = widget.providerData!.address.validate();
+      final bool hasAssignedHandyman =
+
+    widget.handymanData != null &&
+
+    widget.handymanData!.id != null;
+
+// log(
+//   "PROVIDER HANDYMAN COUNT => ${handymanList.length}",
+// );
+
+log(
+  "PROVIDER HAS ASSIGNED HANDYMAN => $hasAssignedHandyman",
+);
+
+      profileId =
+          widget.providerData!.id.validate();
+
+      name = widget.providerData!
+          .displayName
+          .validate();
+
+      profileUrl = widget.providerData!
+          .profileImage
+          .validate();
+
+      contactNumber = widget.providerData!
+          .contactNumber
+          .validate();
+
+      address =
+          widget.providerData!.address.validate();
+
       provider = widget.providerData!;
-      showVerifiedBadge =
-          widget.providerData!.isVerifiedAccount.validate().getBoolInt();
+
+      showVerifiedBadge = widget
+          .providerData!
+          .isVerifiedAccount
+          .validate()
+          .getBoolInt();
+showChat =
+
+    !hasAssignedHandyman &&
+
+    widget.bookingDetail!.status !=
+        BookingStatusKeys.complete &&
+
+    widget.bookingDetail!.status !=
+        BookingStatusKeys.cancelled;
+
+log(
+  "PROVIDER SHOW CHAT => $showChat",
+);
     }
+
     setState(() {});
   }
 
@@ -136,197 +255,403 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
 
   @override
   Widget build(BuildContext context) {
+final handymanList =
+    widget.bookingDetail?.handyman ?? [];
+
+log("HANDYMAN LIST => $handymanList");
+
+log("HANDYMAN COUNT => ${handymanList.length}");
+
+final bool isHandymanLogin =
+    appStore.userType == 'handyman';
+
+final String targetChatId =
+    isHandymanLogin
+
+        ? 'handyman_${appStore.userId}'
+
+        : 'provider_${widget.bookingDetail?.providerId}';
+
+log("IS HANDYMAN LOGIN => $isHandymanLogin");
+
+log("TARGET CHAT ID => $targetChatId");
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+
       children: [
+
         Row(
+
           children: [
-            if (profileUrl.validate().isNotEmpty)
-              ImageBorder(src: profileUrl.validate(), height: 45),
+
+            if (profileUrl
+                .validate()
+                .isNotEmpty)
+
+              ImageBorder(
+                src: profileUrl.validate(),
+                height: 45,
+              ),
+
             16.width,
+
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
               children: [
+
                 Row(
+
                   children: [
+
                     HandymanNameWidget(
+
                       name: name.validate(),
+
                       size: 14,
-                      showVerifiedBadge: showVerifiedBadge,
+
+                      showVerifiedBadge:
+                          showVerifiedBadge,
+
                     ).flexible(),
                   ],
                 ),
+
                 if (widget.flag == 1 &&
-                    userData.handymanRating.validate().toDouble() > 0)
+                    userData.handymanRating
+                            .validate()
+                            .toDouble() >
+                        0)
+
                   Row(
+
                     children: [
-                      Icon(Icons.star, color: rattingColor, size: 16),
+
+                      Icon(
+                        Icons.star,
+                        color: rattingColor,
+                        size: 16,
+                      ),
+
                       2.width,
-                      Text('${userData.handymanRating.validate().toDouble()}',
-                          style: secondaryTextStyle(weight: FontWeight.bold)),
+
+                      Text(
+                        '${userData.handymanRating.validate().toDouble()}',
+                        style:
+                            secondaryTextStyle(
+                          weight:
+                              FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
               ],
             ).expand(),
-            if (showContactWidgets) ...[
-              // GestureDetector(
-              //   onTap: () {
-              //     String phoneNumber = "";
-              //     if (widget.handymanData != null &&
-              //         widget.handymanData!.contactNumber
-              //             .validate()
-              //             .contains('+')) {
-              //       phoneNumber =
-              //           "${contactNumber.validate().replaceAll('-', '')}";
-              //     } else {
-              //       phoneNumber =
-              //           "+${contactNumber.validate().replaceAll('-', '')}";
-              //     }
-              //     launchUrl(
-              //         Uri.parse(
-              //             '${getSocialMediaLink(LinkProvider.WHATSAPP)}$phoneNumber'),
-              //         mode: LaunchMode.externalApplication);
-              //   },
-              //   child: Image.asset(ic_whatsapp, height: 22),
-              // ).paddingRight(8).visible(contactNumber.validate().isNotEmpty),
-            ]
           ],
         ),
-        if (widget.bookingDetail!.canCustomerContact && widget.flag == 0)
+
+        if (widget.bookingDetail!
+                .canCustomerContact &&
+            widget.flag == 0)
+
           Column(
+
             children: [
+
               16.height,
-              if (userData.email.validate().isNotEmpty)
+
+              if (userData.email
+                  .validate()
+                  .isNotEmpty)
+
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
                   children: [
+
                     Text(
                       languages.email,
                       style: boldTextStyle(
-                          size: 12,
-                          color: appStore.isDarkMode
-                              ? textSecondaryColor
-                              : textPrimaryColor),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                        size: 12,
+                        color:
+                            appStore.isDarkMode
+                                ? textSecondaryColor
+                                : textPrimaryColor,
+                      ),
                     ).expand(),
+
                     8.width,
+
                     Text(
-                      userData.email.validate(),
+                      userData.email
+                          .validate(),
                       style: boldTextStyle(
-                          size: 12,
-                          color:
-                              appStore.isDarkMode ? white : textSecondaryColor,
-                          weight: FontWeight.w400),
-                      textAlign: TextAlign.left,
+                        size: 12,
+                        color:
+                            appStore.isDarkMode
+                                ? white
+                                : textSecondaryColor,
+                        weight:
+                            FontWeight.w400,
+                      ),
+                      textAlign:
+                          TextAlign.left,
                     ).expand(flex: 4),
                   ],
                 ).onTap(() {
-                  launchMail(userData.email.validate());
+                  launchMail(
+                      userData.email.validate());
                 }),
-              if (widget.bookingDetail != null) ...[
+
+              if (widget.bookingDetail !=
+                  null) ...[
+
                 8.height,
+
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
                   children: [
+
                     Text(
                       '${languages.lblAddress}:',
                       style: boldTextStyle(
-                          size: 12,
-                          color: appStore.isDarkMode
-                              ? textSecondaryColor
-                              : textPrimaryColor),
+                        size: 12,
+                        color:
+                            appStore.isDarkMode
+                                ? textSecondaryColor
+                                : textPrimaryColor,
+                      ),
                     ).expand(),
+
                     8.width,
+
                     Text(
-                      widget.bookingDetail!.address.validate(),
+                      widget.bookingDetail!
+                          .address
+                          .validate(),
                       style: boldTextStyle(
-                          size: 12,
-                          color:
-                              appStore.isDarkMode ? white : textSecondaryColor,
-                          weight: FontWeight.w400),
-                      textAlign: TextAlign.left,
+                        size: 12,
+                        color:
+                            appStore.isDarkMode
+                                ? white
+                                : textSecondaryColor,
+                        weight:
+                            FontWeight.w400,
+                      ),
+                      textAlign:
+                          TextAlign.left,
                     ).expand(flex: 4),
                   ],
                 )
-                    .visible(
-                        widget.bookingDetail!.address.validate().isNotEmpty)
+                    .visible(widget
+                        .bookingDetail!
+                        .address
+                        .validate()
+                        .isNotEmpty)
                     .onTap(() {
+
                   commonLaunchUrl(
-                      '$GOOGLE_MAP_PREFIX${Uri.encodeFull(widget.bookingDetail!.address.validate())}',
-                      launchMode: LaunchMode.externalApplication);
+                    '$GOOGLE_MAP_PREFIX${Uri.encodeFull(widget.bookingDetail!.address.validate())}',
+                    launchMode:
+                        LaunchMode
+                            .externalApplication,
+                  );
                 }),
+
                 8.height,
               ],
             ],
           ).paddingSymmetric(horizontal: 4),
-        if (contactNumber.validate().isNotEmpty) ...[
+
+        if (contactNumber
+            .validate()
+            .isNotEmpty) ...[
+
           16.height,
+
           Row(
+
             children: [
+
               if (showContactWidgets) ...[
+
                 AppButton(
-                  shapeBorder: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+
+                  shapeBorder:
+                      RoundedRectangleBorder(
+
+                    borderRadius:
+                        BorderRadius.circular(
+                            12),
+
                     side: BorderSide(
                       color: Colors.grey,
                       width: 1.2,
                     ),
                   ),
+
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .center,
+
                     children: [
-                      Image.asset(calling, height: 18, width: 18),
+
+                      Image.asset(
+                        calling,
+                        height: 18,
+                        width: 18,
+                      ),
+
                       16.width,
-                      Text(languages.lblCall, style: boldTextStyle()),
+
+                      Text(
+                        languages.lblCall,
+                        style:
+                            boldTextStyle(),
+                      ),
                     ],
                   ),
+
                   width: context.width(),
-                  color: context.scaffoldBackgroundColor,
+
+                  color: context
+                      .scaffoldBackgroundColor,
+
                   elevation: 0,
+
                   onTap: () {
-                    launchCall(contactNumber.validate());
+                    launchCall(
+                        contactNumber.validate());
                   },
                 ).expand(),
-                24.width
+
+                24.width,
               ],
+     if (showChat && widget.isshow)
               AppButton(
+
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+
                   children: [
-                    Image.asset(chat,
-                        color: Colors.white, height: 18, width: 18),
+
+                    Image.asset(
+                      chat,
+                      color: Colors.white,
+                      height: 18,
+                      width: 18,
+                    ),
+
                     16.width,
-                    Text(languages.lblChat,
-                        style: boldTextStyle(color: Colors.white)),
+
+                    Text(
+                      languages.lblChat,
+                      style: boldTextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
-                width:
-                    showContactWidgets ? context.width() : context.width() / 2,
+
+                width: showContactWidgets
+                    ? context.width()
+                    : context.width() / 2,
+
                 elevation: 0,
+
                 color: primaryColor,
+
                 onTap: () async {
-                  //ChatScreen(chatUser: ChatUserModel(id: userData.uid!, email: userData.email!, name: userData.firstName!)).launch(context);
-                  toast(languages.pleaseWaitWhileWeLoadChatDetails);
-                  UserData? user = await userService.getUserNull(
-                      email: userData.email.validate());
-                  if (user != null) {
-                    Fluttertoast.cancel();
-                    if (widget.bookingDetail != null) {
-                      isChattingAllow = widget.bookingDetail!.status ==
-                              BookingStatusKeys.complete ||
-                          widget.bookingDetail!.status ==
-                              BookingStatusKeys.cancelled;
-                    }
-                    UserChatScreen(
-                            receiverUser: user,
-                            isChattingAllow: isChattingAllow)
-                        .launch(context);
-                  } else {
-                    Fluttertoast.cancel();
-                    toast(
-                        "${userData.firstName} ${languages.isNotAvailableForChat}");
+
+                  log("=========== CHAT OPEN DEBUG ===========");
+
+                  log("BOOKING ID => ${widget.bookingDetail?.id}");
+
+                  log("CUSTOMER ID => ${widget.bookingDetail?.customerId}");
+
+                  log("PROVIDER ID => ${widget.bookingDetail?.providerId}");
+
+                  log("HANDYMAN DATA => ${widget.handymanData?.id}");
+
+                  log("APP USER ID => ${appStore.userId}");
+
+                  log("APP USER TYPE => ${appStore.userType}");
+
+                  log("MY CHAT ID => ${getStringAsync('my_chat_id')}");
+
+                  log("IS HANDYMAN BOOKING => $isHandymanLogin");
+
+                  log("TARGET CHAT ID => $targetChatId");
+
+                  log("=======================================");
+
+                  if (widget.bookingDetail != null) {
+
+                    isChattingAllow =
+                        widget.bookingDetail!
+                                    .status ==
+                                BookingStatusKeys.complete ||
+
+                            widget.bookingDetail!
+                                    .status ==
+                                BookingStatusKeys.cancelled;
                   }
+
+                  Navigator.push(
+
+                    context,
+
+                    MaterialPageRoute(
+
+                      builder: (_) =>
+                          const ChatRoomScreen(),
+
+                      settings:
+                          RouteSettings(
+
+                        arguments: {
+
+                          'booking_id':
+                              widget.bookingDetail?.id,
+
+                          'my_chat_id':
+                              getStringAsync(
+                                  'my_chat_id'),
+
+                          'target_chat_id':
+                              targetChatId,
+
+                          'name':
+                              widget.customerData
+                                      ?.displayName ??
+                                  "Customer",
+
+                          'image':
+                              widget.customerData
+                                  ?.profileImage,
+
+                          'phone':
+                              widget.customerData
+                                  ?.contactNumber,
+'is_handyman_chat':
+    isHandymanLogin,
+                        },
+                      ),
+                    ),
+                  );
                 },
               ).expand(),
             ],
