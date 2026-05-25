@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:handyman_provider_flutter/components/handyman_name_widget.dart';
 import 'package:handyman_provider_flutter/components/image_border_component.dart';

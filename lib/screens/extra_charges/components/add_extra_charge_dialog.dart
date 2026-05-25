@@ -52,7 +52,8 @@ class _AddExtraChargesDialogState extends State<AddExtraChargesDialog> {
       ExtraChargesModel data = ExtraChargesModel();
       data.title = titleCont.text.validate();
       data.price = priceCont.text.toDouble().validate();
-      data.qty = qty.validate();
+      // data.qty = qty.validate();
+           data.qty = 1;
       if (isEdit) {
         log('ISEDIT: $isEdit');
         chargesList[widget.indexOfextraCharge.validate()] = data;
@@ -135,36 +136,36 @@ class _AddExtraChargesDialogState extends State<AddExtraChargesDialog> {
                         errorThisFieldRequired: languages.hintRequired,
                         decoration: inputDecoration(context, hint: languages.lblEnterAmount, fillColor: context.cardColor),
                       ),
-                      16.height,
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(languages.quantity, style: boldTextStyle()),
-                          Container(
-                            height: 40,
-                            padding: EdgeInsets.all(8),
-                            decoration: boxDecorationWithRoundedCorners(backgroundColor: context.cardColor),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Feather.minus, size: 24).onTap(() {
-                                  if (qty > 1) {
-                                    qty = qty - 1;
-                                  }
-                                  setState(() {});
-                                }),
-                                16.width,
-                                Text(qty.toString(), style: primaryTextStyle()),
-                                16.width,
-                                Icon(Icons.add, size: 24).onTap(() {
-                                  qty = qty + 1;
-                                  setState(() {});
-                                }),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      // 16.height,
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text(languages.quantity, style: boldTextStyle()),
+                      //     Container(
+                      //       height: 40,
+                      //       padding: EdgeInsets.all(8),
+                      //       decoration: boxDecorationWithRoundedCorners(backgroundColor: context.cardColor),
+                      //       child: Row(
+                      //         mainAxisSize: MainAxisSize.min,
+                      //         children: [
+                      //           Icon(Feather.minus, size: 24).onTap(() {
+                      //             if (qty > 1) {
+                      //               qty = qty - 1;
+                      //             }
+                      //             setState(() {});
+                      //           }),
+                      //           16.width,
+                      //           Text(qty.toString(), style: primaryTextStyle()),
+                      //           16.width,
+                      //           Icon(Icons.add, size: 24).onTap(() {
+                      //             qty = qty + 1;
+                      //             setState(() {});
+                      //           }),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       24.height,
                       AppButton(
                         text: isEdit ? languages.saveChanges : languages.hintAdd,

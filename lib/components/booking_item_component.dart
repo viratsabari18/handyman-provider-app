@@ -25,9 +25,13 @@ class BookingItemComponent extends StatefulWidget {
   final BookingData bookingData;
   final int? index;
   final bool showDescription;
+  final bool isFromHome;
 
   BookingItemComponent(
-      {required this.bookingData, this.index, this.showDescription = true});
+      {required this.bookingData,
+      this.index,
+      this.showDescription = true,
+      this.isFromHome = false});
 
   @override
   BookingItemComponentState createState() => BookingItemComponentState();
@@ -530,7 +534,7 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                       width: 1.2,
                     ),
                   ),
-                  child: widget.index == 1
+                  child: widget.isFromHome
                       ? Text("View Booking", style: boldTextStyle())
                       : Text(languages.decline, style: boldTextStyle()),
                   width: context.width(),
@@ -538,20 +542,22 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                   color: appStore.isDarkMode
                       ? context.scaffoldBackgroundColor
                       : white,
-                 onTap: () {
-  widget.index == 1
-      ? LiveStream().emit(
-          LIVESTREAM_CHANGE_HANDYMAN_TAB,
-          {"index": 1},
-        )
-      : confirmationRequestDialog(
-          context,
-          widget.index!,
-          isUserTypeProvider
-              ? BookingStatusKeys.rejected
-              : BookingStatusKeys.pending,
-        );
-},
+                  onTap: () {
+                    if (widget.isFromHome) {
+                      LiveStream().emit(
+                        LIVESTREAM_CHANGE_HANDYMAN_TAB,
+                        {"index": 1},
+                      );
+                    } else {
+                      confirmationRequestDialog(
+                        context,
+                        widget.index!,
+                        isUserTypeProvider
+                            ? BookingStatusKeys.rejected
+                            : BookingStatusKeys.pending,
+                      );
+                    }
+                  },
                 ).expand(),
               ],
             ).paddingOnly(bottom: 8, left: 8, right: 8, top: 16),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handyman_provider_flutter/components/spin_kit_chasing_dots.dart';
 import 'package:handyman_provider_flutter/main.dart';
 import 'package:handyman_provider_flutter/models/booking_list_response.dart';
+import 'package:handyman_provider_flutter/utils/colors.dart';
 import 'package:handyman_provider_flutter/utils/configs.dart';
 import 'package:handyman_provider_flutter/utils/constant.dart';
 import 'package:intl/intl.dart';
@@ -51,17 +52,14 @@ Widget aboutCustomerWidget({
         style: boldTextStyle(size: LABEL_TEXT_SIZE),
       ).expand(),
 
-   if (bookingDetail!.canCustomerContact &&
-    bookingDetail.status != BookingStatusKeys.complete &&
-    bookingDetail.status != BookingStatusKeys.cancelled &&
-    bookingDetail.status != BookingStatusKeys.pending)
+   if (bookingDetail!.canCustomerContact &&  bookingDetail.status == BookingStatusKeys.onGoing)
   Align(
     alignment: Alignment.topRight,
     child: AppButton(
       text: languages.lblGetDirection,
       height: 36,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: primaryColor,
+      color: const Color.fromARGB(255, 60, 155, 87),
       textColor: Colors.white,
       elevation: 0,
       shapeBorder: RoundedRectangleBorder(

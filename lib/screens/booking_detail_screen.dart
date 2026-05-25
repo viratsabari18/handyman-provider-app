@@ -179,22 +179,19 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
         "status": BookingStatusKeys.inProgress,
       };
 
-      appStore.setLoading(true);
       var response = await bookingUpdate(request);
+
       appStore.setLoading(false);
 
-      /// 🔴 HANDLE WRONG OTP
-      if (response != null && response is Map && response.status == false) {
-        appStore.setLoading(false);
-
+      /// WRONG OTP
+      if (response != null && response.status == false) {
         toast(response.message ?? "Invalid OTP");
-        appStore.setLoading(true);
-        await updateBooking(res, '', BookingStatusKeys.onGoing);
-        appStore.setLoading(false);
         return;
       }
 
+      /// SUCCESS
       init(flag: true);
+
       toast("OTP verified successfully");
     } catch (e) {
       appStore.setLoading(false);
@@ -211,13 +208,8 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
       } catch (_) {}
 
       toast(errorMsg);
-      appStore.setLoading(true);
-      await updateBooking(res, '', BookingStatusKeys.onGoing);
-      appStore.setLoading(true);
       return;
     }
-
-    appStore.setLoading(false);
   }
 
   Future<void> assignBookingDialog(
@@ -1489,14 +1481,37 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
         color: primaryColor,
         textColor: white,
         onTap: () async {
-          appStore.setLoading(true);
-          await updateBooking(res, '', BookingStatusKeys.arrived);
-          appStore.setLoading(false);
-          showOtpDialog(res);
+          showConfirmDialogCustom(
+            context,
+            title: "Have you arrived at customer location?",
+            positiveText: languages.lblYes,
+            negativeText: languages.lblNo,
+            primaryColor: primaryColor,
+            onAccept: (c) async {
+              appStore.setLoading(true);
+
+              await updateBooking(
+                res,
+                '',
+                BookingStatusKeys.arrived,
+              );
+
+              appStore.setLoading(false);
+            },
+          );
         },
       );
     } else if (res.bookingDetail!.status == BookingStatusKeys.arrived) {
       showBottomActionBar = true;
+
+      return AppButton(
+        text: "Verify OTP",
+        color: primaryColor,
+        textColor: white,
+        onTap: () {
+          showOtpDialog(res);
+        },
+      );
     } else if (res.bookingDetail!.status == BookingStatusKeys.complete) {
       if (res.bookingDetail!.paymentMethod == PAYMENT_METHOD_COD &&
           res.bookingDetail!.paymentStatus == PENDING) {
@@ -1645,10 +1660,9 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
 
   //region Body
   Widget buildBodyWidget(AsyncSnapshot<BookingDetailResponse> res) {
-final bool hasAssignedHandyman =
-    res.data!.handymanData != null &&
-    res.data!.handymanData!.isNotEmpty &&
-    res.data!.handymanData!.first.id != appStore.userId;
+    final bool hasAssignedHandyman = res.data!.handymanData != null &&
+        res.data!.handymanData!.isNotEmpty &&
+        res.data!.handymanData!.first.id != appStore.userId;
     if (res.hasError) {
       return NoDataWidget(
         title: res.error.toString(),
@@ -1685,20 +1699,14 @@ final bool hasAssignedHandyman =
                   _buildCounterWidget(value: res.data!),
 
                   /// Location Tracking
-               locationTrackWidget(data: res.data!).visible(
-
-  BookingStatusKeys.onGoing ==
-      res.data!.bookingDetail!.status &&
-
-  !isUserTypeHandyman &&
-
-  res.data!.handymanData != null &&
-
-  res.data!.handymanData!.isNotEmpty &&
-
-  res.data!.handymanData!.first.id !=
-      appStore.userId,
-),
+                  locationTrackWidget(data: res.data!).visible(
+                    BookingStatusKeys.onGoing ==
+                            res.data!.bookingDetail!.status &&
+                        !isUserTypeHandyman &&
+                        res.data!.handymanData != null &&
+                        res.data!.handymanData!.isNotEmpty &&
+                        res.data!.handymanData!.first.id != appStore.userId,
+                  ),
 
                   /// My Service List
                   if (res.data!.postRequestDetail != null &&
@@ -1716,7 +1724,8 @@ final bool hasAssignedHandyman =
                   //     serviceProofList: res.data!.serviceProof!),
 
                   /// About Handyman Card
-                  if (res.data!.handymanData != null && res.data!.handymanData!.isNotEmpty &&   
+                  if (res.data!.handymanData != null &&
+                      res.data!.handymanData!.isNotEmpty &&
                       appStore.userType != USER_TYPE_HANDYMAN)
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),
@@ -1747,7 +1756,7 @@ final bool hasAssignedHandyman =
                                     style:
                                         boldTextStyle(size: LABEL_TEXT_SIZE)),
                                 Column(
-                                  children:     (res.data!.handymanData ?? []).map(
+                                  children: (res.data!.handymanData ?? []).map(
                                     (e) {
                                       return Text(
                                         languages.viewAll,
@@ -1779,7 +1788,7 @@ final bool hasAssignedHandyman =
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16),
                             child: Column(
-                              children:     (res.data!.handymanData ?? []).map(
+                              children: (res.data!.handymanData ?? []).map(
                                 (e) {
                                   return BasicInfoComponent(
                                     1,
@@ -1809,7 +1818,7 @@ final bool hasAssignedHandyman =
                     ),
 
                   /// About Customer Card
-                  /// 
+                  ///
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1824,38 +1833,37 @@ final bool hasAssignedHandyman =
                       ),
                       16.height,
 
-
-Container(
-  margin: EdgeInsets.symmetric(horizontal: 16),
-  decoration: boxDecorationDefault(
-    color: context.cardColor,
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.3),
-        blurRadius: 10,
-        offset: Offset(0, 3),
-      ),
-    ],
-    border: Border.all(color: Colors.grey),
-    borderRadius: radius(),
-  ),
-  padding: EdgeInsets.all(16),
-  child: BasicInfoComponent(
-    0,
-    customerData: res.data!.customer,
-    service: res.data!.service,
-    bookingDetail: res.data!.bookingDetail,
-    bookingInfo: res.data!,
-    isshow: !hasAssignedHandyman,
-  ),
-),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: boxDecorationDefault(
+                          color: context.cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: radius(),
+                        ),
+                        padding: EdgeInsets.all(16),
+                        child: BasicInfoComponent(
+                          0,
+                          customerData: res.data!.customer,
+                          service: res.data!.service,
+                          bookingDetail: res.data!.bookingDetail,
+                          bookingInfo: res.data!,
+                          isshow: !hasAssignedHandyman,
+                        ),
+                      ),
                       16.height,
 
                       ///Add-ons
-                   if (res.data!.bookingDetail != null &&
-    res.data!.bookingDetail!.serviceaddon
-        .validate()
-        .isNotEmpty)
+                      if (res.data!.bookingDetail != null &&
+                          res.data!.bookingDetail!.serviceaddon
+                              .validate()
+                              .isNotEmpty)
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 16),
                           decoration: boxDecorationDefault(
@@ -2073,11 +2081,11 @@ Container(
                   ),
 
                   /// Customer Review Widget
-          if (res.data!.service != null &&
-    res.data!.ratingData.validate().isNotEmpty)
-  _customerReviewWidget(
-    bookingDetailResponse: res.data!,
-  ),
+                  if (res.data!.service != null &&
+                      res.data!.ratingData.validate().isNotEmpty)
+                    _customerReviewWidget(
+                      bookingDetailResponse: res.data!,
+                    ),
                 ],
               ),
               Positioned(
@@ -2135,12 +2143,9 @@ Container(
                         .toBookingStatus()
                     : "",
               ),
-             body: snap.connectionState ==
-        ConnectionState.waiting
-
-    ? BookingDetailShimmer()
-
-    : buildBodyWidget(snap),
+              body: snap.connectionState == ConnectionState.waiting
+                  ? BookingDetailShimmer()
+                  : buildBodyWidget(snap),
             ),
           ),
         );
@@ -2243,15 +2248,9 @@ Container(
                           textColor: Colors.redAccent,
                           height: 45,
                           onTap: () async {
-                            finish(context);
-
                             appStore.setLoading(true);
 
-                            await updateBooking(
-                              res,
-                              '',
-                              BookingStatusKeys.onGoing,
-                            );
+                            finish(context);
 
                             appStore.setLoading(false);
                           },

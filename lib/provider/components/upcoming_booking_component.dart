@@ -175,7 +175,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
           shrinkWrap: true,
           listAnimationType: ListAnimationType.FadeIn,
           fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i],index: 1 ,showDescription: false),
+          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i],index: 1 ,showDescription: false,isFromHome: true),
         ),
       ],
     ).paddingSymmetric(horizontal: 16);

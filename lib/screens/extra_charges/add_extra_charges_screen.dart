@@ -150,14 +150,14 @@ class _AddExtraChargesScreenState extends State<AddExtraChargesScreen> {
                             ],
                           ),
                           8.height,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(languages.quantity, style: secondaryTextStyle()),
-                              Text(data.qty.toString().validate(), style: boldTextStyle()),
-                            ],
-                          ),
-                          8.height,
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Text(languages.quantity, style: secondaryTextStyle()),
+                          //     Text(data.qty.toString().validate(), style: boldTextStyle()),
+                          //   ],
+                          // ),
+                          // 8.height,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
