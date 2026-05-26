@@ -71,18 +71,18 @@ class HandymanListScreenState extends State<HandymanListScreen> {
               textColor: isDark ? Colors.white : Colors.black,
        
         actions: [
-          IconButton(
-            onPressed: () {
-              HandymanAddUpdateScreen(
-                userType: USER_TYPE_HANDYMAN,
-                onUpdate: () {
-                  init(isLoading: true);
-                },
-              ).launch(context);
-            },
-            icon: Icon(Icons.add, size: 28, color:black),
-            tooltip: languages.lblAddHandyman,
-          ).visible(rolesAndPermissionStore.handymanAdd),
+          // IconButton(
+          //   onPressed: () {
+          //     HandymanAddUpdateScreen(
+          //       userType: USER_TYPE_HANDYMAN,
+          //       onUpdate: () {
+          //         init(isLoading: true);
+          //       },
+          //     ).launch(context);
+          //   },
+          //   icon: Icon(Icons.add, size: 28, color:black),
+          //   tooltip: languages.lblAddHandyman,
+          // ).visible(rolesAndPermissionStore.handymanAdd),
         ],
       ),
       body: Stack(

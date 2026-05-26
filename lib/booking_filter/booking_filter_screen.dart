@@ -29,14 +29,14 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
   List<String> filteredSectionList = [];
 
   List<String> sectionList = [
-    SERVICE_FILTER,
+    // SERVICE_FILTER,  // Commented out
     DATE_RANGE,
     CUSTOMER,
     if (appStore.userType != USER_TYPE_HANDYMAN) PROVIDER.toLowerCase(),
     if (appStore.userType != USER_TYPE_HANDYMAN || appStore.userType != USER_TYPE_PROVIDER) HANDYMAN.toLowerCase(),
     BOOKING_STATUS,
-    PAYMENT_TYPE,
-    PAYMENT_STATUS,
+    // PAYMENT_TYPE,  // Commented out
+    PAYMENT_STATUS,  // Added back - Payment Status filter
   ];
 
   int selectedIndex = 0;
@@ -46,8 +46,8 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
   List<PaymentStatusModel> paymentStatusList = [
     PaymentStatusModel(status: PAID),
     PaymentStatusModel(status: PENDING),
-    PaymentStatusModel(status: SERVICE_PAYMENT_STATUS_ADVANCE_PAID),
-    PaymentStatusModel(status: SERVICE_PAYMENT_STATUS_ADVANCE_REFUND),
+    // PaymentStatusModel(status: SERVICE_PAYMENT_STATUS_ADVANCE_PAID),
+    // PaymentStatusModel(status: SERVICE_PAYMENT_STATUS_ADVANCE_REFUND),
   ];
 
   @override
@@ -74,21 +74,21 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
       toast(e.toString(), print: true);
     });
 
-    // Payment Type List
-    await getPaymentGateways(isAddWallet: true).then((value) {
-      appStore.setLoading(false);
-      paymentTypeList = value.validate();
-      paymentTypeList.forEach((element) {
-        if (filterStore.paymentType.contains(element.type)) {
-          element.isSelected = true;
-        }
-      });
-      setState(() {});
-    }).catchError((e) {
-      toast(e.toString(), print: true);
-    });
+    // Payment Type List - Commented out
+    // await getPaymentGateways(isAddWallet: true).then((value) {
+    //   appStore.setLoading(false);
+    //   paymentTypeList = value.validate();
+    //   paymentTypeList.forEach((element) {
+    //     if (filterStore.paymentType.contains(element.type)) {
+    //       element.isSelected = true;
+    //     }
+    //   });
+    //   setState(() {});
+    // }).catchError((e) {
+    //   toast(e.toString(), print: true);
+    // });
 
-    // Payment Status List
+    // Payment Status List - Added back
     getPaymentStatus();
   }
 
@@ -125,24 +125,52 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
     finish(context, true);
   }
 
+  void applyFilters() {
+    filterStore.bookingStatus = [];
+
+    bookingStatusList.forEach((element) {
+      if (element.isSelected.validate()) {
+        filterStore.addToBookingStatusList(bookingStatusList: element.value.validate());
+      }
+    });
+
+    // Payment Type filter - Commented out
+    // filterStore.paymentType = [];
+    // paymentTypeList.forEach((element) {
+    //   if (element.isSelected.validate()) {
+    //     filterStore.addToPaymentTypeList(paymentTypeList: element.type.validate());
+    //   }
+    // });
+
+    // Payment Status filter - Added back
+    filterStore.paymentStatus = [];
+    paymentStatusList.forEach((element) {
+      if (element.isSelected.validate()) {
+        filterStore.addToPaymentStatusList(paymentStatusList: element.status.validate());
+      }
+    });
+    
+    finish(context, true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: appBarWidget(
-      languages.filterBy,
-      actions: [
-        Observer(
-          builder: (_) {
-            return TextButton(
-              onPressed: () {
-                clearFilter();
-              },
-              child: Text(languages.reset, style: boldTextStyle(color: Colors.white)),
-            ).visible(filterStore.isAnyFilterApplied);
-          },
-        ),
-      ],
-     ),
+      appBar: appBarWidget(
+        languages.filterBy,
+        actions: [
+          Observer(
+            builder: (_) {
+              return TextButton(
+                onPressed: () {
+                  clearFilter();
+                },
+                child: Text(languages.reset, style: boldTextStyle(color: Colors.white)),
+              ).visible(filterStore.isAnyFilterApplied);
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -223,41 +251,17 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Observer(
-                builder: (_) => Container(
-                  decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
-                  width: context.width(),
-                  padding: EdgeInsets.all(16),
-                  child: AppButton(
-                    text: languages.apply,
-                    textColor: Colors.white,
-                    color: context.primaryColor,
-                    onTap: () {
-                      filterStore.bookingStatus = [];
-        
-                      bookingStatusList.forEach((element) {
-                        if (element.isSelected.validate()) {
-                          filterStore.addToBookingStatusList(bookingStatusList: element.value.validate());
-                        }
-                      });
-        
-                      filterStore.paymentType = [];
-        
-                      paymentTypeList.forEach((element) {
-                        if (element.isSelected.validate()) {
-                          filterStore.addToPaymentTypeList(paymentTypeList: element.type.validate());
-                        }
-                      });
-        
-                      filterStore.paymentStatus = [];
-                      paymentStatusList.forEach((element) {
-                        if (element.isSelected.validate()) {
-                          filterStore.addToPaymentStatusList(paymentStatusList: element.status.validate());
-                        }
-                      });
-                      finish(context, true);
-                    },
-                  ).visible(filterStore.isAnyFilterApplied),
+              child: Container(
+                decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+                width: context.width(),
+                padding: EdgeInsets.all(16),
+                child: AppButton(
+                  text: languages.apply,
+                  textColor: Colors.white,
+                  color: context.primaryColor,
+                  onTap: () {
+                    applyFilters();
+                  },
                 ),
               ),
             ),

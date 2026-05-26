@@ -149,13 +149,14 @@ class _HandymanWidgetState extends State<HandymanWidget> {
             ],
           ),
         ).onTap(() {
-          HandymanAddUpdateScreen(
-            userType: USER_TYPE_HANDYMAN,
-            data: widget.data,
-            onUpdate: () {
-              widget.onUpdate?.call();
-            },
-          ).launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
+          // Navigation to Handyman update screen is commented out
+          // HandymanAddUpdateScreen(
+          //   userType: USER_TYPE_HANDYMAN,
+          //   data: widget.data,
+          //   onUpdate: () {
+          //     widget.onUpdate?.call();
+          //   },
+          // ).launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
         }, borderRadius: radius()),
         Positioned(
           right: 8,

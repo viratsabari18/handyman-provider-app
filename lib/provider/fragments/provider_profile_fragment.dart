@@ -148,10 +148,12 @@ class ProviderProfileFragmentState extends State<ProviderProfileFragment> {
                   right: 16,
                   top: 24,
                 )
-                .visible(appStore.isLoggedIn)
-                .onTap(() {
-              EditProfileScreen().launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
-            }),
+                .visible(appStore.isLoggedIn),
+              //   .onTap(() {
+              // EditProfileScreen().launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
+            // }
+            // ),
+
             if (appStore.earningTypeSubscription && appStore.isPlanSubscribe)
               Column(
                 children: [

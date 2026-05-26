@@ -251,6 +251,15 @@ log(
     if (mounted) super.setState(fn);
   }
 
+  // Helper function to check if booking status is pending or accepted
+  // Returns true if status is pending or accepted (buttons should be HIDDEN)
+  bool shouldHideCallAndChatButtons() {
+    final status = widget.bookingDetail?.status;
+    // Hide buttons for pending and accepted statuses
+    return status == BookingStatusKeys.pending || 
+           status == BookingStatusKeys.accept;
+  }
+
   @override
   Widget build(BuildContext context) {
 final handymanList =
@@ -273,6 +282,10 @@ final String targetChatId =
 log("IS HANDYMAN LOGIN => $isHandymanLogin");
 
 log("TARGET CHAT ID => $targetChatId");
+
+// Check if buttons should be hidden (hidden for pending and accepted statuses)
+final bool hideButtons = shouldHideCallAndChatButtons();
+
     return Column(
 
       crossAxisAlignment:
@@ -470,9 +483,10 @@ log("TARGET CHAT ID => $targetChatId");
             ],
           ).paddingSymmetric(horizontal: 4),
 
+        // Only show Call and Chat buttons if hideButtons is false (status is NOT pending or accepted)
         if (contactNumber
             .validate()
-            .isNotEmpty) ...[
+            .isNotEmpty && !hideButtons) ...[
 
           16.height,
 
@@ -536,7 +550,7 @@ log("TARGET CHAT ID => $targetChatId");
 
                 24.width,
               ],
-     if (showChat && widget.isshow)
+     if (showChat && widget.isshow && !hideButtons)
               AppButton(
 
                 child: Row(
