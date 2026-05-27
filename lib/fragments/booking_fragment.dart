@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:handyman_provider_flutter/components/app_widgets.dart';
@@ -23,7 +25,8 @@ class BookingFragment extends StatefulWidget {
   BookingFragmentState createState() => BookingFragmentState();
 }
 
-class BookingFragmentState extends State<BookingFragment> with SingleTickerProviderStateMixin {
+class BookingFragmentState extends State<BookingFragment>
+    with SingleTickerProviderStateMixin {
   ScrollController scrollController = ScrollController();
 
   int page = 1;
@@ -35,6 +38,7 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
 
   Future<List<BookingData>>? future;
   UniqueKey keyForList = UniqueKey();
+  Timer? bookingRefreshTimer;
 
   FocusNode myFocusNode = FocusNode();
 
@@ -48,6 +52,25 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
     super.initState();
     selectedBookingStatus = BOOKING_PAYMENT_STATUS_ALL;
     init();
+    bookingRefreshTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      if (!mounted) return;
+
+      page = 1;
+
+      future = getBookingList(
+        page,
+        bookings: [],
+        lastPageCallback: (b) {
+          isLastPage = b;
+        },
+        paymentBreakdownCallBack: (totalEarning, paymentBreakdown) {
+          totalEarnings = totalEarning;
+          paymentBreakdownData = paymentBreakdown;
+        },
+      );
+
+      setState(() {});
+    });
     filterStore = FilterStore();
 
     LiveStream().on(LIVESTREAM_UPDATE_BOOKING_STATUS_WISE, (data) {
@@ -120,7 +143,9 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
     // LiveStream().dispose(LIVESTREAM_HANDY_BOARD);
     // LiveStream().dispose(LIVESTREAM_HANDYMAN_ALL_BOOKING);
     // LiveStream().dispose(LIVESTREAM_HANDY_BOARD);
+      bookingRefreshTimer?.cancel();
     super.dispose();
+  
   }
 
   @override
@@ -158,7 +183,8 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
                 },
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 8),
+                    padding: EdgeInsets.only(
+                        left: 16, right: 16, top: 24, bottom: 8),
                     // child: Column(
                     //   children: [
                     //     Container(
@@ -196,7 +222,8 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
                     key: keyForList,
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     listAnimationType: ListAnimationType.FadeIn,
-                    fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                    fadeInConfiguration:
+                        FadeInConfiguration(duration: 2.seconds),
                     itemCount: list.length,
                     shrinkWrap: true,
                     disposeScrollController: true,
@@ -210,7 +237,8 @@ class BookingFragmentState extends State<BookingFragment> with SingleTickerProvi
                         imageWidget: EmptyStateWidget(),
                       ),
                     ),
-                    itemBuilder: (_, index) => BookingItemComponent(bookingData: list[index], index: index),
+                    itemBuilder: (_, index) => BookingItemComponent(
+                        bookingData: list[index], index: index),
                   ),
                 ],
               );

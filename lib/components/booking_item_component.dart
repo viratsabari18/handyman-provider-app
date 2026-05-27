@@ -25,13 +25,13 @@ class BookingItemComponent extends StatefulWidget {
   final BookingData bookingData;
   final int? index;
   final bool showDescription;
-  final bool isFromHome;
+
 
   BookingItemComponent(
       {required this.bookingData,
       this.index,
       this.showDescription = true,
-      this.isFromHome = false});
+      });
 
   @override
   BookingItemComponentState createState() => BookingItemComponentState();
@@ -534,21 +534,14 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                       width: 1.2,
                     ),
                   ),
-                  child: widget.isFromHome
-                      ? Text("View Booking", style: boldTextStyle())
-                      : Text(languages.decline, style: boldTextStyle()),
+                  child: Text(languages.decline, style: boldTextStyle()),
                   width: context.width(),
                   elevation: 0,
                   color: appStore.isDarkMode
                       ? context.scaffoldBackgroundColor
                       : white,
                   onTap: () {
-                    if (widget.isFromHome) {
-                      LiveStream().emit(
-                        LIVESTREAM_CHANGE_HANDYMAN_TAB,
-                        {"index": 1},
-                      );
-                    } else {
+              
                       confirmationRequestDialog(
                         context,
                         widget.index!,
@@ -556,45 +549,80 @@ class BookingItemComponentState extends State<BookingItemComponent> {
                             ? BookingStatusKeys.rejected
                             : BookingStatusKeys.pending,
                       );
-                    }
                   },
                 ).expand(),
               ],
             ).paddingOnly(bottom: 8, left: 8, right: 8, top: 16),
-          if (isUserTypeProvider &&
-              widget.bookingData.status == BookingStatusKeys.accept)
-            Column(
-              children: [
-                8.height,
-                AppButton(
-                  width: context.width(),
-                  child: Text(
-                    widget.bookingData.handyman!.isEmpty
-                        ? languages.lblAssign
-                        : languages.lblReassign,
-                    style: boldTextStyle(color: white),
-                  ),
-                  color: primaryColor,
-                  elevation: 0,
-                  onTap: () {
-                    AssignHandymanScreen(
-                      bookingId: widget.bookingData.id,
-                      serviceAddressId: widget.bookingData.bookingAddressId,
-                      onUpdate: () {
-                        setState(() {});
-                        LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
-                      },
-                    ).launch(context);
-                  },
-                ),
-              ],
-            ).paddingAll(8),
+if (isUserTypeProvider &&
+    widget.bookingData.status == BookingStatusKeys.accept)
+  Row(
+    children: [
+
+      // ================= ASSIGN / REASSIGN =================
+
+      AppButton(
+        width: context.width(),
+        child: Text(
+          widget.bookingData.handyman!.isEmpty
+              ? languages.lblAssign
+              : languages.lblReassign,
+          style: boldTextStyle(color: white),
+        ),
+        color: primaryColor,
+        elevation: 0,
+        onTap: () {
+          AssignHandymanScreen(
+            bookingId: widget.bookingData.id,
+            serviceAddressId: widget.bookingData.bookingAddressId,
+            onUpdate: () {
+              setState(() {});
+              LiveStream().emit(LIVESTREAM_UPDATE_BOOKINGS);
+            },
+          ).launch(context);
+        },
+      ).expand(),
+
+      12.width,
+
+      // ================= DECLINE BUTTON =================
+
+      AppButton(
+        shapeBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.red,
+            width: 1.2,
+          ),
+        ),
+        child: Text(
+          languages.decline,
+          style: boldTextStyle(color: Colors.red),
+        ),
+        width: context.width(),
+        elevation: 0,
+        color: appStore.isDarkMode
+            ? context.scaffoldBackgroundColor
+            : white,
+        onTap: () {
+          confirmationRequestDialog(
+            context,
+            widget.index!,
+            BookingStatusKeys.rejected,
+          );
+        },
+      ).expand(),
+    ],
+  ).paddingAll(8),
         ],
       ),
     ).onTap(
       () async {
         if (widget.bookingData.status == BookingStatusKeys.pending) {
           toast("Please accept or decline the booking first");
+          return;
+        }
+         if (widget.bookingData.status == BookingStatusKeys.cancelled) {
+         
           return;
         }
 

@@ -36,6 +36,8 @@ class ServiceData {
   Map<String, MultiLanguageRequest>? translations;
   String? rejectReason;
   String? serviceRequestStatus;
+  double? serviceRating;
+String? serviceReview;
 
   //Set Values
   num? totalAmount;
@@ -127,6 +129,8 @@ class ServiceData {
     this.translations,
     this.reason,
     this.zones,
+    this.serviceRating,
+    this.serviceReview,
   });
 
   ServiceData.fromJson(Map<String, dynamic> json) {
@@ -184,6 +188,11 @@ class ServiceData {
     advancePaymentAmount = json[AdvancePaymentKey.advancePaymentAmount];
     advancePaymentPercentage = json[AdvancePaymentKey.advancePaymentAmount];
     zones = json['zones'] != null ? (json['zones'] as List).map((i) => Zones.fromJson(i)).toList() : null;
+    serviceRating= json['service_rating'] != null
+    ? double.tryParse(json['service_rating'].toString()): null;
+
+
+serviceReview= json['service_review']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -238,6 +247,8 @@ class ServiceData {
     data[AdvancePaymentKey.advancePaymentAmount] = this.advancePaymentAmount;
     data[AdvancePaymentKey.advancePaymentAmount] = this.advancePaymentPercentage;
     data['zones'] = this.zones != null ? this.zones!.map((v) => v.toJson()).toList() : null;
+    data['service_rating'] = serviceRating;
+data['service_review'] = serviceReview;
     return data;
   }
 }

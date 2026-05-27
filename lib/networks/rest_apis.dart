@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:handyman_provider_flutter/Models_new/about_us_model.dart';
 import 'package:handyman_provider_flutter/Models_new/add_provider_category_requset_and_response.dart';
 import 'package:handyman_provider_flutter/Models_new/add_provider_zones_requst_and_response.dart';
 import 'package:handyman_provider_flutter/Models_new/delete_provider_category_request_response.dart';
@@ -525,6 +526,11 @@ Future<DashboardResponse> providerDashboard({bool forceSyncAppConfigurations = f
 Future<ProviderDocumentListResponse> getProviderDoc() async {
   return ProviderDocumentListResponse.fromJson(await handleResponse(await buildHttpResponse('provider-document-list', method: HttpMethodType.GET)));
 }
+
+Future<AboutUsModel> getAboutUs() async {
+  return AboutUsModel.fromJson(await handleResponse(await buildHttpResponse('about-us', method: HttpMethodType.GET)));
+}
+
 
 Future<CommonResponseModel> deleteProviderDoc(int? id) async {
   return CommonResponseModel.fromJson(await handleResponse(await buildHttpResponse('provider-document-delete/$id', method: HttpMethodType.POST)));

@@ -236,7 +236,7 @@ class _ServiceDetailHeaderComponentState extends State<ServiceDetailHeaderCompon
                               color: getRatingBarColor(widget.serviceDetail.serviceDetail!.totalRating.validate().toInt()),
                             ),
                             4.width,
-                            Text("${widget.serviceDetail.serviceDetail!.totalRating.validate().toStringAsFixed(1)}", style: boldTextStyle()),
+                            Text("${widget.serviceDetail.serviceDetail!.serviceRating.validate().toStringAsFixed(1)}", style: boldTextStyle()),
                           ],
                         ),
                       ),

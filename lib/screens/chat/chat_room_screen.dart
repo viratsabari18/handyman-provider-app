@@ -301,7 +301,7 @@ _messageFocus.addListener(() {
         resizeToAvoidBottomInset: true,
         
         appBar: AppBar(
-          backgroundColor: Colors.transparent, // Make app bar transparent
+          backgroundColor:Colors.red,// Make app bar transparent
           elevation: 0,
           systemOverlayStyle: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -309,7 +309,7 @@ _messageFocus.addListener(() {
             statusBarIconBrightness: Brightness.light,
           ),
           leading: IconButton(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: EdgeInsets.symmetric(horizontal: 2),
             onPressed: () => finish(context),
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           ),
@@ -333,31 +333,31 @@ _messageFocus.addListener(() {
             ],
           ),
           actions: [
-            PopupMenuButton(
-              onSelected: (index) {
-                if (index == 0) {
-                  showConfirmDialogCustom(
-                    context,
-                    positiveText: languages.lblYes,
-                    negativeText: languages.lblNo,
-                    primaryColor: context.primaryColor,
-                    title: languages.clearChatMessage,
-                    onAccept: (c) async {
-                      appStore.setLoading(true);
-                      await _clearAllMessages();
-                      appStore.setLoading(false);
-                    },
-                  );
-                }
-              },
-              icon: Icon(Icons.more_vert_sharp, color: Colors.white),
-              color: context.cardColor,
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(value: 0, child: Text(languages.clearChat, style: primaryTextStyle())),
-                ];
-              },
-            ),
+            // PopupMenuButton(
+            //   onSelected: (index) {
+            //     if (index == 0) {
+            //       showConfirmDialogCustom(
+            //         context,
+            //         positiveText: languages.lblYes,
+            //         negativeText: languages.lblNo,
+            //         primaryColor: context.primaryColor,
+            //         title: languages.clearChatMessage,
+            //         onAccept: (c) async {
+            //           appStore.setLoading(true);
+            //           await _clearAllMessages();
+            //           appStore.setLoading(false);
+            //         },
+            //       );
+            //     }
+            //   },
+            //   icon: Icon(Icons.more_vert_sharp, color: Colors.white),
+            //   color: context.cardColor,
+            //   itemBuilder: (context) {
+            //     return [
+            //       PopupMenuItem(value: 0, child: Text(languages.clearChat, style: primaryTextStyle())),
+            //     ];
+            //   },
+            // ),
           ],
         ),
         body: GestureDetector(

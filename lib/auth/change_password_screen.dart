@@ -45,15 +45,16 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> changePassword() async {
     if (formKey.currentState!.validate()) {
-      if (oldPasswordCont.text.trim() != getStringAsync(USER_PASSWORD)) {
-        return toast(languages.youMustProvideValidCurrentPassword);
-      }
+      // if (oldPasswordCont.text.trim() != getStringAsync(USER_PASSWORD)) {
+      //   return toast(languages.youMustProvideValidCurrentPassword);
+      // }
 
       formKey.currentState!.save();
       hideKeyboard(context);
       appStore.setLoading(true);
 
       var request = {
+          "id": appStore.userId,
         UserKeys.oldPassword: oldPasswordCont.text,
         UserKeys.newPassword: newPasswordCont.text,
       };

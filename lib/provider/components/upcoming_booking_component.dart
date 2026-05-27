@@ -90,6 +90,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
                 style: boldTextStyle(
                   size: 18,
                   color: Colors.grey[700],
+                   fontFamily: 'Inter',
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -101,6 +102,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
                 style: secondaryTextStyle(
                   size: 14,
                   color: Colors.grey[600],
+                      fontFamily: 'Inter',
                 ),
                 textAlign: TextAlign.center,
               ).paddingSymmetric(horizontal: 40),
@@ -134,6 +136,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
                         style: boldTextStyle(
                           color: Colors.white,
                           size: 16,
+                          fontFamily: 'Inter',
                         ),
                       ),
                       if (displayedText.isNotEmpty && displayedText.length < fullText.length)
@@ -175,7 +178,7 @@ class _UpcomingBookingComponentState extends State<UpcomingBookingComponent> {
           shrinkWrap: true,
           listAnimationType: ListAnimationType.FadeIn,
           fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i],index: 1 ,showDescription: false,isFromHome: true),
+          itemBuilder: (_, i) => BookingItemComponent(bookingData: widget.bookingData[i],index: 1 ,showDescription: false),
         ),
       ],
     ).paddingSymmetric(horizontal: 16);

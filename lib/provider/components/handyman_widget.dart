@@ -120,28 +120,28 @@ class _HandymanWidgetState extends State<HandymanWidget> {
                             child: ic_message.iconImage(size: 14, color: primaryColor),
                           ),
                         ),
-                      if (widget.data!.contactNumber.validate().isNotEmpty)
-                        TextIcon(
-                          onTap: () async {
-                            toast(languages.pleaseWaitWhileWeLoadChatDetails);
-                            UserData? user = await userService.getUserNull(email: widget.data!.email.validate());
-                            if (user != null) {
-                              Fluttertoast.cancel();
-                              // UserChatScreen(receiverUser: user).launch(context);
-                            } else {
-                              Fluttertoast.cancel();
-                              toast("${widget.data!.firstName.validate()} ${languages.isNotAvailableForChat}");
-                            }
-                          },
-                          prefix: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: boxDecorationWithRoundedCorners(
-                              boxShape: BoxShape.circle,
-                              backgroundColor: primaryColor.withValues(alpha:0.1),
-                            ),
-                            child: Image.asset(textMsg, color: primaryColor, height: 14, width: 14),
-                          ),
-                        ),
+                      // if (widget.data!.contactNumber.validate().isNotEmpty)
+                        // TextIcon(
+                        //   onTap: () async {
+                        //     toast(languages.pleaseWaitWhileWeLoadChatDetails);
+                        //     UserData? user = await userService.getUserNull(email: widget.data!.email.validate());
+                        //     if (user != null) {
+                        //       Fluttertoast.cancel();
+                        //       // UserChatScreen(receiverUser: user).launch(context);
+                        //     } else {
+                        //       Fluttertoast.cancel();
+                        //       toast("${widget.data!.firstName.validate()} ${languages.isNotAvailableForChat}");
+                        //     }
+                        //   },
+                        //   prefix: Container(
+                        //     padding: EdgeInsets.all(8),
+                        //     decoration: boxDecorationWithRoundedCorners(
+                        //       boxShape: BoxShape.circle,
+                        //       backgroundColor: primaryColor.withValues(alpha:0.1),
+                        //     ),
+                        //     child: Image.asset(textMsg, color: primaryColor, height: 14, width: 14),
+                        //   ),
+                        // ),
                     ],
                   ).fit(),
                 ],
