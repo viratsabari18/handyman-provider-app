@@ -58,7 +58,7 @@ class _HandymanDashboardScreenState
     fragmentList = [
       HandymanHomeFragment(),
       BookingFragment(),
-      if (appConfigurationStore.isEnableChat) ChatListScreen(),
+      // if (appConfigurationStore.isEnableChat) ChatListScreen(),
       HandymanProfileFragment(),
     ];
 
@@ -481,21 +481,21 @@ class _HandymanDashboardScreenState
                   label: languages.lblBooking,
                 ),
 
-                if (appConfigurationStore.isEnableChat)
-                  NavigationDestination(
-                    icon: Image.asset(
-                      chat,
-                      height: 20,
-                      width: 20,
-                      color: appTextSecondaryColor,
-                    ),
-                    selectedIcon: Image.asset(
-                      ic_fill_textMsg,
-                      height: 26,
-                      width: 26,
-                    ),
-                    label: languages.lblChat,
-                  ),
+                // if (appConfigurationStore.isEnableChat)
+                //   NavigationDestination(
+                //     icon: Image.asset(
+                //       chat,
+                //       height: 20,
+                //       width: 20,
+                //       color: appTextSecondaryColor,
+                //     ),
+                //     selectedIcon: Image.asset(
+                //       ic_fill_textMsg,
+                //       height: 26,
+                //       width: 26,
+                //     ),
+                //     label: languages.lblChat,
+                //   ),
 
                 Observer(
                   builder: (_) {

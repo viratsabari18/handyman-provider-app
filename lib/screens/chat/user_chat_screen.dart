@@ -165,18 +165,25 @@ void init() async {
       return;
     }
 
-    final Map<String, dynamic> data = {
-      'senderId': widget.myChatId,
-      'receiverId': widget.targetChatId,
-      'message': text,
-      'text': text,
-      'bookingId': widget.bookingId,
-      'participants': [widget.myChatId, widget.targetChatId],
-      'chatType': widget.isHandymanChat ? 'handyman' : 'provider',
-      'providerName': widget.receiverName,
-      'providerImage': widget.receiverImage,
-      'attachmentfiles': [],
-    };
+final Map<String, dynamic> data = {
+  'senderId': widget.myChatId,
+  'receiverId': widget.targetChatId,
+
+  // sender details
+  'senderName': appStore.userFullName,
+  'senderImage': appStore.userProfileImage,
+
+  // receiver details
+  'receiverName': widget.receiverName,
+  'receiverImage': widget.receiverImage,
+
+  'message': text,
+  'text': text,
+  'bookingId': widget.bookingId,
+  'participants': [widget.myChatId, widget.targetChatId],
+  'chatType': widget.isHandymanChat ? 'handyman' : 'provider',
+  'attachmentfiles': [],
+};
 
     log("========== SEND MESSAGE ==========");
     log("Room ID => $roomId");

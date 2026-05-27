@@ -73,84 +73,103 @@ class ChatMessageModel {
     this.isMe,
   });
 
-  factory ChatMessageModel.fromJson(
-      Map<String, dynamic> json) {
+factory ChatMessageModel.fromJson(
+    Map<String, dynamic> json) {
 
-    return ChatMessageModel(
+  return ChatMessageModel(
 
-      uid:
-          json['uid'],
+    uid:
+        json['uid']?.toString(),
 
-      messageId:
-          json['messageId'],
+    messageId:
+        json['messageId']
+            ?.toString(),
 
-      bookingId:
-          json['bookingId']
-              ?.toString(),
+    bookingId:
+        json['bookingId']
+            ?.toString(),
 
-      senderId:
-          json['senderId'],
+    senderId:
+        json['senderId']
+            ?.toString(),
 
-      receiverId:
-          json['receiverId'],
+    receiverId:
+        json['receiverId']
+            ?.toString(),
 
-      message:
+    message:
 
-          json['message'] ??
+        json['message'] ??
 
-          json['text'] ??
+        json['text'] ??
 
-          '',
+        '',
 
-      isMessageRead:
+    isMessageRead:
 
-          json['isMessageRead'] ??
+        json['isMessageRead'] ??
 
-          json['isRead'] ??
+        json['isRead'] ??
 
-          false,
+        false,
 
-      isRead:
-          json['isRead'],
+    isRead:
+        json['isRead'],
 
-      isDelivered:
-          json['isDelivered'],
+    isDelivered:
+        json['isDelivered'],
 
-      photoUrl:
-          json['photoUrl'],
+    photoUrl:
+        json['photoUrl']
+            ?.toString(),
 
-      attachmentfiles:
+    attachmentfiles:
 
-          json['attachmentfiles']
-                  is List
+        json['attachmentfiles']
+                is List
 
-              ? List<String>.from(
+            ? List<String>.from(
 
-                  json['attachmentfiles']
-                      .map((x) => x),
-                )
+                json['attachmentfiles']
+                    .map(
+                      (x) => x.toString(),
+                    ),
+              )
 
-              : [],
+            : [],
 
-      messageType:
+    messageType:
 
-          json['messageType'] ??
+        json['messageType']
+            ?.toString() ??
 
-          'TEXT',
+        'TEXT',
 
-      createdAt:
-          json['createdAt'],
+    createdAt:
 
-      createdAtTime:
+        json['createdAt'] == null
 
-          json['timestamp'] ??
+            ? null
 
-          json['createdAtTime'],
+            : (json['createdAt']
+                    is int
 
-      updatedAtTime:
-          json['updatedAtTime'],
-    );
-  }
+                ? json['createdAt']
+
+                : (json['createdAt']
+                        as num)
+                    .toInt()),
+
+    createdAtTime:
+
+        json['timestamp'] ??
+
+        json['createdAtTime'],
+
+    updatedAtTime:
+        json['updatedAtTime'],
+  );
+}
 
   Map<String, dynamic> toJson() {
 

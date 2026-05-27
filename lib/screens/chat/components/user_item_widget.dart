@@ -21,12 +21,20 @@ class _UserItemWidgetState extends State<UserItemWidget> {
     final String roomId = widget.chatData['chatRoomId'] ?? '';
     final String bookingId = widget.chatData['bookingId']?.toString() ?? '';
     final String targetUid = widget.chatData['targetUid'] ?? '';
-    final String name = widget.chatData['providerName'] ??
+final bool isProviderOrHandyman =
+    appStore.userType == 'provider' ||
+    appStore.userType == 'handyman';
+
+final String name = isProviderOrHandyman
+    ? (widget.chatData['name'] ?? 'Customer')
+    : (widget.chatData['providerName'] ??
         widget.chatData['name'] ??
-        'Customer';
-    final String image = widget.chatData['providerImage'] ??
+        'Professional');
+final String image = isProviderOrHandyman
+    ? (widget.chatData['image'] ?? '')
+    : (widget.chatData['providerImage'] ??
         widget.chatData['image'] ??
-        '';
+        '');
 
     return InkWell(
       onTap: () {
