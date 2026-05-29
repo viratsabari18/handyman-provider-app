@@ -71,36 +71,23 @@ class _ZoneListState extends State<ZoneList> {
     }
   }
 
-  Future<void> fetchAvailableZones() async {
+Future<void> fetchAvailableZones() async {
+  try {
+    final response = await getRegistrationFields();
+
+    final existingZoneIds = zones.map((z) => z.id).toSet();
+
     setState(() {
-      dropdownError = null;
+      availableZones = response.zones!
+          .where((zone) => !existingZoneIds.contains(zone.id))
+          .toList();
     });
-    appStore.setLoading(true);
 
-    try {
-      final response = await getRegistrationFields();
-
-      setState(() {
-        if (response.zones != null && response.zones!.isNotEmpty) {
-          final existingZoneIds = zones.map((z) => z.id).toSet();
-          availableZones = response.zones!
-              .where((zone) => !existingZoneIds.contains(zone.id))
-              .toList();
-        } else {
-          availableZones = [];
-          dropdownError = languages.noZonesAvailable;
-        }
-      });
-    } catch (e) {
-      setState(() {
-        availableZones = [];
-        dropdownError = '${languages.failedToLoadZones}: $e';
-      });
-      toast(dropdownError!);
-    } finally {
-      appStore.setLoading(false);
-    }
+    print('Available Zones Count: ${availableZones.length}');
+  } catch (e) {
+    print('ERROR => $e');
   }
+}
 
   Future<void> addProviderZones() async {
     if (selectedZoneIds.isEmpty) {
@@ -115,7 +102,77 @@ class _ZoneListState extends State<ZoneList> {
 
       await addProviderZoneList(request);
 
-      toast(languages.zonesAddedSuccessfully);
+      // Show success dialog with hardcoded messages
+      if (mounted) {
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: radius(16)),
+              child: Container(
+                padding: EdgeInsets.all(24),
+                decoration: boxDecorationWithRoundedCorners(
+                  backgroundColor: context.cardColor,
+                  borderRadius: radius(16),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Success Icon
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.green.withValues(alpha: 0.1),
+                      ),
+                      child: Icon(
+                        Icons.check_circle,
+                        size: 48,
+                        color: Colors.green,
+                      ),
+                    ),
+                    16.height,
+
+                    // Title
+                    Text(
+                      "Zones Added Successfully",
+                      style: boldTextStyle(size: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                    8.height,
+
+                    // Subtitle / Message
+                    Text(
+                      "Your zone request has been submitted successfully. Our team will review and contact you soon.",
+                      style: secondaryTextStyle(size: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    24.height,
+
+                    // OK Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: AppButton(
+                        text: "OK",
+                        color: context.primaryColor,
+                        textColor: Colors.white,
+                        height: 44,
+                        shapeBorder: RoundedRectangleBorder(
+                          borderRadius: radius(8),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      }
 
       setState(() {
         showZoneDropdown = false;
@@ -198,34 +255,34 @@ class _ZoneListState extends State<ZoneList> {
                 fetchZones();
               },
             )
-          else if (zones.isEmpty && !appStore.isLoading)
-            NoDataWidget(
-              title: languages.noZonesFound,
-              subTitle: languages.noZonesAvailableForProvider,
-              imageWidget: const EmptyStateWidget(),
-            )
           else
             Column(
               children: [
                 if (showZoneDropdown) _buildAddZoneDropdown(),
                 Expanded(
-                  child: AnimatedScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    listAnimationType: ListAnimationType.FadeIn,
-                    fadeInConfiguration:
-                        FadeInConfiguration(duration: 2.seconds),
-                    onSwipeRefresh: () async {
-                      await fetchZones();
-                      return await 2.seconds.delay;
-                    },
-                    children: [
-                      if (zones.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: _buildListView(),
+                  child: zones.isEmpty && !appStore.isLoading
+                      ? NoDataWidget(
+                          title: languages.noZonesFound,
+                          subTitle: languages.noZonesAvailableForProvider,
+                          imageWidget: const EmptyStateWidget(),
+                        )
+                      : AnimatedScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          listAnimationType: ListAnimationType.FadeIn,
+                          fadeInConfiguration:
+                              FadeInConfiguration(duration: 2.seconds),
+                          onSwipeRefresh: () async {
+                            await fetchZones();
+                            return await 2.seconds.delay;
+                          },
+                          children: [
+                            if (zones.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: _buildListView(),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -280,7 +337,6 @@ class _ZoneListState extends State<ZoneList> {
             ),
           ),
           const Divider(height: 1),
-
           if (appStore.isLoading)
             const Padding(
               padding: EdgeInsets.all(32),
@@ -356,7 +412,6 @@ class _ZoneListState extends State<ZoneList> {
                 },
               ),
             ),
-
           if (!appStore.isLoading &&
               dropdownError == null &&
               availableZones.isNotEmpty)

@@ -14,6 +14,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../components/back_widget.dart';
 import 'upload_documents_screen.dart';
 import 'sign_in_screen.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -443,30 +444,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               16.height,
               // First Dropdown: Provider Name
-              DropdownButtonFormField<Provider>(
-                items: registrationData?.providers?.map((provider) {
-                  return DropdownMenuItem<Provider>(
-                    child: Text(
-                      provider.name ?? '',
-                      style: primaryTextStyle(),
-                    ),
-                    value: provider,
-                  );
-                }).toList(),
-                dropdownColor: context.cardColor,
-                decoration: inputDecoration(context, hint: 'Select Provider'),
-                value: selectedProvider,
-                validator: (value) {
-                  if (value == null) return 'Please select provider';
-                  return null;
-                },
-                onChanged: (value) {
+              DropdownSearch<Provider>(
+                items: registrationData?.providers ?? [],
+                selectedItem: selectedProvider,
+                itemAsString: (Provider p) => p.name ?? '',
+                popupProps: PopupProps.menu(
+                  showSearchBox: true,
+                ),
+                dropdownDecoratorProps: DropDownDecoratorProps(
+                  dropdownSearchDecoration: inputDecoration(
+                    context,
+                    hint: 'Select Provider',
+                  ),
+                ),
+                onChanged: (Provider? value) {
                   setState(() {
                     selectedProvider = value;
-                    // Reset handyman commission when provider changes
-                    // selectedHandymanCommission = null;
-                    _clearRegistrationError(); // Clear error on change
+                    _clearRegistrationError();
                   });
+                },
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select provider';
+                  }
+                  return null;
                 },
               ),
 
@@ -603,8 +604,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 request['commission'] = selectedProviderCommission?.commission;
                 request['commission_type'] = selectedProviderCommission?.type;
                 request['provider_type_id'] = selectedProviderCommission?.id;
-              }
-               else {
+              } else {
                 // Handyman data
                 request['provider_id'] = selectedProvider?.id;
                 request['provider_name'] = selectedProvider?.name;

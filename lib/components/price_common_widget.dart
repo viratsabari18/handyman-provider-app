@@ -124,7 +124,7 @@ class PriceCommonWidget extends StatelessWidget {
                 /// Price Row - Hide if service addons or service options exist
                 if (bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE || 
                     bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
-                  if (!shouldHidePriceRow)
+                  // if (!shouldHidePriceRow)
                     Column(
                       children: [
                         Row(
@@ -146,7 +146,7 @@ class PriceCommonWidget extends StatelessWidget {
                                     PriceWidget(
                                       price: (bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
                                           ? bookingDetail.amount.validate()
-                                          : bookingDetail.finalTotalServicePrice.validate(),
+                                          : bookingDetail.amount.validate(),
                                       isBoldText: true,
                                       color: textPrimaryColorGlobal,
                                     ),

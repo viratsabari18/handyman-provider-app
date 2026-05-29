@@ -47,6 +47,8 @@ class PriceWidget extends StatelessWidget {
             );
     }
 
+
+
     return Container(
       margin: EdgeInsets.only(left: 4, right: 4),
       child: Row(
