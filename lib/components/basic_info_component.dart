@@ -66,6 +66,20 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
   bool showContactWidgets = false;
   bool showChat = false;
 
+  bool get isHandymanLogin {
+    return appStore.userType == 'handyman';
+  }
+
+  String get targetChatId {
+    return isHandymanLogin
+        ? 'handyman_${appStore.userId}'
+        : 'provider_${widget.bookingDetail?.providerId}';
+  }
+
+  String get roomId {
+    return 'booking_${widget.bookingDetail?.id}_$targetChatId';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -90,10 +104,12 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
       contactNumber = widget.customerData!.contactNumber.validate();
       address = widget.customerData!.address.validate();
       userData = widget.customerData!;
-      showContactWidgets = widget.bookingDetail!.status != BookingStatusKeys.complete &&
-          widget.bookingDetail!.status != BookingStatusKeys.cancelled;
+      showContactWidgets =
+          widget.bookingDetail!.status != BookingStatusKeys.complete &&
+              widget.bookingDetail!.status != BookingStatusKeys.cancelled;
       showChat = true;
-      showVerifiedBadge = widget.customerData!.isVerifiedAccount.validate().getBoolInt();
+      showVerifiedBadge =
+          widget.customerData!.isVerifiedAccount.validate().getBoolInt();
     } else if (widget.flag == 1) {
       profileId = widget.handymanData!.id.validate();
       name = widget.handymanData!.displayName.validate();
@@ -102,12 +118,15 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
       address = widget.handymanData!.address.validate();
       userData = widget.handymanData!;
       showContactWidgets = widget.bookingInfo != null &&
-          widget.bookingInfo!.providerData!.id.validate() != widget.handymanData!.id.validate();
-      showVerifiedBadge = widget.handymanData!.isVerifiedAccount.validate().getBoolInt();
+          widget.bookingInfo!.providerData!.id.validate() !=
+              widget.handymanData!.id.validate();
+      showVerifiedBadge =
+          widget.handymanData!.isVerifiedAccount.validate().getBoolInt();
       showChat = widget.bookingDetail!.status != BookingStatusKeys.complete &&
           widget.bookingDetail!.status != BookingStatusKeys.cancelled;
     } else {
-      final bool hasAssignedHandyman = widget.handymanData != null && widget.handymanData!.id != null;
+      final bool hasAssignedHandyman =
+          widget.handymanData != null && widget.handymanData!.id != null;
 
       log("PROVIDER HAS ASSIGNED HANDYMAN => $hasAssignedHandyman");
 
@@ -117,7 +136,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
       contactNumber = widget.providerData!.contactNumber.validate();
       address = widget.providerData!.address.validate();
       provider = widget.providerData!;
-      showVerifiedBadge = widget.providerData!.isVerifiedAccount.validate().getBoolInt();
+      showVerifiedBadge =
+          widget.providerData!.isVerifiedAccount.validate().getBoolInt();
       showChat = !hasAssignedHandyman &&
           widget.bookingDetail!.status != BookingStatusKeys.complete &&
           widget.bookingDetail!.status != BookingStatusKeys.cancelled;
@@ -138,7 +158,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
   bool shouldHideCallAndChatButtons() {
     final status = widget.bookingDetail?.status;
     // Hide buttons for pending and accepted statuses
-    return status == BookingStatusKeys.pending || status == BookingStatusKeys.accept;
+    return status == BookingStatusKeys.pending ||
+        status == BookingStatusKeys.accept;
   }
 
   @override
@@ -148,15 +169,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
     log("HANDYMAN LIST => $handymanList");
     log("HANDYMAN COUNT => ${handymanList.length}");
 
-    final bool isHandymanLogin = appStore.userType == 'handyman';
-
-    final String targetChatId = isHandymanLogin
-        ? 'handyman_${appStore.userId}'
-        : 'provider_${widget.bookingDetail?.providerId}';
-
     log("IS HANDYMAN LOGIN => $isHandymanLogin");
     log("TARGET CHAT ID => $targetChatId");
-
     // Check if buttons should be hidden (hidden for pending and accepted statuses)
     final bool hideButtons = shouldHideCallAndChatButtons();
 
@@ -183,7 +197,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                     ).flexible(),
                   ],
                 ),
-                if (widget.flag == 1 && userData.handymanRating.validate().toDouble() > 0)
+                if (widget.flag == 1 &&
+                    userData.handymanRating.validate().toDouble() > 0)
                   Row(
                     children: [
                       Icon(
@@ -216,7 +231,9 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                       languages.email,
                       style: boldTextStyle(
                         size: 12,
-                        color: appStore.isDarkMode ? textSecondaryColor : textPrimaryColor,
+                        color: appStore.isDarkMode
+                            ? textSecondaryColor
+                            : textPrimaryColor,
                       ),
                     ).expand(),
                     8.width,
@@ -242,7 +259,9 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                       '${languages.lblAddress}:',
                       style: boldTextStyle(
                         size: 12,
-                        color: appStore.isDarkMode ? textSecondaryColor : textPrimaryColor,
+                        color: appStore.isDarkMode
+                            ? textSecondaryColor
+                            : textPrimaryColor,
                       ),
                     ).expand(),
                     8.width,
@@ -257,7 +276,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                     ).expand(flex: 4),
                   ],
                 )
-                    .visible(widget.bookingDetail!.address.validate().isNotEmpty)
+                    .visible(
+                        widget.bookingDetail!.address.validate().isNotEmpty)
                     .onTap(() {
                   commonLaunchUrl(
                     '$GOOGLE_MAP_PREFIX${Uri.encodeFull(widget.bookingDetail!.address.validate())}',
@@ -316,13 +336,51 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                         width: 18,
                       ),
                       16.width,
-                      Text(
-                        languages.lblChat,
-                        style: boldTextStyle(color: Colors.white),
-                      ),
+                      StreamBuilder<int>(
+                        stream: chatServices.getUnReadCount(
+                          roomId: roomId,
+                          myChatId: getStringAsync('my_chat_id'),
+                        ),
+                        builder: (context, snapshot) {
+                          final unread = snapshot.data ?? 0;
+
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                languages.lblChat,
+                                style: boldTextStyle(color: Colors.white),
+                              ),
+                              if (unread > 0) ...[
+                                6.width,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    unread > 99 ? '99+' : unread.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          );
+                        },
+                      )
                     ],
                   ),
-                  width: showContactWidgets ? context.width() : context.width() / 2,
+                  width: showContactWidgets
+                      ? context.width()
+                      : context.width() / 2,
                   elevation: 0,
                   color: primaryColor,
                   onTap: () async {
@@ -341,28 +399,33 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                     // Determine if chatting is allowed based on booking status
                     bool isChattingAllow = false;
                     if (widget.bookingDetail != null) {
-                      isChattingAllow = widget.bookingDetail!.status == BookingStatusKeys.complete ||
-                          widget.bookingDetail!.status == BookingStatusKeys.cancelled;
+                      isChattingAllow = widget.bookingDetail!.status ==
+                              BookingStatusKeys.complete ||
+                          widget.bookingDetail!.status ==
+                              BookingStatusKeys.cancelled;
                     }
 
                     // Get the receiver name and image
                     String receiverName = "";
                     String receiverImage = "";
                     String receiverPhone = "";
-                    
+
                     if (widget.flag == 0) {
                       // Customer chat
-                      receiverName = widget.customerData?.displayName ?? "Customer";
+                      receiverName =
+                          widget.customerData?.displayName ?? "Customer";
                       receiverImage = widget.customerData?.profileImage ?? "";
                       receiverPhone = widget.customerData?.contactNumber ?? "";
                     } else if (widget.flag == 1) {
                       // Handyman chat
-                      receiverName = widget.handymanData?.displayName ?? "Handyman";
+                      receiverName =
+                          widget.handymanData?.displayName ?? "Handyman";
                       receiverImage = widget.handymanData?.profileImage ?? "";
                       receiverPhone = widget.handymanData?.contactNumber ?? "";
                     } else {
                       // Provider chat
-                      receiverName = widget.providerData?.displayName ?? "Provider";
+                      receiverName =
+                          widget.providerData?.displayName ?? "Provider";
                       receiverImage = widget.providerData?.profileImage ?? "";
                       receiverPhone = widget.providerData?.contactNumber ?? "";
                     }
