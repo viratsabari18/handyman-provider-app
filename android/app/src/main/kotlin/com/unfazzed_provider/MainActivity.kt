@@ -1,4 +1,4 @@
-package com.fixomesprovider.lmt
+package com.unfazzed_provider
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

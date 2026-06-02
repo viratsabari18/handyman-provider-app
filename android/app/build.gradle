@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.fixomesprovider.lmt"
+    namespace "com.unfazzed_provider"
     compileSdk 35
     ndkVersion "27.0.12077973"
 
@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.fixomesprovider.lmt"
+        applicationId "com.unfazzed_provider"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 35
         versionCode 1

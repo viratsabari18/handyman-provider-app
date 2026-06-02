@@ -336,46 +336,12 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                         width: 18,
                       ),
                       16.width,
-                      StreamBuilder<int>(
-                        stream: chatServices.getUnReadCount(
-                          roomId: roomId,
-                          myChatId: getStringAsync('my_chat_id'),
+                      Text(
+                        languages.lblChat,
+                        style: boldTextStyle(
+                          color: Colors.white,
                         ),
-                        builder: (context, snapshot) {
-                          final unread = snapshot.data ?? 0;
-
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                languages.lblChat,
-                                style: boldTextStyle(color: Colors.white),
-                              ),
-                              if (unread > 0) ...[
-                                6.width,
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Text(
-                                    unread > 99 ? '99+' : unread.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          );
-                        },
-                      )
+                      ),
                     ],
                   ),
                   width: showContactWidgets
@@ -396,8 +362,8 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                     log("TARGET CHAT ID => $targetChatId");
                     log("=======================================");
 
-                    // Determine if chatting is allowed based on booking status
                     bool isChattingAllow = false;
+
                     if (widget.bookingDetail != null) {
                       isChattingAllow = widget.bookingDetail!.status ==
                               BookingStatusKeys.complete ||
@@ -405,25 +371,21 @@ class BasicInfoComponentState extends State<BasicInfoComponent> {
                               BookingStatusKeys.cancelled;
                     }
 
-                    // Get the receiver name and image
                     String receiverName = "";
                     String receiverImage = "";
                     String receiverPhone = "";
 
                     if (widget.flag == 0) {
-                      // Customer chat
                       receiverName =
                           widget.customerData?.displayName ?? "Customer";
                       receiverImage = widget.customerData?.profileImage ?? "";
                       receiverPhone = widget.customerData?.contactNumber ?? "";
                     } else if (widget.flag == 1) {
-                      // Handyman chat
                       receiverName =
                           widget.handymanData?.displayName ?? "Handyman";
                       receiverImage = widget.handymanData?.profileImage ?? "";
                       receiverPhone = widget.handymanData?.contactNumber ?? "";
                     } else {
-                      // Provider chat
                       receiverName =
                           widget.providerData?.displayName ?? "Provider";
                       receiverImage = widget.providerData?.profileImage ?? "";
