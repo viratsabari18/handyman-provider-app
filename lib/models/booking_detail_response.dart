@@ -46,34 +46,41 @@ class BookingDetailResponse {
  });
 
   BookingDetailResponse.fromJson(Map<String, dynamic> json) {
+    print("coupon_data => ${json['coupon_data']}");
+print("coupon_data type => ${json['coupon_data'].runtimeType}");
+
+print("provider_data => ${json['provider_data']}");
+print("provider_data type => ${json['provider_data'].runtimeType}");
+
+print("post_request_detail => ${json['post_request_detail']}");
+print("post_request_detail type => ${json['post_request_detail'].runtimeType}");
     bookingDetail = json['booking_detail'] != null
         ? new BookingData.fromJson(json['booking_detail'])
         : null;
-    service = json['service'] != null
-        ? new ServiceData.fromJson(json['service'])
-        : null;
-    customer = json['customer'] != null
-        ? new UserData.fromJson(json['customer'])
-        : null;
+  service = json['service'] is Map<String, dynamic>
+    ? ServiceData.fromJson(json['service'])
+    : null;
+ customer = json['customer'] is Map<String, dynamic>
+    ? UserData.fromJson(json['customer'])
+    : null;
     if (json['booking_activity'] != null) {
       bookingActivity = [];
       json['booking_activity'].forEach((v) {
         bookingActivity!.add(new BookingActivity.fromJson(v));
       });
     }
-    providerData = json['provider_data'] != null
-        ? new UserData.fromJson(json['provider_data'])
-        : null;
+providerData = json['provider_data'] is Map<String, dynamic>
+    ? UserData.fromJson(json['provider_data'])
+    : null;
     if (json['rating_data'] != null) {
       ratingData = [];
       json['rating_data'].forEach((v) {
         ratingData!.add(new RatingData.fromJson(v));
       });
     }
-    couponData = json['coupon_data'] != null
-        ? new CouponData.fromJson(json['coupon_data'])
-        : null;
-
+couponData = json['coupon_data'] is Map<String, dynamic>
+    ? CouponData.fromJson(json['coupon_data'])
+    : null;
     if (json['handyman_data'] != null) {
       handymanData = [];
       json['handyman_data'].forEach((v) {
@@ -87,9 +94,9 @@ class BookingDetailResponse {
       });
     }
 
-    postRequestDetail = json['post_request_detail'] != null
-        ? PostJobData.fromJson(json['post_request_detail'])
-        : null;
+    postRequestDetail = json['post_request_detail'] is Map<String, dynamic>
+    ? PostJobData.fromJson(json['post_request_detail'])
+    : null;
     serviceaddon=json['BookingAddonService'] != null
         ? (json['BookingAddonService'] as List)
             .map((i) => ServiceAddon.fromJson(i))

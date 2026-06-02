@@ -260,7 +260,7 @@ Future<void> fetchAvailableZones() async {
               children: [
                 if (showZoneDropdown) _buildAddZoneDropdown(),
                 Expanded(
-                  child: zones.isEmpty && !appStore.isLoading
+                  child: zones.isEmpty && !appStore.isLoading && !showZoneDropdown
                       ? NoDataWidget(
                           title: languages.noZonesFound,
                           subTitle: languages.noZonesAvailableForProvider,

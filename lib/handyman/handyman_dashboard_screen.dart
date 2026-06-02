@@ -183,7 +183,7 @@ class _HandymanDashboardScreenState
                                 return Image.network(
                                   imageUrl,
                                   width: context.width(),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fill,
                                   errorBuilder: (_, __, ___) {
                                     return Container(
                                       color: Colors.grey.shade300,

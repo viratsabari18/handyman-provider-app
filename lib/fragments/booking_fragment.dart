@@ -52,25 +52,18 @@ class BookingFragmentState extends State<BookingFragment>
     super.initState();
     selectedBookingStatus = BOOKING_PAYMENT_STATUS_ALL;
     init();
-    bookingRefreshTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
-      if (!mounted) return;
+bookingRefreshTimer = Timer.periodic(
+  Duration(seconds: 5),
+  (timer) async {
+    if (!mounted) return;
 
-      page = 1;
+    page = 1;
 
-      future = getBookingList(
-        page,
-        bookings: [],
-        lastPageCallback: (b) {
-          isLastPage = b;
-        },
-        paymentBreakdownCallBack: (totalEarning, paymentBreakdown) {
-          totalEarnings = totalEarning;
-          paymentBreakdownData = paymentBreakdown;
-        },
-      );
+    init(); // Reload with current filters
 
-      setState(() {});
-    });
+    setState(() {});
+  },
+);
     filterStore = FilterStore();
 
     LiveStream().on(LIVESTREAM_UPDATE_BOOKING_STATUS_WISE, (data) {

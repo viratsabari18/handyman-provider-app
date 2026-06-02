@@ -625,6 +625,10 @@ if (isUserTypeProvider &&
          
           return;
         }
+        if(widget.bookingData.id == null){
+          toast("Booking is cancelled by admin");
+          return;
+        }
 
         BookingDetailScreen(
           bookingId: widget.bookingData.id.validate(),

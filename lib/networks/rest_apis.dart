@@ -902,22 +902,68 @@ Future<List<ServiceData>> getSearchList(
   }
 }
 
-Future<BookingDetailResponse> bookingDetail(Map request, {Function(String, int)? callbackForStatus}) async {
-  final bookingDetailResponse = BookingDetailResponse.fromJson(
-    await handleResponse(await buildHttpResponse('booking-detail', request: request, method: HttpMethodType.POST)),
-  );
-  printLongString(
-  const JsonEncoder.withIndent('  ').convert(bookingDetailResponse),
-);
+Future<BookingDetailResponse> bookingDetail(
+  Map request, {
+  Function(String, int)? callbackForStatus,
+}) async {
+  try {
+    final response = await handleResponse(
+      await buildHttpResponse(
+        'booking-detail',
+        request: request,
+        method: HttpMethodType.POST,
+      ),
+    );
 
-  callbackForStatus?.call(bookingDetailResponse.bookingDetail!.status.validate(),
-      bookingDetailResponse.handymanData?.isNotEmpty ?? false ? bookingDetailResponse.handymanData!.firstOrNull!.id.validate() : bookingDetailResponse.providerData!.id.validate());
-  appStore.setLoading(false);
-  if (cachedBookingDetailList.any((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id)) {
-    cachedBookingDetailList.removeWhere((element) => element.bookingDetail!.id == bookingDetailResponse.bookingDetail!.id);
+    final bookingDetailResponse =
+        BookingDetailResponse.fromJson(response);
+
+    printLongString(
+      const JsonEncoder.withIndent('  ').convert(
+        bookingDetailResponse.toJson(),
+      ),
+    );
+
+    /// Booking deleted / not found
+    if (bookingDetailResponse.bookingDetail == null) {
+      throw Exception('Booking no longer exists');
+    }
+
+    int assignedUserId = -1;
+
+    if (bookingDetailResponse.handymanData?.isNotEmpty == true) {
+      assignedUserId =
+          bookingDetailResponse.handymanData!.first.id.validate();
+    } else if (bookingDetailResponse.providerData != null) {
+      assignedUserId =
+          bookingDetailResponse.providerData!.id.validate();
+    }
+
+    callbackForStatus?.call(
+      bookingDetailResponse.bookingDetail?.status.validate() ?? '',
+      assignedUserId,
+    );
+
+    appStore.setLoading(false);
+
+    /// Remove old cache
+    cachedBookingDetailList.removeWhere(
+      (element) =>
+          element.bookingDetail?.id ==
+          bookingDetailResponse.bookingDetail?.id,
+    );
+
+    /// Add updated cache
+    cachedBookingDetailList.add(bookingDetailResponse);
+
+    return bookingDetailResponse;
+  } catch (e) {
+    appStore.setLoading(false);
+
+    debugPrint('BOOKING DETAIL ERROR: $e');
+
+    rethrow;
   }
-  cachedBookingDetailList.add(bookingDetailResponse);
-  return bookingDetailResponse;
 }
 
 

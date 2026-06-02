@@ -578,11 +578,14 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
   }
 
   BookingDetailResponse? initialData() {
-    if (cachedBookingDetailList.any((element) =>
-        element.bookingDetail!.id == widget.bookingId.validate())) {
+    if (cachedBookingDetailList.any(
+      (element) => element.bookingDetail?.id == widget.bookingId.validate(),
+    )) {
       return cachedBookingDetailList.firstWhere(
-          (element) => element.bookingDetail!.id == widget.bookingId);
+        (element) => element.bookingDetail?.id == widget.bookingId,
+      );
     }
+
     return null;
   }
 
@@ -1660,22 +1663,52 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
 
   //region Body
   Widget buildBodyWidget(AsyncSnapshot<BookingDetailResponse> res) {
-    final bool hasAssignedHandyman = res.data!.handymanData != null &&
-        res.data!.handymanData!.isNotEmpty &&
-        res.data!.handymanData!.first.id != appStore.userId;
-    if (res.hasError) {
-      return NoDataWidget(
-        title: res.error.toString(),
-        imageWidget: ErrorStateWidget(),
-        retryText: languages.reload,
-        onRetry: () {
-          appStore.setLoading(true);
+    debugPrint("========== BUILD BODY ==========");
 
-          init();
-          setState(() {});
+    debugPrint("hasData = ${res.hasData}");
+    debugPrint("hasError = ${res.hasError}");
+
+    if (res.hasData) {
+      debugPrint("bookingDetail = ${res.data?.bookingDetail != null}");
+      debugPrint("service = ${res.data?.service != null}");
+      debugPrint("customer = ${res.data?.customer != null}");
+      debugPrint("handymanData = ${res.data?.handymanData != null}");
+      debugPrint("serviceProof = ${res.data?.serviceProof != null}");
+      debugPrint("ratingData = ${res.data?.ratingData != null}");
+
+      debugPrint("handymanData length = ${res.data?.handymanData?.length}");
+      debugPrint("serviceProof length = ${res.data?.serviceProof?.length}");
+    }
+
+    debugPrint("================================");
+
+    if (res.hasError) {
+      final errorText = res.error.toString();
+
+      return NoDataWidget(
+        title:
+            errorText.contains('400') ? 'Booking no longer exists' : errorText,
+        imageWidget: ErrorStateWidget(),
+        retryText: 'Back',
+        onRetry: () {
+          Navigator.pop(context);
         },
       );
     } else if (res.hasData) {
+      if (res.data?.bookingDetail == null) {
+        return NoDataWidget(
+          title: 'Booking no longer exists',
+          imageWidget: ErrorStateWidget(),
+          retryText: 'Back',
+          onRetry: () {
+            Navigator.pop(context);
+          },
+        );
+      }
+      final bool hasAssignedHandyman =
+          (res.data?.handymanData?.isNotEmpty ?? false) &&
+              res.data!.handymanData!.first.id != appStore.userId;
+
       countDownKey = GlobalKey();
       return Stack(
         fit: StackFit.expand,
@@ -1696,17 +1729,17 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
                   _serviceDetailWidget(bookingResponse: res.data!),
 
                   /// Total Service Time
-                  _buildCounterWidget(value: res.data!),
+                  // _buildCounterWidget(value: res.data!),
 
-                  /// Location Tracking
-                  locationTrackWidget(data: res.data!).visible(
-                    BookingStatusKeys.onGoing ==
-                            res.data!.bookingDetail!.status &&
-                        !isUserTypeHandyman &&
-                        res.data!.handymanData != null &&
-                        res.data!.handymanData!.isNotEmpty &&
-                        res.data!.handymanData!.first.id != appStore.userId,
-                  ),
+                  // /// Location Tracking
+                  // locationTrackWidget(data: res.data!).visible(
+                  //   BookingStatusKeys.onGoing ==
+                  //           res.data!.bookingDetail!.status &&
+                  //       !isUserTypeHandyman &&
+                  //       res.data!.handymanData != null &&
+                  //       res.data!.handymanData!.isNotEmpty &&
+                  //       res.data!.handymanData!.first.id != appStore.userId,
+                  // ),
 
                   /// My Service List
                   if (res.data!.postRequestDetail != null &&
@@ -2137,11 +2170,7 @@ class BookingDetailScreenState extends State<BookingDetailScreen>
             top: false,
             child: Scaffold(
               appBar: appBarWidget(
-                snap.hasData
-                    ? snap.data!.bookingDetail!.status
-                        .validate()
-                        .toBookingStatus()
-                    : "",
+                snap.data?.bookingDetail?.status?.toBookingStatus() ?? "",
               ),
               body: snap.connectionState == ConnectionState.waiting
                   ? BookingDetailShimmer()
