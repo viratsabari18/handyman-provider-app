@@ -9,6 +9,7 @@ import 'package:handyman_provider_flutter/components/selected_item_widget.dart';
 
 import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 import 'package:handyman_provider_flutter/provider/components/assign_handyman_screen.dart';
+import 'package:handyman_provider_flutter/provider/provider_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/utils/model_keys.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -264,8 +265,11 @@ Future<void> registerNewHandyman() async {
         widget.onUpdate!.call();
       }
 
-      BookingFragment().launch(
+    ProviderDashboardScreen(
+              index: 1,
+            ).launch(
         context,
+          isNewTask: true,
         pageRouteAnimation:
             PageRouteAnimation.SlideBottomTop,
       );
