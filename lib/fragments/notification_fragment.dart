@@ -14,6 +14,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../components/app_widgets.dart';
 import '../components/base_scaffold_widget.dart';
 import '../components/empty_error_state_widget.dart';
+import 'package:handyman_provider_flutter/provider/provider_dashboard_screen.dart';
 
 class NotificationFragment extends StatefulWidget {
   @override
@@ -83,24 +84,24 @@ class NotificationScreenState extends State<NotificationFragment> {
       appBar: appBarWidget(
         languages.notification,
         actions: [
-          IconButton(
-            icon: Icon(Icons.clear_all_rounded, color: Colors.black),
-            onPressed: () async {
-              showConfirmDialogCustom(
-                context,
-                onAccept: (_) async {
-                  appStore.setLoading(true);
+          // IconButton(
+          //   icon: Icon(Icons.clear_all_rounded, color: Colors.black),
+          //   onPressed: () async {
+          //     showConfirmDialogCustom(
+          //       context,
+          //       onAccept: (_) async {
+          //         appStore.setLoading(true);
 
-                  init(type: MARK_AS_READ);
-                  setState(() {});
-                },
-                primaryColor: context.primaryColor,
-                negativeText: languages.lblNo,
-                positiveText: languages.lblYes,
-                title: languages.confirmationRequestTxt,
-              );
-            },
-          ),
+          //         init(type: MARK_AS_READ);
+          //         setState(() {});
+          //       },
+          //       primaryColor: context.primaryColor,
+          //       negativeText: languages.lblNo,
+          //       positiveText: languages.lblYes,
+          //       title: languages.confirmationRequestTxt,
+          //     );
+          //   },
+          // ),
         ],
       ),
       body: SnapHelperWidget<List<NotificationData>>(
@@ -128,7 +129,9 @@ class NotificationScreenState extends State<NotificationFragment> {
                         .contains(BOOKING)) {
                       readNotificationGeneric(
                           type: 'booking', id: data.data!.id.toString());
-                      BookingDetailScreen(bookingId: data.data!.id)
+                                            ProviderDashboardScreen(
+        index: 1,
+      )
                           .launch(context);
                     } else {
                       //
@@ -149,7 +152,9 @@ class NotificationScreenState extends State<NotificationFragment> {
                             .contains(PAYMENT_MESSAGE_STATUS)) {
                       readNotificationGeneric(
                           type: 'booking', id: data.data!.id.toString());
-                      BookingDetailScreen(bookingId: data.data!.id)
+                      ProviderDashboardScreen(
+        index: 1,
+      )
                           .launch(context);
                     }
 

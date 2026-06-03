@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:handyman_provider_flutter/provider/jobRequest/bid_list_screen.dart';
+import 'package:handyman_provider_flutter/provider/provider_dashboard_screen.dart';
 import 'package:handyman_provider_flutter/utils/common.dart';
 import 'package:http/http.dart' as http;
 import 'package:nb_utils/nb_utils.dart';
@@ -16,6 +17,7 @@ import '../provider/services/service_detail_screen.dart';
 import '../screens/booking_detail_screen.dart';
 import '../screens/chat/user_chat_list_screen.dart';
 import 'constant.dart';
+import 'package:handyman_provider_flutter/fragments/booking_fragment.dart';
 
 Future<void> initFirebaseMessaging() async {
   await FirebaseMessaging.instance
@@ -145,9 +147,13 @@ void handleNotificationClick(RemoteMessage message) {
     if (additionalData.containsKey('id') && additionalData['id'] != null) {
       if (additionalData.containsKey('check_booking_type') &&
           additionalData['check_booking_type'] == 'booking') {
-        navigatorKey.currentState!.push(MaterialPageRoute(
-            builder: (context) =>
-                BookingDetailScreen(bookingId: additionalData['id'].toInt())));
+        navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (context) => ProviderDashboardScreen(
+              index: 1,
+            ),
+          ),
+        );
       }
 
       if (additionalData.containsKey('notification-type') &&

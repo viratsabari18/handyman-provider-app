@@ -39,6 +39,7 @@ class ProviderDashboardScreenState extends State<ProviderDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    currentIndex = widget.index ?? 0;
     init();
   }
 

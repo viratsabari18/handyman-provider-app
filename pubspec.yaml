@@ -109,14 +109,14 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#DB0008"
 
-  image: assets/app_icon.png
+  image: assets/splash_test1.png
 
   android: true
   ios: true
 
   android_12:
     color: "#DB0008"
-    image: assets/app_icon.png
+    image: assets/splash_test1.png
 
 flutter:
   uses-material-design: true
