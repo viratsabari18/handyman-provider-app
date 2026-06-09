@@ -24,12 +24,12 @@ class DefaultFirebaseConfig {
       );
     } else {
       // Android
-      return const FirebaseOptions(
-        appId: '1:438524885554:android:4fcb3890f4ff19244f9a2b',
-        apiKey: 'AIzaSyDrdD0fJnvDQjp02Ong4C2LxFlZV8mrCU4',
-        projectId: 'bookingsystem-3be5c',
-        messagingSenderId: '438524885554',
-      );
+ return const FirebaseOptions(
+  appId: '1:258035372869:android:430275901c86cbffa3242c',
+  apiKey: 'AIzaSyBCSznTrq6zyD4-4HY9yZUpEkiqEgyoKDA',
+  projectId: 'shiber-746d7',
+  messagingSenderId: '258035372869',
+);
     }
   }
 }

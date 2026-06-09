@@ -1,7 +1,7 @@
 name: handyman_provider_flutter
 description: A new Flutter project.
 publish_to: 'none'
-version: 11.14.2+99
+version: 11.14.4+101
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -101,10 +101,10 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/app_icon.png"
+  image_path: "assets/app_icon_test1.jpeg"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/app_icon.png"
-  adaptive_icon_monochrome: "assets/app_icon.png"
+  adaptive_icon_foreground: "assets/app_icon_test1.jpeg"
+  adaptive_icon_monochrome: "assets/app_icon_test1.jpeg"
 
 flutter_native_splash:
   color: "#DB0008"

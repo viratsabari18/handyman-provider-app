@@ -48,13 +48,14 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    defaultConfig {
-        applicationId "com.unfazzed_provider"
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 35
-        versionCode 1
-        versionName '1.0.0'
-    }
+ defaultConfig {
+    applicationId "com.unfazzed_provider"
+    minSdkVersion flutter.minSdkVersion
+    targetSdkVersion 35
+
+    versionCode flutterVersionCode.toInteger()
+    versionName flutterVersionName
+}
 
     signingConfigs {
         release {
